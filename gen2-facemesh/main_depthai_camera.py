@@ -12,7 +12,7 @@ from utils.effect import EffectRenderer2D
 MediaPipe Facial Landmark detector with PNG EffectRenderer.
 Run as:
 python3 -m pip install -r requirements.txt
-python3 main.py -conf [CONF]
+python3 main_depthai_camera.py -conf [CONF]
 
 Blob is converted from MediaPipe's tflite model.
 """
@@ -90,7 +90,7 @@ with dai.Device(pipeline) as device:
     # FPS Init
     start_time = time.time()
     counter = 0
-    fps = 0
+    fps = 0.0
     layer_info_printed = False
 
     while True:
