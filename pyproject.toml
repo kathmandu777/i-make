@@ -24,6 +24,7 @@ profile = "black"
 line_length = 119
 
 [tool.flake8]
+extend-ignore = "E203,"
 max-line-length = 119
 max-complexity = 10
 
