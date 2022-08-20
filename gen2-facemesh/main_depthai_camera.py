@@ -9,9 +9,9 @@ import numpy as np
 from utils.effect import EffectRenderer2D
 
 """
-MediaPipe Facial Landmark detector with PNG EffectRenderer.
+MediaPipe Facial Landmark detector with PNG EffectRenderer using DepthAI camera.
 Run as:
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements_depthai_camera.txt
 python3 main_depthai_camera.py -conf [CONF]
 
 Blob is converted from MediaPipe's tflite model.

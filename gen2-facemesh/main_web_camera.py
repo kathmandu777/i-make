@@ -8,10 +8,10 @@ import numpy as np
 from utils.effect import EffectRenderer2D
 
 """
-MediaPipe Facial Landmark detector with PNG EffectRenderer.
+MediaPipe Facial Landmark detector with PNG EffectRenderer using web camera.
 Run as:
-python3 -m pip install -r requirements.txt
-python3 main_web_camera.py -conf [CONF]
+python3 -m pip install -r requirements_web_camera.txt
+python3 main_web_camera.py -detect_conf [DETECT_CONF] -track_conf [TRACK_CONF]
 """
 
 
