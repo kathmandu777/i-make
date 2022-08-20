@@ -23,10 +23,10 @@ parser.add_argument("-conf", "--confidence_thresh", help="set the confidence thr
 
 args = parser.parse_args()
 CONF_THRESH = args.confidence_thresh
-NN_PATH = "models/face_landmark_openvino_2021.4_6shave.blob"
+NN_PATH = "./gen2-facemesh/models/face_landmark_openvino_2021.4_6shave.blob"
 NN_WIDTH, NN_HEIGHT = 192, 192
 PREVIEW_WIDTH, PREVIEW_HEIGHT = 416, 416
-OVERLAY_IMAGE = "mask/facepaint.png"
+OVERLAY_IMAGE = "./gen2-facemesh/mask/facepaint.png"
 
 
 # Start defining a pipeline
