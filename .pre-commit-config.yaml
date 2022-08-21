@@ -51,3 +51,8 @@ repos:
     hooks:
       - id: docformatter
         args: [--in-place]
+  - repo: https://github.com/markdownlint/markdownlint
+    rev: master
+    hooks:
+      - id: markdownlint
+        args: [-r, ~MD013] # ignore line length of makrdownlint
