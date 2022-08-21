@@ -12,6 +12,15 @@ class EffectRenderer2D:
         filter_points_path: str = "i-make/res/filter_points.npy",
         use_filter_points: bool = True,
     ):
+        """Initialize EffectRenderer2D.
+
+        Args:
+            effect_image_path (str): path to the effect image (1024 x 1024)
+            src_points_path (str, optional): path to the source landmarks. Defaults to "i-make/res/source_landmarks.npy".
+            filter_points_path (str, optional): path to the filter landmarks. Defaults to "i-make/res/filter_points.npy".
+            use_filter_points (bool, optional): use filter landmarks. Defaults to True.
+        """
+
         self.effect_image = cv2.imread(effect_image_path, cv2.IMREAD_UNCHANGED)
         height, width, _ = self.effect_image.shape
 
@@ -81,15 +90,15 @@ class EffectRenderer2D:
                 borderMode=cv2.BORDER_REFLECT_101,
             )
 
-            mask = np.zeros((overlay_crop.shape[0], overlay_crop.shape[1], 4), dtype=np.uint8)
+            mask = np.zeros((overlay_crop.shape[0], overlay_crop.shape[1], 4), dtype=np.uint8)  # shapeが一つでも0になるとエラーになる
+            if mask.shape[0] != 0 and mask.shape[1] != 0:
+                cv2.fillConvexPoly(
+                    mask, np.int32(dst_tri_crop), (1.0, 1.0, 1.0, 1.0), 16, 0
+                )  # 多角形を描画 fillConvexPoly(元の画像, 複数の座標, color, ...)
+                mask[np.where(overlay_crop > 0)] = 0
 
-            cv2.fillConvexPoly(
-                mask, np.int32(dst_tri_crop), (1.0, 1.0, 1.0, 1.0), 16, 0
-            )  # 多角形を描画 fillConvexPoly(元の画像, 複数の座標, color, ...)
-            mask[np.where(overlay_crop > 0)] = 0
-
-            cropped_triangle = warp * mask
-            overlay_crop += cropped_triangle
+                cropped_triangle = warp * mask
+                overlay_crop += cropped_triangle
 
         return overlay
 
