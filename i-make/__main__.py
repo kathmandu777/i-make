@@ -5,6 +5,7 @@ import mediapipe as mp
 import numpy as np
 
 from .libs.effect import EffectRenderer2D
+from .libs.parts_filter import FacePartsFilter
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -42,7 +43,8 @@ with mp_face_mesh.FaceMesh(
             for landmark in results.multi_face_landmarks[0].landmark:
                 landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
             target_image = image.copy()
-            effected_image = renderer.render_effect(target_image, np.array(landmarks))
+            # effected_image = renderer.render_effect(target_image, np.array(landmarks))
+            effected_image = FacePartsFilter.filter(target_image, mp_face_mesh.FACEMESH_LIPS, landmarks, (0, 255, 0))
         else:
             effected_image = image.copy()
 
