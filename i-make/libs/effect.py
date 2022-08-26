@@ -43,20 +43,25 @@ class EffectRenderer2D:
         )
         self.triangles = self.triangles_1D.reshape(len(self.triangles_1D) // 3, 3)
 
-    def render_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray) -> np.ndarray:
+    def render_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool) -> np.ndarray:
         """Render effect on the target image.
 
         Args:
             target_image (_type_): 描画する画像(カメラ画像)
             target_landmarks (_type_): target_image上でのランドマークの座標
+            do_overlay (_type_): メイクを元画像(target_image)の上に貼り付けるかどうか
 
         Returns:
-            np.array: 描画された画像
+            np.array: メイクのみ、もしくは描画された映像
         """
+
         if self.use_filter_points:
             target_landmarks = target_landmarks[self.filter_points]
-        effect = self.create_effect(target_image, target_landmarks)
-        return self.overlay_image(target_image, effect)
+        if do_overlay:
+            effect = self.create_effect(target_image, target_landmarks)
+            return self.overlay_image(target_image, effect)
+        else:
+            return self.create_effect(target_image, target_landmarks)
 
     def create_effect(self, target_image: np.ndarray, dst_points: np.ndarray) -> np.ndarray:
         """Creates effect image that can be rendered on the target image.
