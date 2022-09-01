@@ -18,8 +18,7 @@ args = parser.parse_args()
 OVERLAY_IMAGE = "i-make/static/facepaints/facepaint.png"
 
 mp_face_mesh = mp.solutions.face_mesh
-renderer = EffectRenderer2D(OVERLAY_IMAGE, use_filter_points=False)
-
+renderer_1 = EffectRenderer2D(OVERLAY_IMAGE, use_filter_points=True)
 cap = cv2.VideoCapture(0)
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
@@ -42,11 +41,11 @@ with mp_face_mesh.FaceMesh(
             for landmark in results.multi_face_landmarks[0].landmark:
                 landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
             target_image = image.copy()
-            effected_image = renderer.render_effect(target_image, np.array(landmarks))
+            effected_image = renderer_1.render_effect(target_image, np.array(landmarks), False)
         else:
             effected_image = image.copy()
 
-        cv2.imshow("Demo", np.hstack([cv2.flip(image, 1), cv2.flip(effected_image, 1)]))
+        cv2.imshow("RESULT", effected_image)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break

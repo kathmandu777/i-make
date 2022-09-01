@@ -112,7 +112,7 @@ with dai.Device(pipeline) as device:
 
             # render frame
             target_frame = frame.copy()
-            applied_effect = effect_rendered.render_effect(target_frame, ldms)
+            applied_effect = effect_rendered.render_effect(target_frame, ldms, False)
             cv2.imshow("Effect", applied_effect)
 
             # show landmarks on frame
@@ -123,7 +123,7 @@ with dai.Device(pipeline) as device:
         else:
             applied_effect = frame
 
-        cv2.imshow("Demo", np.hstack([frame, applied_effect]))
+        cv2.imshow("Demo", applied_effect)
 
         # Show FPS and score
         color_black, color_white = (0, 0, 0), (255, 255, 255)
