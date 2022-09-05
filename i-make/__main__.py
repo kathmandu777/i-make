@@ -4,7 +4,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
-from .libs.effect import EffectRenderer2D
+from .libs.makeup_useful import MakeupUseful
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -15,10 +15,10 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-OVERLAY_IMAGE = "i-make/static/facepaints/facepaint.png"
 
 mp_face_mesh = mp.solutions.face_mesh
-renderer_1 = EffectRenderer2D(OVERLAY_IMAGE, use_filter_points=True)
+
+render_make = MakeupUseful(use_filter_points=True)
 cap = cv2.VideoCapture(0)
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
@@ -41,7 +41,7 @@ with mp_face_mesh.FaceMesh(
             for landmark in results.multi_face_landmarks[0].landmark:
                 landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
             target_image = image.copy()
-            effected_image = renderer_1.render_effect(target_image, np.array(landmarks), False)
+            effected_image = render_make.eye_bags0(target_image, np.array(landmarks), False)
         else:
             effected_image = image.copy()
 
