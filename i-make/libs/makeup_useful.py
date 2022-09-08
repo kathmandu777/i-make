@@ -33,34 +33,23 @@ class MakeupUseful(EffectRenderer2D):
         )
         self.triangles = self.triangles_1D.reshape(len(self.triangles_1D) // 3, 3)
 
-    def solo_makeup(self, target_image: str, target_landmarks: str, do_overlay: bool) -> np.ndarray:
+    def making_overlay_image(self, *pathes) -> None:
+        self.blended = cv2.imread("i-make/static/facepaints/black.png", -1)
+        for path in pathes:
+            image = cv2.imread(path, -1)
+            self.blended = cv2.addWeighted(src1=self.blended, alpha=1.0, src2=image, beta=1.0, gamma=0)
+
+    def makeup(self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool) -> np.ndarray:
+        """単体又は合成画像からメイクを導出する
+        Args:
+            target_image(_type_): 描画する画像(カメラ画像)
+            target_landmarks(_type_):target_image上でのランドマークの座標
+            do_overlay(_type_):メイクを元画像(target_image)の上に貼り付けるかどうか
+
+        Returns:
+            np.array:メイクのみ、もしくは描画された画像
+        """
 
         blended = self.blended
         self.initialization(blended)
         return self.render_effect(target_image, target_landmarks, do_overlay)
-
-    def making_overlay_image(self, path: str, path_second: str) -> None:
-        img = cv2.imread(path, -1)
-        img2 = cv2.imread(path_second, -1)
-        self.blended = cv2.addWeighted(src1=img, alpha=1.0, src2=img2, beta=1.0, gamma=0)
-        """
-        img2 = cv2.imread(second_path,-1)
-
-        if img.shape[2] == 4:
-            img[img[:,:,3]==0] = 0
-        if img2.shape[2] == 4:
-            img2[img2[:,:,3]==0] = 0
-
-        self.blended = cv2.addWeighted(src1=img,alpha=1.0,src2=img2,beta=1.0,gamma=0)
-        """
-
-    def making_overlay_image_kahentyou_test(self, *pathes) -> None:
-        images = np.zeros((1024, 1024, 4))
-        for path in pathes:
-            itiji = cv2.imread(path, -1)
-            np.append(images, itiji)
-        for i in range(len(images)):
-            if images.shape[i][2] == 4:
-                images[images[:, :, 3] == 0] = 0
-        for image in images:
-            self.blended = cv2.addWeighted(src1=self.blended, alpha=1.0, src2=image, beta=1.0, gamma=0)
