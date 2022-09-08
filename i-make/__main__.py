@@ -17,8 +17,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 mp_face_mesh = mp.solutions.face_mesh
-
-render_make = MakeupUseful(use_filter_points=True)
+render_make = MakeupUseful()
+render_make.making_overlay_image("i-make/static/facepaints/black_png.png", "i-make/static/facepaints/kirakira_png.png")
 cap = cv2.VideoCapture(0)
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
@@ -41,7 +41,7 @@ with mp_face_mesh.FaceMesh(
             for landmark in results.multi_face_landmarks[0].landmark:
                 landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
             target_image = image.copy()
-            effected_image = render_make.eye_bags0(target_image, np.array(landmarks), False)
+            effected_image = render_make.solo_makeup(target_image, np.array(landmarks), False)
         else:
             effected_image = image.copy()
 

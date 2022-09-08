@@ -5,6 +5,25 @@ import numpy as np
 
 
 class EffectRenderer2D:
+    def __init__(
+        self,
+        src_points_path: str = "i-make/res/source_landmarks.npy",
+        filter_points_path: str = "i-make/res/filter_points.npy",
+        use_filter_points: bool = True,
+    ):
+        """Initialize EffectRenderer2D.
+
+        Args:
+            src_points_path (str, optional): path to the source landmarks. Defaults to "i-make/res/source_landmarks.npy".
+            filter_points_path (str, optional): path to the filter landmarks. Defaults to "i-make/res/filter_points.npy".
+            use_filter_points (bool, optional): use filter landmarks. Defaults to True.
+        """
+        self.src_points = np.load(src_points_path)  # facemeshが返却する468(467)個のランドマークの座標
+        self.filter_points = np.load(filter_points_path)  # src_pointsの中から選択するランドマークのindex
+        self.use_filter_points = use_filter_points
+        if use_filter_points:
+            self.src_points = self.src_points[self.filter_points]
+
     def render_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool) -> np.ndarray:
         """Render effect on the target image.
 
