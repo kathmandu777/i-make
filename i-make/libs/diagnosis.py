@@ -1,14 +1,14 @@
-from typing import Tuple
+from typing import Final, Tuple
 
 import cv2
 import numpy as np
 
 
 class EyeDiagnosis:
-    LEFT_EYE_LEFTMOST_IDX = 33
-    LEFT_EYE_RIGHTMOST_IDX = 133
-    RIGHT_EYE_LEFTMOST_IDX = 362
-    RIGHT_EYE_RIGHTMOST_IDX = 263
+    LEFT_EYE_LEFTMOST_IDX: Final = 33
+    LEFT_EYE_RIGHTMOST_IDX: Final = 133
+    RIGHT_EYE_LEFTMOST_IDX: Final = 362
+    RIGHT_EYE_RIGHTMOST_IDX: Final = 263
 
     def __init__(self, threshold: float = 0.2):
         self.PROPER_RATIO_THRESHOLD = threshold
