@@ -51,7 +51,9 @@ class EffectRenderer2D:
         )
         self.triangles = self.triangles_1D.reshape(len(self.triangles_1D) // 3, 3)
 
-    def render_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool) -> np.ndarray:
+    def render_effect(
+        self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool, mirror: bool = False
+    ) -> np.ndarray:
         """Render effect. If do_overlay is True, the effect will be rendered on
         the target image. Otherwise, the effect will be rendered on a black
         background(BGRA).
@@ -67,11 +69,12 @@ class EffectRenderer2D:
 
         if self.use_filter_points:
             target_landmarks = target_landmarks[self.filter_points]
+        effect = self.create_effect(target_image, target_landmarks)
         if do_overlay:
-            effect = self.create_effect(target_image, target_landmarks)
-            return cv2.flip(self.overlay_image(target_image, effect), 1)
-        else:
-            return cv2.flip(self.create_effect(target_image, target_landmarks), 1)
+            effect = self.overlay_image(target_image, effect)
+        if mirror:
+            effect = cv2.flip(effect, 1)
+        return effect
 
     def create_effect(self, target_image: np.ndarray, dst_points: np.ndarray) -> np.ndarray:
         """Creates effect image that can be rendered into an image the size of
