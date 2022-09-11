@@ -5,9 +5,12 @@ import numpy as np
 
 
 class EffectRenderer2D:
+    EFFECT_IMAGE_WIDTH = 1024
+    EFFECT_IMAGE_HEIGHT = 1024
+
     def __init__(
         self,
-        effect_image_path: str,
+        effect_image: np.ndarray,
         src_points_path: str = "i-make/res/source_landmarks.npy",
         filter_points_path: str = "i-make/res/filter_points.npy",
         use_filter_points: bool = True,
@@ -15,14 +18,17 @@ class EffectRenderer2D:
         """Initialize EffectRenderer2D.
 
         Args:
-            effect_image_path (str): path to the effect image (1024 x 1024)
+            effect_image (np.ndarray): effect image (1024 x 1024)
             src_points_path (str, optional): path to the source landmarks. Defaults to "i-make/res/source_landmarks.npy".
             filter_points_path (str, optional): path to the filter landmarks. Defaults to "i-make/res/filter_points.npy".
             use_filter_points (bool, optional): use filter landmarks. Defaults to True.
         """
 
-        self.effect_image = cv2.imread(effect_image_path, cv2.IMREAD_UNCHANGED)
-        height, width, _ = self.effect_image.shape
+        if not (
+            effect_image.shape[0] == self.EFFECT_IMAGE_HEIGHT and effect_image.shape[1] == self.EFFECT_IMAGE_WIDTH
+        ):
+            raise ValueError("Effect image size must be 1024x1024")
+        self.effect_image = effect_image
 
         self.src_points = np.load(src_points_path)  # facemeshが返却する468(467)個のランドマークの座標
         self.filter_points = np.load(filter_points_path)  # src_pointsの中から選択するランドマークのindex
@@ -31,7 +37,9 @@ class EffectRenderer2D:
         if use_filter_points:
             self.src_points = self.src_points[self.filter_points]
 
-        self.subdiv = cv2.Subdiv2D((0, 0, width, height))  # cv2.Subdiv2D((left, top, right, bottom))
+        self.subdiv = cv2.Subdiv2D(
+            (0, 0, self.EFFECT_IMAGE_WIDTH, self.EFFECT_IMAGE_HEIGHT)
+        )  # cv2.Subdiv2D((left, top, right, bottom))
         self.subdiv.insert(self.src_points.tolist())  # 対象の点を追加
 
         self.triangles_1D = np.array(
@@ -44,7 +52,9 @@ class EffectRenderer2D:
         self.triangles = self.triangles_1D.reshape(len(self.triangles_1D) // 3, 3)
 
     def render_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool) -> np.ndarray:
-        """Render effect on the target image.
+        """Render effect. If do_overlay is True, the effect will be rendered on
+        the target image. Otherwise, the effect will be rendered on a black
+        background(BGRA).
 
         Args:
             target_image (_type_): 描画する画像(カメラ画像)
@@ -59,12 +69,13 @@ class EffectRenderer2D:
             target_landmarks = target_landmarks[self.filter_points]
         if do_overlay:
             effect = self.create_effect(target_image, target_landmarks)
-            return self.overlay_image(target_image, effect)
+            return cv2.flip(self.overlay_image(target_image, effect), 1)
         else:
-            return self.create_effect(target_image, target_landmarks)
+            return cv2.flip(self.create_effect(target_image, target_landmarks), 1)
 
     def create_effect(self, target_image: np.ndarray, dst_points: np.ndarray) -> np.ndarray:
-        """Creates effect image that can be rendered on the target image.
+        """Creates effect image that can be rendered into an image the size of
+        the target image.
 
         Args:
             target_image (_type_): target image
@@ -135,7 +146,7 @@ class EffectRenderer2D:
         return overlayed
 
     def crop_triangle_bb(self, image: np.ndarray, triangle: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Create a trinagle bounding box and return cropped image.
+        """Create a triangle bounding box and return cropped image.
 
         Args:
             image (_type_): target image

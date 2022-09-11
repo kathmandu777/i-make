@@ -4,8 +4,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
-from .libs.diagnosis import EyeDiagnosis
-from .libs.effect import EffectRenderer2D
+from .libs.makeup import Makeup
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -16,11 +15,18 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-OVERLAY_IMAGE = "i-make/static/facepaints/facepaint.png"
+SKIN_IMAGE = "i-make/static/facepaints/custom/skin/skin0.png"
+EYE_BAGS_IMAGE = "i-make/static/facepaints/custom/eye-bags/eye-bags0.png"
+EYE_SHADOW_IMAGE = "i-make/static/facepaints/custom/eye-shadow/eye-shadow0-0.png"
+GLITTER_IMAGE = "i-make/static/facepaints/custom/glitter/u-glitterL.png"
+EYE_LINE_IMAGE = "i-make/static/facepaints/custom/eyeliner/eyeliner0-0.png"
+EYE_LASH_IMAGE = "i-make/static/facepaints/custom/eyelashes/eyelashes0-0.png"
 
 mp_face_mesh = mp.solutions.face_mesh
-renderer_1 = EffectRenderer2D(OVERLAY_IMAGE, use_filter_points=True)
-eye_diagnosis = EyeDiagnosis()
+makeup = Makeup(
+    [SKIN_IMAGE, EYE_BAGS_IMAGE, EYE_SHADOW_IMAGE, GLITTER_IMAGE, EYE_LINE_IMAGE, EYE_LASH_IMAGE],
+    use_filter_points=True,
+)
 cap = cv2.VideoCapture(0)
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
@@ -43,12 +49,8 @@ with mp_face_mesh.FaceMesh(
             for landmark in results.multi_face_landmarks[0].landmark:
                 landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
             target_image = image.copy()
-            # effected_image = renderer_1.render_effect(target_image, np.array(landmarks), False)
-            effected_image = eye_diagnosis.render_eye_edge(np.array(landmarks), target_image)
-            is_long_distance_between_eye = eye_diagnosis.is_longer_distance_between_eye_than_eye_size(
-                np.array(landmarks)
-            )
-            print(is_long_distance_between_eye)
+            effected_image_w_alpha = makeup.render_effect(target_image, np.array(landmarks), False)
+            effected_image = makeup.convert_rgba_to_rgb(effected_image_w_alpha)
         else:
             effected_image = image.copy()
 
