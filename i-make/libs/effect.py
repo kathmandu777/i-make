@@ -1,26 +1,24 @@
-from typing import Tuple
+from typing import Final, Tuple
 
 import cv2
 import numpy as np
 
 
-class EffectRenderer2D:
-    EFFECT_IMAGE_WIDTH = 1024
-    EFFECT_IMAGE_HEIGHT = 1024
+class Effect:
+    EFFECT_IMAGE_WIDTH: Final = 1024
+    EFFECT_IMAGE_HEIGHT: Final = 1024
+    SRC_POINTS_PATH: Final = "i-make/res/source_landmarks.npy"
+    FILTER_POINTS_PATH: Final = "i-make/res/filter_points.npy"
 
     def __init__(
         self,
         effect_image: np.ndarray,
-        src_points_path: str = "i-make/res/source_landmarks.npy",
-        filter_points_path: str = "i-make/res/filter_points.npy",
         use_filter_points: bool = True,
     ):
-        """Initialize EffectRenderer2D.
+        """Initialize Effect.
 
         Args:
             effect_image (np.ndarray): effect image (1024 x 1024)
-            src_points_path (str, optional): path to the source landmarks. Defaults to "i-make/res/source_landmarks.npy".
-            filter_points_path (str, optional): path to the filter landmarks. Defaults to "i-make/res/filter_points.npy".
             use_filter_points (bool, optional): use filter landmarks. Defaults to True.
         """
 
@@ -30,8 +28,8 @@ class EffectRenderer2D:
             raise ValueError("Effect image size must be 1024x1024")
         self.effect_image = effect_image
 
-        self.src_points = np.load(src_points_path)  # facemeshが返却する468(467)個のランドマークの座標
-        self.filter_points = np.load(filter_points_path)  # src_pointsの中から選択するランドマークのindex
+        self.src_points = np.load(self.SRC_POINTS_PATH)  # facemeshが返却する468(467)個のランドマークの座標
+        self.filter_points = np.load(self.FILTER_POINTS_PATH)  # src_pointsの中から選択するランドマークのindex
 
         self.use_filter_points = use_filter_points
         if use_filter_points:
@@ -51,49 +49,47 @@ class EffectRenderer2D:
         )
         self.triangles = self.triangles_1D.reshape(len(self.triangles_1D) // 3, 3)
 
-    def render_effect(
-        self, target_image: np.ndarray, target_landmarks: np.ndarray, do_overlay: bool, mirror: bool = False
+    def render_effect_on_target_image(
+        self, target_image: np.ndarray, target_landmarks: np.ndarray, mirror: bool = False
     ) -> np.ndarray:
-        """Render effect. If do_overlay is True, the effect will be rendered on
-        the target image. Otherwise, the effect will be rendered on a black
-        background(BGRA).
+        """Render effect on the target image. Otherwise, the effect will be
+        rendered on a black background(BGRA).
 
         Args:
-            target_image (_type_): 描画する画像(カメラ画像)
-            target_landmarks (_type_): target_image上でのランドマークの座標
-            do_overlay (_type_): メイクを元画像(target_image)の上に貼り付けるかどうか
+            target_image (np.ndarray): 描画する画像(カメラ画像)
+            target_landmarks (np.ndarray): target_image上でのランドマークの座標
+            mirror (bool, optional): ミラー処理をするかどうか. Defaults to False.
 
         Returns:
-            np.array: メイクのみ、もしくは描画された映像
+            np.array: 描画された映像
         """
 
-        if self.use_filter_points:
-            target_landmarks = target_landmarks[self.filter_points]
         effect = self.create_effect(target_image, target_landmarks)
-        if do_overlay:
-            effect = self.overlay_image(target_image, effect)
+        rendered = self.overlay_image(target_image, effect)
         if mirror:
-            effect = cv2.flip(effect, 1)
-        return effect
+            return cv2.flip(rendered, 1)
+        return rendered
 
-    def create_effect(self, target_image: np.ndarray, dst_points: np.ndarray) -> np.ndarray:
+    def create_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray) -> np.ndarray:
         """Creates effect image that can be rendered into an image the size of
         the target image.
 
         Args:
-            target_image (_type_): target image
-            dst_points (_type_): landmarks on the target image, should be of the same size and order as self.filter_points
+            target_image (np.ndarray): target image
+            target_landmarks (np.ndarray): landmarks on the target image. Must be the same size as the source landmarks.
 
         Returns:
-            _type_: effect image
+            np.ndarray: effect image
         """
+        if self.use_filter_points:
+            target_landmarks = target_landmarks[self.filter_points]
 
         # create empty overlay
         overlay = np.zeros((target_image.shape[0], target_image.shape[1], 4), np.uint8)
 
         for idx_tri in self.triangles:
             src_tri = self.src_points[idx_tri]
-            dst_tri_full = dst_points[idx_tri]
+            dst_tri_full = target_landmarks[idx_tri]
             dst_tri = dst_tri_full[:, :2].astype(np.int32)
 
             src_tri_crop, src_crop = self.crop_triangle_bb(self.effect_image, src_tri)
@@ -126,12 +122,12 @@ class EffectRenderer2D:
         overlays the background image.
 
         Args:
-            background_image (_type_): background BRG or BGRA image with 0-255 values, transparency will be ignored in the result
-            foreground_image (_type_): foreground BGRA image with 0-255 values
+            background_image (np.ndarray): background BRG or BGRA image with 0-255 values, transparency will be ignored in the result
+            foreground_image (np.ndarray): foreground BGRA image with 0-255 values
             blur (int, optional): blur. Defaults to 0.
 
         Returns:
-            _type_: BGR image with foreground image overlaying the background image
+            np.ndarray: BGR image with foreground image overlaying the background image
         """
 
         mask = foreground_image[:, :, 3]
@@ -152,8 +148,8 @@ class EffectRenderer2D:
         """Create a triangle bounding box and return cropped image.
 
         Args:
-            image (_type_): target image
-            triangle (_type_): Triangle coordinates (3x2 array)
+            image (np.ndarray): target image
+            triangle (np.ndarray): Triangle coordinates (3x2 array)
 
         Returns:
             _type_: Tupple (Triangle crop coordinates relative to the cropped image, cropped image)
