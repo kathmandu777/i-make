@@ -5,19 +5,22 @@
 ## Usage
 
 1. `git clone https://github.com/kathmandu777/i-make`
-1. `cd i-make`
 
 ### iMake
 
 ```bash
 poetry install
+cd i-make/vue
+npm install (初回のみ)
+npm run build (vueフォルダ内のファイルを変更する度)
+cd ../..
 python -m i-make
 ```
 
 ### gen2-facemesh
 
 ```bash
-cd gen2-facemesh
+cd i-make/gen2-facemesh
 ```
 
 `main_***.py` のソースコード内に記載
