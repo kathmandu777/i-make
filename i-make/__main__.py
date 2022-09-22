@@ -22,10 +22,12 @@ GLITTER_IMAGE = "i-make/static/facepaints/custom/glitter/u-glitterL.png"
 EYE_LINE_IMAGE = "i-make/static/facepaints/custom/eyeliner/eyeliner0-0.png"
 EYE_LASH_IMAGE = "i-make/static/facepaints/custom/eyelashes/eyelashes0-0.png"
 HALLOWEEN = "i-make/static/facepaints/event/Halloween0.png"
+TEST = "/home/gorugo/i-make/i-make/static/facepaints/B255.png"
 
 mp_face_mesh = mp.solutions.face_mesh
 makeup = Makeup(
-    [SKIN_IMAGE, HALLOWEEN],
+    [TEST],
+    [[0, 255, 255]],
     use_filter_points=True,
 )
 cap = cv2.VideoCapture(0)
@@ -53,7 +55,7 @@ with mp_face_mesh.FaceMesh(
             effected_image_w_alpha = makeup.render_effect(
                 target_image, np.array(landmarks), do_overlay=False, mirror=True
             )
-            effected_image = makeup.convert_rgba_to_rgb(effected_image_w_alpha)
+            effected_image = makeup.convert_bgra_to_bgr(effected_image_w_alpha, False)
         else:
             effected_image = image.copy()
 
