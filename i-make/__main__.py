@@ -142,7 +142,7 @@ def main():
     eel.expose(imake.set_effect_image_from_path)
     eel.expose(imake.start)
     eel.expose(imake.get_choice_images)
-    eel.start("ui/menu.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
+    eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
 
 if __name__ == "__main__":
