@@ -1,6 +1,6 @@
 <template>
     <p id="fps">FPS: {{fps}}</p>
-    <img id="python_video" width="860" height="1080" v-bind:src="videosrc">
+    <img id="video" width="860" height="1080" v-bind:src="videosrc">
 </template>
 
 <script>

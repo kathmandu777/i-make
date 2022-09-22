@@ -133,7 +133,6 @@ class iMake:
 
 
 def main():
-    # Eelフォルダ設定、および起動 ###############################################
     eel.init("i-make/static")
 
     imake = iMake()

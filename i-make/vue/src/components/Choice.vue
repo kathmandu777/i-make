@@ -1,8 +1,7 @@
 <template>
     <div v-for="(choiceImagesPath, i) in choiceImagesPaths" :key="i">
-        <input :id="'choiceImagesPath' + i" type="checkbox" :value="choiceImagesPath"
-            v-model="selectedChoiceImagesPath">
-        <label :for="'choiceImagesPath' + i"> <img v-bind:src="choiceImagesPath" width="128" height="128">
+        <input :id="i" type="checkbox" :value="choiceImagesPath" v-model="selectedChoiceImagesPath">
+        <label :for="i"> <img v-bind:src="choiceImagesPath" width="128" height="128">
         </label>
     </div>
     <button id="choice_button" v-on:click="confirm">confirm</button>
