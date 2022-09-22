@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "i-make"
 version = "0.1.0"
-description = "engineering design task"
+description = ""
 authors = ["kathmandu777 <mahhakatomanato@gmail.com>"]
 
 [tool.poetry.dependencies]
@@ -9,6 +9,7 @@ python = "^3.10"
 opencv-python = "^4.6.0"
 numpy = "^1.23.2"
 mediapipe = "^0.8.10"
+Eel = "^0.14.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"

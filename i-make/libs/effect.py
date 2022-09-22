@@ -12,7 +12,7 @@ class Effect:
 
     def __init__(
         self,
-        effect_image: np.ndarray,
+        effect_image: np.ndarray | None = None,
         use_filter_points: bool = True,
     ):
         """Initialize Effect.
@@ -21,12 +21,8 @@ class Effect:
             effect_image (np.ndarray): effect image (1024 x 1024)
             use_filter_points (bool, optional): use filter landmarks. Defaults to True.
         """
-
-        if not (
-            effect_image.shape[0] == self.EFFECT_IMAGE_HEIGHT and effect_image.shape[1] == self.EFFECT_IMAGE_WIDTH
-        ):
-            raise ValueError("Effect image size must be 1024x1024")
-        self.effect_image = effect_image
+        if effect_image is not None:
+            self.set_effect_image(effect_image)
 
         self.src_points = np.load(self.SRC_POINTS_PATH)  # facemeshが返却する468(467)個のランドマークの座標
         self.filter_points = np.load(self.FILTER_POINTS_PATH)  # src_pointsの中から選択するランドマークのindex
@@ -49,6 +45,18 @@ class Effect:
         )
         self.triangles = self.triangles_1D.reshape(len(self.triangles_1D) // 3, 3)
 
+    def set_effect_image(self, effect_image: np.ndarray) -> None:
+        """Set effect image.
+
+        Args:
+            effect_image (np.ndarray): effect image (1024 x 1024)
+        """
+        if not (
+            effect_image.shape[0] == self.EFFECT_IMAGE_HEIGHT and effect_image.shape[1] == self.EFFECT_IMAGE_WIDTH
+        ):
+            raise ValueError("Effect image size must be 1024x1024")
+        self.effect_image = effect_image
+
     def render_effect_on_target_image(
         self, target_image: np.ndarray, target_landmarks: np.ndarray, mirror: bool = False
     ) -> np.ndarray:
@@ -65,7 +73,7 @@ class Effect:
         """
 
         effect = self.create_effect(target_image, target_landmarks)
-        rendered = self.overlay_image(target_image, effect)
+        rendered = self._overlay_image(target_image, effect)
         if mirror:
             return cv2.flip(rendered, 1)
         return rendered
@@ -79,8 +87,11 @@ class Effect:
             target_landmarks (np.ndarray): landmarks on the target image. Must be the same size as the source landmarks.
 
         Returns:
-            np.ndarray: effect image
+            np.ndarray: effect image (BGRA)
         """
+        if self.effect_image is None:
+            raise ValueError("Effect image is not set")
+
         if self.use_filter_points:
             target_landmarks = target_landmarks[self.filter_points]
 
@@ -92,8 +103,8 @@ class Effect:
             dst_tri_full = target_landmarks[idx_tri]
             dst_tri = dst_tri_full[:, :2].astype(np.int32)
 
-            src_tri_crop, src_crop = self.crop_triangle_bb(self.effect_image, src_tri)
-            dst_tri_crop, overlay_crop = self.crop_triangle_bb(overlay, dst_tri)
+            src_tri_crop, src_crop = self._crop_triangle_bb(self.effect_image, src_tri)
+            dst_tri_crop, overlay_crop = self._crop_triangle_bb(overlay, dst_tri)
 
             warp_mat = cv2.getAffineTransform(np.float32(src_tri_crop), np.float32(dst_tri_crop))  # アフィン変換の変換行列を取得
             warp = cv2.warpAffine(
@@ -117,7 +128,9 @@ class Effect:
 
         return overlay
 
-    def overlay_image(self, background_image: np.ndarray, foreground_image: np.ndarray, blur: float = 0) -> np.ndarray:
+    def _overlay_image(
+        self, background_image: np.ndarray, foreground_image: np.ndarray, blur: float = 0
+    ) -> np.ndarray:
         """Take the two images, and produce an image where foreground image
         overlays the background image.
 
@@ -144,7 +157,7 @@ class Effect:
 
         return overlayed
 
-    def crop_triangle_bb(self, image: np.ndarray, triangle: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def _crop_triangle_bb(self, image: np.ndarray, triangle: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Create a triangle bounding box and return cropped image.
 
         Args:

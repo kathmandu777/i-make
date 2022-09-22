@@ -1,65 +1,149 @@
-import argparse
+import base64
+import time
 
 import cv2
-import mediapipe as mp
+import eel
 import numpy as np
 
-from .libs.makeup import Makeup
+from .libs.facemesh import FaceMesh
+from .mode import BaseModeEffectType, Mode
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "-detect_conf", "--detection_confidence", help="set the detection confidence threshold", default=0.5, type=float
-)
-parser.add_argument(
-    "-track_conf", "--tracking_confidence", help="set the tracking confidence threshold", default=0.5, type=float
-)
 
-args = parser.parse_args()
-SKIN_IMAGE = "i-make/static/facepaints/custom/skin/skin0.png"
-EYE_BAGS_IMAGE = "i-make/static/facepaints/custom/eye-bags/eye-bags0.png"
-EYE_SHADOW_IMAGE = "i-make/static/facepaints/custom/eye-shadow/eye-shadow0-0.png"
-GLITTER_IMAGE = "i-make/static/facepaints/custom/glitter/u-glitterL.png"
-EYE_LINE_IMAGE = "i-make/static/facepaints/custom/eyeliner/eyeliner0-0.png"
-EYE_LASH_IMAGE = "i-make/static/facepaints/custom/eyelashes/eyelashes0-0.png"
-HALLOWEEN = "i-make/static/facepaints/event/Halloween0.png"
+class iMake:
+    def __init__(self, camera_id: int = 0):
+        self.face_mesh = FaceMesh(refine_landmarks=True)
+        self.cap = cv2.VideoCapture(camera_id)
 
-mp_face_mesh = mp.solutions.face_mesh
-makeup = Makeup(
-    [SKIN_IMAGE, HALLOWEEN],
-    use_filter_points=True,
-)
-cap = cv2.VideoCapture(0)
-with mp_face_mesh.FaceMesh(
-    max_num_faces=1,
-    refine_landmarks=True,
-    min_detection_confidence=args.detection_confidence,
-    min_tracking_confidence=args.tracking_confidence,
-) as face_mesh:
-    while cap.isOpened():
-        success, image = cap.read()
-        if not success:
-            print("Ignoring empty camera frame.")
-            continue
+    def set_mode(self, mode_name: str, *args, **kwargs):
+        """Set mode.
 
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = face_mesh.process(image)
+        Args:
+            mode_name (_type_): mode name
+        """
+        self.mode: BaseModeEffectType = Mode[mode_name].value(**kwargs)
 
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        if results.multi_face_landmarks:
-            landmarks = []
-            for landmark in results.multi_face_landmarks[0].landmark:
-                landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
-            target_image = image.copy()
-            effected_image_w_alpha = makeup.render_effect(
-                target_image, np.array(landmarks), do_overlay=False, mirror=True
-            )
-            effected_image = makeup.convert_rgba_to_rgb(effected_image_w_alpha)
-        else:
-            effected_image = image.copy()
+    def get_mode_choices(self) -> list[str]:
+        """Get mode choices."""
+        return [mode.name for mode in Mode]
 
-        cv2.imshow("RESULT", effected_image)
+    def set_effect_image_from_path(self, effect_image_path: list[str] | str) -> None:
+        """Set effect image from path.
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        Args:
+            effect_image_path (_type_): path to effect image
+        """
+        if isinstance(effect_image_path, str):
+            effect_image_path = [effect_image_path]
 
-cap.release()
+        effect_image_path = ["i-make/static/" + path.replace("../", "") for path in effect_image_path]
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        self.mode.set_effect_image_from_path(effect_image_path)
+
+    def set_skin_color(self, color):
+        """Set skin color.
+
+        Args:
+            color (_type_): RGB
+        """
+        self.mode.set_skin_color(color)
+
+    def get_choice_images(self) -> list[str]:
+        """Get choice images.
+
+        Returns:
+            _type_: choice images
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        return ["../" + file.replace("i-make/static/", "") for file in self.mode.get_choice_images_paths()]
+
+    def process(self, mirror: bool = True) -> np.ndarray | None:
+        """Process.
+
+        Returns:
+            _type_: effect(BGR)
+        """
+        image = self._get_image()
+        if image is None:
+            return None
+
+        landmarks = self.face_mesh.get_landmarks(image)
+        if landmarks is None:
+            return None
+
+        effect_w_alpha = self.mode.create_effect(image, landmarks)
+        effect = self._convert_rgba_to_rgb(effect_w_alpha)
+        cropped = self._crop_center_x(effect)
+        return cv2.flip(cropped, 1) if mirror else cropped
+
+    def start(self):
+        while True:
+            start_time = time.time()
+            eel.sleep(0.000001)
+            effect = self.process()
+            if effect is None:
+                continue
+
+            _, imencode_image = cv2.imencode(".jpg", effect)
+            base64_image = base64.b64encode(imencode_image)
+            eel.setBase64Image("data:image/jpg;base64," + base64_image.decode("ascii"))
+
+            elapsed_time = round((time.time() - start_time), 3)
+            eel.setFPS(1 / 1 / elapsed_time)
+
+    def _get_image(self) -> np.ndarray | None:
+        """Get image.
+
+        Returns:
+            _type_: image
+        """
+        ret, image = self.cap.read()
+        if not ret:
+            print("failed to get image")
+            return None
+        return image
+
+    def _convert_rgba_to_rgb(self, image: np.ndarray) -> np.ndarray:
+        """Convert RGBA image to RGB image.
+
+        Args:
+            image (_type_): RGBA image
+
+        Returns:
+            _type_: RGB image
+        """
+        mask = image[:, :, 3]
+        return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
+
+    def _crop_center_x(self, image: np.ndarray) -> np.ndarray:
+        """Crop center x.
+
+        Args:
+            image (_type_): image
+
+        Returns:
+            _type_: image
+        """
+        return image[:, image.shape[1] // 4 : image.shape[1] * 3 // 4, :]
+
+    def close(self):
+        self.cap.release()
+        self.face_mesh.close()
+
+
+def main():
+    # Eelフォルダ設定、および起動 ###############################################
+    eel.init("i-make/static")
+
+    imake = iMake()
+    eel.expose(imake.set_mode)
+    eel.expose(imake.get_mode_choices)
+    eel.expose(imake.set_effect_image_from_path)
+    eel.expose(imake.start)
+    eel.expose(imake.get_choice_images)
+    eel.start("ui/menu.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
+
+
+if __name__ == "__main__":
+    main()

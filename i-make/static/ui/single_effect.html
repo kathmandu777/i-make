@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="https://unpkg.com/vue@3.1.4/dist/vue.global.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="app" class="container">
+        <div class="row">
+            <div class="col">
+                <p id="fps">FPS: {{fps}}</p>
+                <img id="python_video" width="860" height="1080" v-bind:src="videosrc">
+            </div>
+            <div class="col">
+                <div v-for="(choiceImagesPath, i) in choiceImagesPaths" :key="i">
+                    <input :id="'choiceImagesPath' + i" type="checkbox" :value="choiceImagesPath"
+                        v-model="selectedChoiceImagesPath">
+                    <label :for="'choiceImagesPath' + i"> <img v-bind:src="choiceImagesPath" width="128" height="128">
+                    </label>
+                </div>
+                <button id="choice_button" v-on:click="confirm">confirm</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                videosrc: "./image/noimage.png",
+                fps: 0,
+                modes: [],
+                choiceImagesPaths: [],
+                selectedChoiceImagesPath: [],
+            }
+        },
+        methods: {
+            setFPS(fps) {
+                this.fps = fps;
+            },
+            setBase64Image(base64image) {
+                this.videosrc = base64image;
+            },
+            async getModes() {
+                this.modes = await eel.get_mode_choices()()
+            },
+            async getChoiceImagesPaths() {
+                this.choiceImagesPaths = await eel.get_choice_images()()
+            },
+            async confirm() {
+                await eel.set_effect_image_from_path(this.selectedChoiceImagesPath)()
+                await eel.start()
+            }
+        },
+        mounted: function () {
+            this.getChoiceImagesPaths()
+        }
+    }).mount('#app')
+
+    eel.expose(app.setFPS, 'setFPS')
+    eel.expose(app.setBase64Image, 'setBase64Image')
+</script>
