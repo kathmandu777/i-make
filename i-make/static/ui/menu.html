@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="https://unpkg.com/vue@3.1.4/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>iMake!</h1>
+        <ul id="mode">
+            <li v-for="name in modes">
+                <button @click="setMode(name)">{{name}}</button>
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>
+
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                modes: []
+            }
+        },
+        methods: {
+            setMode(name) {
+                eel.set_mode(name)()
+                window.location.href = "single_effect.html"
+            },
+            async getModes() {
+                this.modes = await eel.get_mode_choices()()
+            }
+        },
+        created: function () {
+            this.getModes()
+        }
+    }).mount('#app')
+</script>
