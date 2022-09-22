@@ -18,13 +18,7 @@
                 <img id="python_video" width="860" height="1080" v-bind:src="videosrc">
             </div>
             <div class="col">
-                <div v-for="(choiceImagesPath, i) in choiceImagesPaths" :key="i">
-                    <input :id="'choiceImagesPath' + i" type="checkbox" :value="choiceImagesPath"
-                        v-model="selectedChoiceImagesPath">
-                    <label :for="'choiceImagesPath' + i"> <img v-bind:src="choiceImagesPath" width="128" height="128">
-                    </label>
-                </div>
-                <button id="choice_button" v-on:click="confirm">confirm</button>
+
             </div>
         </div>
     </div>
