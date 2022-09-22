@@ -4,7 +4,7 @@
 
 ## Usage
 
-1. `git clone https://github.com/kathmandu777/i-make`
+`git clone https://github.com/kathmandu777/i-make`
 
 ### iMake
 
@@ -15,6 +15,12 @@ npm install (初回のみ)
 npm run build (vueフォルダ内のファイルを変更する度)
 cd ../..
 python -m i-make
+```
+
+※ 上記の2行目移行(`npm install` を除く)は `build.sh` にも記述してあるため、下記コマンドで実行可能
+
+```bash
+./build.sh
 ```
 
 ### gen2-facemesh
