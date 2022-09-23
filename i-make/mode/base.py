@@ -94,23 +94,6 @@ class BaseModeEffect(BaseMode, Effect):
         else:
             raise ValueError("The number of image paths and hsv paths do not match")
 
-    def _overlay_effect_images_for_hsv_color_change(self):
-        """Overlay effect images with hsv color change.
-
-        Returns:
-            _type_: effect image for EffectCreator
-        """
-
-        effect_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
-        for image_path in self.effect_image_paths:
-            image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-            if image is None:
-                raise ValueError(f"Failed to read image: {image_path}")
-            if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
-                raise ValueError("Effect image size must be 1024x1024")
-            effect_image = self._overlay_alpha_image(effect_image, image)
-        return effect_image
-
     def _overlay_alpha_image(self, back, front):
         """Overlay alpha image on the background image.
 
