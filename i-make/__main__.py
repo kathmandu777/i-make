@@ -1,3 +1,4 @@
+import argparse
 import base64
 import time
 
@@ -133,9 +134,13 @@ class iMake:
 
 
 def main():
-    eel.init("i-make/static")
+    parser = argparse.ArgumentParser(description="iMake!")
+    parser.add_argument("--camera_id", type=int, default=0, help="camera id")
+    args = parser.parse_args()
 
-    imake = iMake()
+    imake = iMake(camera_id=args.camera_id)
+
+    eel.init("i-make/static")
     eel.expose(imake.set_mode)
     eel.expose(imake.get_mode_choices)
     eel.expose(imake.set_effect_image_from_path)
