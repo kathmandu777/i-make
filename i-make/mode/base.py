@@ -37,22 +37,25 @@ class BaseModeEffect(BaseMode, Effect):
         self.set_effect_image(self._overlay_effect_images())
 
     def set_effect_image_from_path_w_hsv(
-        self, effect_image_path: list[str] | str, effect_image_hsv: list[float] | float
+        self, effect_image_path: list[str] | str, effect_image_hsv: list[float, float, float]
     ) -> None:
         """Set effect image from path.
 
         Args:
             effect_image_path (_type_): path to effect image
+            effect_image_hsv(_type_):HSV figures after change
         """
 
         if isinstance(effect_image_path, str):
             effect_image_path = [effect_image_path]
 
-        if isinstance(effect_image_hsv, str):
+        if isinstance(effect_image_hsv, float):
             effect_image_hsv = [effect_image_hsv]
 
+        if not (len(effect_image_path) == len(effect_image_hsv)):
+            raise ValueError("The number of image paths and hsv paths do not match")
         self.effect_image_paths = effect_image_path
-        self.effect_image_hsv_color = effect_image_hsv
+        self.effect_image_hsv_list = effect_image_hsv
         self.set_effect_image(self._overlay_effect_images_w_hsv())
 
     def _overlay_effect_images(self):
@@ -62,7 +65,6 @@ class BaseModeEffect(BaseMode, Effect):
             _type_: effect image for EffectCreator
         """
 
-        effect_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
         for image_path in self.effect_image_paths:
             image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
             if image is None:
@@ -79,16 +81,17 @@ class BaseModeEffect(BaseMode, Effect):
             _type_: effect image for EffectCreator
         """
 
-        effect_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
-        if len(self.effect_image_paths) == len(self.effect_image_hsv_color):
-            for image_path, hsv_value in zip(self.effect_image_paths, self.effect_image_hsv_color):
+        self.effect_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
+        effect_image = self.effect_image
+        if len(self.effect_image_paths) == len(self.effect_image_hsv_list):
+            for image_path, hsv_value in zip(self.effect_image_paths, self.effect_image_hsv_list):
                 image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
                 if image is None:
                     raise ValueError(f"Failed to read image: {image_path}")
                 if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
                     raise ValueError("Effect image size must be 1024x1024")
                 h, s, v = hsv_value
-                image = self.set_skin_color(image, h, s, v, True)
+                image = self.convert_image_color(image, h, s, v, True)
                 effect_image = self._overlay_alpha_image(effect_image, image)
             return effect_image
         else:
@@ -111,9 +114,26 @@ class BaseModeEffect(BaseMode, Effect):
         return np.array(image).astype(np.uint8)
 
     def set_skin_color(
+        self, hue: float = 27.0, saturation: float = 36.0, value: float = 100.0, include_alpha_ch: bool = True
+    ) -> None:
+        """指定したHSVにスキンカラーをセットする.
+
+        Args:
+            hue(float,optional):HSVのHueの数値
+            saturation(float,optional):HSVのSaturationの数値
+            value(float,optional):HSVのVvalueの数値
+            include_alpha_ch(bool,optional):returnする画像にアルファチャンネルを含むか否か
+        """
+        image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
+        if include_alpha_ch:
+            self.skin_color = self.convert_image_color(image, hue, saturation, value, True)
+        else:
+            self.skin_color = self.convert_image_color(image, hue, saturation, value, False)
+
+    def convert_image_color(
         self, image: np.ndarray, hue: float, saturation: float, value: float, include_alpha_ch: bool
     ) -> np.ndarray:
-        """指定したHSVにメイクを変更する.
+        """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
 
         Args:
             image(_type_): B255で塗りつぶした透過メイク素材、1024x1024
