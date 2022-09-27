@@ -41,13 +41,19 @@ class iMake:
             raise ValueError("mode is not set")
         self.mode.set_effect_image_from_path(effect_image_path)
 
-    def set_skin_color(self, color):
+    def set_skin_color(self, hue: float, sat: float, val: float):
         """Set skin color.
 
         Args:
-            color (_type_): RGB
+           hue (float, optional): HSVのHueの数値
+           sat (float, optional): HSVのSaturationの数値
+           val (float, optional): HSVのVvalueの数値
+           include_alpha_ch (bool, optional): setする画像にアルファチャンネルを含むか否か
         """
-        self.mode.set_skin_color(color)
+        if self.mode is None:
+            raise ValueError("mode is not set")
+
+        self.mode.set_skin_color(hue, sat, val)
 
     def get_choice_images(self) -> list[str]:
         """Get choice images.
@@ -146,6 +152,7 @@ def main():
     eel.expose(imake.set_effect_image_from_path)
     eel.expose(imake.start)
     eel.expose(imake.get_choice_images)
+    eel.expose(imake.set_skin_color)
     eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
 
