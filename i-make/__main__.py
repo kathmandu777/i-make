@@ -38,19 +38,15 @@ class iMake:
         effect_image_path = ["i-make/static/" + path.replace("../", "") for path in effect_image_path]
         if self.mode is None:
             raise ValueError("mode is not set")
+        self.mode.set_effect_image_from_path(effect_image_path)
 
-    def set_skin_color(
-        self, hue: float = 27.0, saturation: float = 36.0, value: float = 100.0, include_alpha_ch: bool = True
-    ):
-        """指定したHSVにスキンカラーをセットする.
+    def set_skin_color(self, color):
+        """Set skin color.
 
         Args:
-            hue(float,optional):HSVのHueの数値
-            saturation(float,optional):HSVのSaturationの数値
-            value(float,optional):HSVのVvalueの数値
-            include_alpha_ch(bool,optional):returnする画像にアルファチャンネルを含むか否か
+            color (_type_): RGB
         """
-        self.mode.set_skin_color(hue, saturation, value, include_alpha_ch)
+        self.mode.set_skin_color(color)
 
     def get_choice_images(self) -> list[str]:
         """Get choice images.
