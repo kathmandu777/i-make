@@ -21,6 +21,7 @@ export default {
             this.choiceImagesPaths=await window.eel.get_choice_images()()
         },
         async confirm() {
+            await window.eel.set_skin_color(27.0, 36.0, 100.0)() // TODO: 任意の色を指定できるように
             await window.eel.set_effect_image_from_path(this.selectedChoiceImagesPath)()
             await window.eel.start()
         }

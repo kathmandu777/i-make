@@ -19,7 +19,7 @@ class BaseModeEffect(BaseMode, Effect):
 
     # Path to the directory containing the images for the choices. Must be overridden.
     CHOICE_IMAGES_DIR_PATH: str = ""
-    SKIN_IMAGE_PATH: str = "i-make/static/facepaints/custom/skin/skin0.png"
+    SKIN_IMAGE_PATH: str = "i-make/static/facepaints/custom/skin/skin.png"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -62,13 +62,15 @@ class BaseModeEffect(BaseMode, Effect):
         self.set_effect_image(self._overlay_effect_images_w_hsv())
 
     def _overlay_effect_images(self):
-        """Overlay effect images.
+        """Overlay effect images on skin image.
 
         Returns:
             _type_: effect image for EffectCreator
         """
+        if self.skin_image is None:
+            raise ValueError("skin_image is None")
 
-        effect_image = np.zeros((Effect.EFFECT_IMAGE_HEIGHT, Effect.EFFECT_IMAGE_WIDTH, 4), dtype=np.uint8)
+        effect_image = self.skin_image
         for image_path in self.effect_image_paths:
             image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
             if image is None:
@@ -79,14 +81,15 @@ class BaseModeEffect(BaseMode, Effect):
         return effect_image
 
     def _overlay_effect_images_w_hsv(self):
-        """Overlay effect images.
+        """Overlay effect images on skin image.
 
         Returns:
             _type_: effect image for EffectCreator
         """
+        if self.skin_image is None:
+            raise ValueError("skin_image is None")
 
-        self.effect_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
-        effect_image = self.effect_image
+        effect_image = self.skin_image
         if len(self.effect_image_paths) == len(self.effect_image_hsv_list):
             for image_path, hsv_list in zip(self.effect_image_paths, self.effect_image_hsv_list):
                 image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
@@ -117,22 +120,24 @@ class BaseModeEffect(BaseMode, Effect):
         image = Image.alpha_composite(back_pil, front_pil)
         return np.array(image).astype(np.uint8)
 
-    def set_skin_color(
-        self, hue: float = 27.0, sat: float = 36.0, val: float = 100.0, include_alpha_ch: bool = True
-    ) -> None:
+    def set_skin_color(self, hue: float, sat: float, val: float) -> None:
         """指定したHSVにスキンカラーをセットする.
 
         Args:
             hue (float, optional): HSVのHueの数値
             sat (float, optional): HSVのSaturationの数値
             val (float, optional): HSVのVvalueの数値
-            include_alpha_ch (bool, optional): setする画像にアルファチャンネルを含むか否か
         """
-        image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
-        if include_alpha_ch:
-            self.skin_color = self._convert_image_color(image, hue, sat, val, True)
-        else:
-            self.skin_color = self._convert_image_color(image, hue, sat, val, False)
+        base_skin_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
+        if base_skin_image is None:
+            raise ValueError(f"Failed to read image: {self.SKIN_IMAGE_PATH}")
+        if not (
+            base_skin_image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT
+            and base_skin_image.shape[1] == Effect.EFFECT_IMAGE_WIDTH
+        ):
+            raise ValueError("Skin image size must be 1024x1024")
+
+        self.skin_image = self._convert_image_color(base_skin_image, hue, sat, val, True)
 
     def _convert_image_color(
         self, image: np.ndarray, hue: float, sat: float, val: float, include_alpha_ch: bool
