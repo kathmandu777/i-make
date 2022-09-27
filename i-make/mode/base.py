@@ -95,7 +95,7 @@ class BaseModeEffect(BaseMode, Effect):
                 if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
                     raise ValueError("Effect image size must be 1024x1024")
                 h, s, v = hsv_list
-                image = self.convert_image_color(image, h, s, v, True)
+                image = self._convert_image_color(image, h, s, v, True)
                 effect_image = self._overlay_alpha_image(effect_image, image)
             return effect_image
         else:
@@ -130,11 +130,11 @@ class BaseModeEffect(BaseMode, Effect):
         """
         image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
         if include_alpha_ch:
-            self.skin_color = self.convert_image_color(image, hue, sat, val, True)
+            self.skin_color = self._convert_image_color(image, hue, sat, val, True)
         else:
-            self.skin_color = self.convert_image_color(image, hue, sat, val, False)
+            self.skin_color = self._convert_image_color(image, hue, sat, val, False)
 
-    def convert_image_color(
+    def _convert_image_color(
         self, image: np.ndarray, hue: float, sat: float, val: float, include_alpha_ch: bool
     ) -> np.ndarray:
         """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
