@@ -1,10 +1,19 @@
 <template>
-    <div v-for="(choiceImagesPath, i) in choiceImagesPaths" :key="i">
-        <input :id="i" type="checkbox" :value="choiceImagesPath" v-model="selectedChoiceImagesPath">
-        <label :for="i"> <img v-bind:src="choiceImagesPath" width="128" height="128">
-        </label>
+    <div :style="{ position: 'relative' }">
+        <div :style="{ position: 'absolute', left: '50%' }">
+            <div v-for="(choiceImagesPath, i) in choiceImagesPaths" :key="i" :style="{ position: 'relative' }">
+                <input :id="i" type="checkbox" :value="choiceImagesPath" v-model="selectedChoiceImagesPath" :style="{ position: 'absolute', top: '40px' }" v-on:change="confirm">
+                <label :for="i" >
+                    <img v-bind:src="choiceImagesPath" width="128" height="128">
+                </label>
+            </div>
+            <div :style="{ display: 'grid', gridTemplateColumns: '30% 30% 30%', gridGap: '10px', position: 'absolute', left: '-130px' }">
+                <div v-for="(selectedChoiceImagePath, i) in selectedChoiceImagesPath" :key="i">
+                    <img v-bind:src="selectedChoiceImagePath" width="128" height="128" />
+                </div>
+            </div>
+        </div>
     </div>
-    <button id="choice_button" v-on:click="confirm">confirm</button>
 </template>
 
 <script>
