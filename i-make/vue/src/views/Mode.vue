@@ -1,8 +1,8 @@
 <template>
     <div class="container">
-        <div class="row">
-            <Video class="col-6" />
-            <Choice class="col-6" />
+        <div :style="{ display: 'flex', 'justify-content': 'space-around' }">
+            <Video :style="{ flex: 1 }"/>
+            <Choice :style="{ flex: 1 }" />
         </div>
     </div>
 </template>
