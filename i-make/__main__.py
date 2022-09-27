@@ -23,9 +23,12 @@ class iMake:
         """
         self.mode: BaseModeEffectType = Mode[mode_name].value(**kwargs)
 
-    def get_mode_choices(self) -> list[str]:
+    def get_mode_choices(self) -> list[dict[str, str]]:
         """Get mode choices."""
-        return [mode.name for mode in Mode]
+        return [
+            {"name": mode.name, "icon_path": "../" + mode.value.ICON_PATH.replace("i-make/static/", "")}
+            for mode in Mode
+        ]
 
     def set_effect_image_from_path(self, effect_image_path: list[str] | str) -> None:
         """Set effect image from path.
