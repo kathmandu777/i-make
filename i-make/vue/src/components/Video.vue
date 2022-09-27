@@ -1,8 +1,5 @@
 <template>
-    <div>
-        <p id="fps">FPS: {{fps}}</p>
-        <img id="video" width="860" height="1080" v-bind:src="videosrc">
-    </div>
+    <img id="video" width="960" height="1080" v-bind:src="videosrc">
 </template>
 
 <script>
@@ -10,7 +7,7 @@ export default {
     name: 'Video',
     data: function () {
         return {
-            videosrc: "./image/noimage.png",
+            videosrc: "/dist/woman.jpg",
             fps: 0
         }
     },
