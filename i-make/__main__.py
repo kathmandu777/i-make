@@ -38,6 +38,7 @@ class iMake:
         effect_image_path = ["i-make/static/" + path.replace("../", "") for path in effect_image_path]
         if self.mode is None:
             raise ValueError("mode is not set")
+        self.mode.set_effect_image_from_path(effect_image_path)
 
     def set_skin_color(
         self, hue: float = 27.0, saturation: float = 36.0, value: float = 100.0, include_alpha_ch: bool = True
