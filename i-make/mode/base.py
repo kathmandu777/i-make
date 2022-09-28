@@ -156,15 +156,18 @@ class BaseModeEffect(BaseMode, Effect):
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
-        DETECT_HUE_VAL = 120
-        DETECT_SAT_VAL = 255
-        NOT_DETECT_VAL_VAL = 0
+        if not ((0.0 <= hue <= 255) & (0.0 <= sat <= 255) & (0.0 <= val <= 255)):
+            raise ValueError("Defferent range of values")
+
+        B255_HUE = 120
+        B255_SAT = 255
+        NO_CHANGE_VAL = 0
         # OpenCV内でH:120 S:255であり、V:0でないメイクの色が変更可能
 
-        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == DETECT_HUE_VAL, hue / 2, image_hsv[:, :, 0])
-        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == DETECT_SAT_VAL, sat, image_hsv[:, :, 1])
+        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == B255_HUE, hue / 2, image_hsv[:, :, 0])
+        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == B255_SAT, sat, image_hsv[:, :, 1])
         image_hsv[:, :, 2] = np.where(
-            image_hsv[:, :, 2] != NOT_DETECT_VAL_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
+            image_hsv[:, :, 2] != NO_CHANGE_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
         )
         # ↑グラデーションの比率を保ったまま、明度を変更する
 
