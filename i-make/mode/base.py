@@ -142,13 +142,13 @@ class BaseModeEffect(BaseMode, Effect):
     def _convert_image_color(
         self, image: np.ndarray, hue: float, sat: float, val: float, include_alpha_ch: bool
     ) -> np.ndarray:
-        """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
+        """アルファチャンネル付きのHSV=(240,255,255)の画像の色を、指定したHSV数値の色に変更する.
 
         Args:
-            image (_type_): B255で塗りつぶした透過メイク素材、1024x1024
-            hue (_type_): HSVのHueの数値
-            sat (_type_): HSVのSaturationの数値
-            val (_type_): HSVのValueの数値
+            image (_type_): H:240 S:255 V:255で塗りつぶしたアルファチャンネルを含むメイク素材、1024x1024
+            hue (_type_): HSVのHueの数値(0~255)
+            sat (_type_): HSVのSaturationの数値(0~255)
+            val (_type_): HSVのValueの数値(0~255)
             include_alpha_ch (_type_): returnする画像にアルファチャンネルを含むか否か
         Return:
             np.ndarray: 任意の色、設定に変更したメイクのnumpy配列
@@ -156,9 +156,16 @@ class BaseModeEffect(BaseMode, Effect):
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
-        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == 120, hue / 2, image_hsv[:, :, 0])
-        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == 255, sat, image_hsv[:, :, 1])
-        image_hsv[:, :, 2] = np.where(image_hsv[:, :, 2] != 0, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2])
+        DETECT_HUE_VAL = 120
+        DETECT_SAT_VAL = 255
+        NOT_DETECT_VAL_VAL = 0
+        # OpenCV内でH:120 S:255であり、V:0でないメイクの色が変更可能
+
+        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == DETECT_HUE_VAL, hue / 2, image_hsv[:, :, 0])
+        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == DETECT_SAT_VAL, sat, image_hsv[:, :, 1])
+        image_hsv[:, :, 2] = np.where(
+            image_hsv[:, :, 2] != NOT_DETECT_VAL_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
+        )
         # ↑グラデーションの比率を保ったまま、明度を変更する
 
         image_bgr = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2BGR)
@@ -169,16 +176,6 @@ class BaseModeEffect(BaseMode, Effect):
             return image_bgr_w_alpha
         else:
             return image_bgr
-
-    @classmethod
-    def get_choice_images_paths(cls):
-        """Get the paths to the images for the choices."""
-        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
-        return [
-            os.path.join(cls.CHOICE_IMAGES_DIR_PATH, file)
-            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
-            if file.endswith(".png") and not file == icon_file
-        ]
 
     def _convert_bgra_to_bgr(self, image: np.ndarray, return_mask: bool) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
         """Convert RGBA image to RGB image.
@@ -193,3 +190,13 @@ class BaseModeEffect(BaseMode, Effect):
         if return_mask:
             return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8), mask
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
+
+    @classmethod
+    def get_choice_images_paths(cls):
+        """Get the paths to the images for the choices."""
+        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
+        return [
+            os.path.join(cls.CHOICE_IMAGES_DIR_PATH, file)
+            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
+            if file.endswith(".png") and not file == icon_file
+        ]
