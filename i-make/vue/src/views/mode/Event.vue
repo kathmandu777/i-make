@@ -1,9 +1,7 @@
 <template>
     <div class="container">
-        <div :style="{ display: 'flex', 'justify-content': 'space-around' }">
-            <Video :style="{ flex: 1 }"/>
-            <EventImageChoices :style="{ flex: 1 }" />
-        </div>
+        <Video class="video" />
+        <EventImageChoices class="content" />
     </div>
 </template>
 
@@ -16,3 +14,26 @@ export default {
     components: { Video, EventImageChoices }
 }
 </script>
+
+<style scoped>
+.container {
+    display: grid;
+    grid-template-columns: 960px 960px;
+    grid-template-rows: 1080px;
+    grid-template-areas:
+        "video contentarea";
+}
+
+.video {
+    grid-area: video;
+}
+
+.content {
+    grid-area: contentarea;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 1080px;
+    margin: 0;
+}
+</style>
