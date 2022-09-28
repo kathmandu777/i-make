@@ -4,11 +4,13 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
+    // モード選択ページ（トップページ）
     path: "/menu",
     name: "Menu",
     component: Menu,
   },
   {
+    // 各モードのページ
     path: "/mode",
     name: "Mode",
     component: Mode,

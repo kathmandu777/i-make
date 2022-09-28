@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Video from '@/components/Video.vue'
+import Video from '@/components/shared/Video.vue'
 import Choice from '@/components/Choice.vue'
 
 export default {
