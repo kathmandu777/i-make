@@ -35,7 +35,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #container {
     display: grid;
     grid-template-columns: 960px 960px;

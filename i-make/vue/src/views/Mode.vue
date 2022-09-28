@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div>
         <div :style="{ display: 'flex', 'justify-content': 'space-around' }">
             <Video :style="{ flex: 1 }"/>
             <Choice :style="{ flex: 1 }" />
