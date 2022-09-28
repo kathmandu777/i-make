@@ -1,0 +1,178 @@
+{
+    "1": {
+        "question": "ブルベ or イエベ",
+        "choices": [{
+                "answer": "ブルベ",
+                "next": 2
+            },
+            {
+                "answer": "イエベ",
+                "next": 3
+            }
+        ]
+    },
+    "2": {
+        "question": "ブルベ夏 or 冬？",
+        "choices": [{
+                "answer": "夏",
+                "next": 4
+            },
+            {
+                "answer": "冬",
+                "next": 5
+            }
+        ]
+    },
+    "3": {
+        "question": "イエベ春 or 秋？",
+        "choices": [{
+                "answer": "春",
+                "next": 6
+            },
+            {
+                "answer": "秋",
+                "next": 7
+            }
+        ]
+    },
+    "4": { // ブルベ夏
+        "question": null,
+        "settings": {
+            "eyeshadow": 8,
+            "eyeliner": 22
+        },
+        "next": 8
+    },
+    "5": { // ブルベ冬
+        "question": null,
+        "settings": {
+            "eyeshadow": 9,
+            "eyeliner": 23
+        },
+        "next": 8
+    },
+    "6": { // イエベ春
+        "question": null,
+        "settings": {
+            "eyeshadow": 10,
+            "eyeliner": 24
+        },
+        "next": 8
+    },
+    "7": { // イエベ秋
+        "question": null,
+        "settings": {
+            "eyeshadow": 11,
+            "eyeliner": 25
+        },
+        "next": 8
+    },
+    "8": {
+        "question": "目の形は？",
+        "choices": [{
+                "answer": "ツリ目",
+                "next": 9
+            },
+            {
+                "answer": "タレ目",
+                "next": 10
+            },
+            {
+                "answer": "丸い目",
+                "next": 11
+
+            },
+            {
+                "answer" : "細い目",
+                "next": 12
+            }
+        ]
+    },
+    "9": { // ツリ目
+        "question": null,
+        "settings": {
+            "eyeshadow": 12,
+            "eyeliner": 26
+        },
+        "next": 13
+    },
+    "10": { // タレ目
+        "question": null,
+        "settings": {
+            "eyeshadow": 13,
+            "eyeliner": 27
+        },
+        "next": 13
+    },
+    "11": { // 丸い目
+        "question": null,
+        "settings": {
+            "eyeshadow": 14,
+            "eyeliner": 28
+        },
+        "next": 13
+    },
+    "12": { // 細い目
+        "question": null,
+        "settings": {
+            "eyeshadow": 15,
+            "eyeliner": 29
+        },
+        "next": 13
+    },
+    "13": {
+        "question": "顔の形は？",
+        "choices": [{
+                "answer": "面長",
+                "next": 14
+            },
+            {
+                "answer": "丸顔",
+                "next": 15
+            }
+        ]
+    },
+    "14": { // 面長
+        "question": null,
+        "settings": {
+            "eyeshadow": 16,
+            "eyeliner": 30
+        },
+        "next": 16
+    },
+    "15": { // 丸顔
+        "question": null,
+        "settings": {
+            "eyeshadow": 17,
+            "eyeliner": 31
+        },
+        "next": 16
+    },
+    "16": {
+        "question": "目の間は？",
+        "choices": [
+            {
+                "answer": "広い",
+                "next": 17
+            },
+            {
+                "answer": "狭い",
+                "next": 99
+            }
+
+        ]
+    },
+    "17": { // 広い
+        "question": null,
+        "settings": {
+            "eyeshadow": 18,
+            "eyeliner": 32
+        },
+        "next": 99
+    },
+    "99": { // 終了
+        "question": null,
+        "settings":null,
+        "next": null
+    }
+}
