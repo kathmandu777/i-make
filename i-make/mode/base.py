@@ -156,8 +156,12 @@ class BaseModeEffect(BaseMode, Effect):
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
-        if not ((0.0 <= hue <= 255) & (0.0 <= sat <= 255) & (0.0 <= val <= 255)):
-            raise ValueError("Defferent range of values")
+        if not (0.0 <= hue <= 255):
+            raise ValueError("Defferent range of hue values")
+        if not (0.0 <= sat <= 255):
+            raise ValueError("Defferent range of sat values")
+        if not (0.0 <= val <= 255):
+            raise ValueError("Defferent range of val values")
 
         B255_HUE = 120
         B255_SAT = 255
