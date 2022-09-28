@@ -1,17 +1,12 @@
 <template>
-    <div :style="{ position: 'relative' }">
-        <div :style="{ position: 'absolute', left: '50%' }">
-            <div v-for="(choiceImagesPath, i) in choiceImagesPaths" :key="i" :style="{ position: 'relative' }">
-                <input :id="i" type="radio" name="image" :value="choiceImagesPath" v-model="selectedChoiceImagesPath" :style="{ position: 'absolute', top: '40px' }" v-on:change="confirm">
-                <label :for="i" >
-                    <img v-bind:src="choiceImagesPath" width="128" height="128">
-                </label>
-            </div>
-        </div>
+<div>
+    <div class="container">
+        <label class="card" v-for="(choiceImagesPath, i) in choiceImagesPaths" :for="i" :key="i">
+            <input type="radio" :id="i" name="select-image" :value="choiceImagesPath" v-model="selectedChoiceImagesPath" v-on:change="confirm" />
+            <img v-bind:src="choiceImagesPath" width="230" height="250" />
+        </label>
     </div>
-    <!-- <div class="container">
-        <p>hi</p>
-    </div> -->
+</div>
 </template>
 
 <script>
@@ -20,7 +15,7 @@ export default {
     data: function () {
         return {
             choiceImagesPaths: [],
-            selectedChoiceImagesPath: [],
+            selectedChoiceImagesPath: "",
         }
     },
     methods: {
@@ -39,9 +34,30 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
-    height: 100%;
     width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-start;
+    gap: 10px;
 }
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.card > input {
+    display: none;
+}
+
+.card:has(input:checked) {
+    border: 2px solid #000;
+}
+
 </style>
