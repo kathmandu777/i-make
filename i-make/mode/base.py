@@ -177,6 +177,16 @@ class BaseModeEffect(BaseMode, Effect):
         else:
             return image_bgr
 
+    @classmethod
+    def get_choice_images_paths(cls):
+        """Get the paths to the images for the choices."""
+        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
+        return [
+            os.path.join(cls.CHOICE_IMAGES_DIR_PATH, file)
+            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
+            if file.endswith(".png") and not file == icon_file
+        ]
+
     def _convert_bgra_to_bgr(self, image: np.ndarray, return_mask: bool) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
         """Convert RGBA image to RGB image.
 
@@ -190,13 +200,3 @@ class BaseModeEffect(BaseMode, Effect):
         if return_mask:
             return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8), mask
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
-
-    @classmethod
-    def get_choice_images_paths(cls):
-        """Get the paths to the images for the choices."""
-        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
-        return [
-            os.path.join(cls.CHOICE_IMAGES_DIR_PATH, file)
-            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
-            if file.endswith(".png") and not file == icon_file
-        ]
