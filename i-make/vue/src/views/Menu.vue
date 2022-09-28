@@ -22,7 +22,7 @@ export default {
     methods: {
         setMode(name) {
             window.eel.set_mode(name)();
-            this.$router.push("/mode");
+            this.$router.push("/mode/" + name);
         },
         async getModes() {
             this.modes=await window.eel.get_mode_choices()();
