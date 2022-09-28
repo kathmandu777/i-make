@@ -142,32 +142,30 @@ class BaseModeEffect(BaseMode, Effect):
     def _convert_image_color(
         self, image: np.ndarray, hue: float, sat: float, val: float, include_alpha_ch: bool
     ) -> np.ndarray:
-        """アルファチャンネル付きのHSV=(240,255,255)の画像の色を、指定したHSV数値の色に変更する.
+        """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
 
         Args:
-            image (_type_): H:240 S:255 V:255で塗りつぶしたアルファチャンネルを含むメイク素材、1024x1024
-            hue (_type_): HSVのHueの数値(0~255)
-            sat (_type_): HSVのSaturationの数値(0~255)
-            val (_type_): HSVのValueの数値(0~255)
-            include_alpha_ch (_type_): returnする画像にアルファチャンネルを含むか否か
+            image (np.ndarray): RGB=(0,0,255)で塗りつぶしたアルファチャンネルを含むメイク素材、1024x1024
+            hue (float): HSVのHueの数値(0~255)
+            sat (float): HSVのSaturationの数値(0~255)
+            val (float): HSVのValueの数値(0~255)
+            include_alpha_ch (bool): returnする画像にアルファチャンネルを含むか否か
         Return:
             np.ndarray: 任意の色、設定に変更したメイクのnumpy配列
         """
+        if not (0.0 <= hue <= 255.0):
+            raise ValueError("hue must be 0.0 <= hue <= 255.0")
+        if not (0.0 <= sat <= 255.0):
+            raise ValueError("sat must be 0.0 <= sat <= 255.0")
+        if not (0.0 <= val <= 255.0):
+            raise ValueError("val must be 0.0 <= val <= 255.0")
+
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
-
-        if not (0.0 <= hue <= 255):
-            raise ValueError("Defferent range of hue values")
-        if not (0.0 <= sat <= 255):
-            raise ValueError("Defferent range of sat values")
-        if not (0.0 <= val <= 255):
-            raise ValueError("Defferent range of val values")
 
         B255_HUE = 120
         B255_SAT = 255
         NO_CHANGE_VAL = 0
-        # OpenCV内でH:120 S:255であり、V:0でないメイクの色が変更可能
-
         image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == B255_HUE, hue / 2, image_hsv[:, :, 0])
         image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == B255_SAT, sat, image_hsv[:, :, 1])
         image_hsv[:, :, 2] = np.where(
