@@ -145,20 +145,32 @@ class BaseModeEffect(BaseMode, Effect):
         """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
 
         Args:
-            image (_type_): B255で塗りつぶした透過メイク素材、1024x1024
-            hue (_type_): HSVのHueの数値
-            sat (_type_): HSVのSaturationの数値
-            val (_type_): HSVのValueの数値
-            include_alpha_ch (_type_): returnする画像にアルファチャンネルを含むか否か
+            image (np.ndarray): RGB=(0,0,255)で塗りつぶしたアルファチャンネルを含むメイク素材、1024x1024
+            hue (float): HSVのHueの数値(0~255)
+            sat (float): HSVのSaturationの数値(0~255)
+            val (float): HSVのValueの数値(0~255)
+            include_alpha_ch (bool): returnする画像にアルファチャンネルを含むか否か
         Return:
             np.ndarray: 任意の色、設定に変更したメイクのnumpy配列
         """
+        if not (0.0 <= hue <= 255.0):
+            raise ValueError("hue must be 0.0 <= hue <= 255.0")
+        if not (0.0 <= sat <= 255.0):
+            raise ValueError("sat must be 0.0 <= sat <= 255.0")
+        if not (0.0 <= val <= 255.0):
+            raise ValueError("val must be 0.0 <= val <= 255.0")
+
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
-        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == 120, hue / 2, image_hsv[:, :, 0])
-        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == 255, sat, image_hsv[:, :, 1])
-        image_hsv[:, :, 2] = np.where(image_hsv[:, :, 2] != 0, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2])
+        B255_HUE = 120
+        B255_SAT = 255
+        NO_CHANGE_VAL = 0
+        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == B255_HUE, hue / 2, image_hsv[:, :, 0])
+        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == B255_SAT, sat, image_hsv[:, :, 1])
+        image_hsv[:, :, 2] = np.where(
+            image_hsv[:, :, 2] != NO_CHANGE_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
+        )
         # ↑グラデーションの比率を保ったまま、明度を変更する
 
         image_bgr = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2BGR)
