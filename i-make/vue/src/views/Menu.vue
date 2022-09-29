@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import Video from '@/components/Video.vue'
+import Video from '@/components/shared/Video.vue'
 
 export default {
     name: "Menu",
@@ -22,7 +22,7 @@ export default {
     methods: {
         setMode(name) {
             window.eel.set_mode(name)();
-            this.$router.push("/mode");
+            this.$router.push("/mode/" + name);
         },
         async getModes() {
             this.modes=await window.eel.get_mode_choices()();
@@ -35,7 +35,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #container {
     display: grid;
     grid-template-columns: 960px 960px;
