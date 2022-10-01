@@ -4,7 +4,8 @@
         <h3 class="question">{{question}}</h3>
         <div class="container">
             <div class="choice" v-for="(choice, index) in choices" :key="index">
-                <button @click="setAnswer(index)" class="css-button-arrow--sky">{{ index+1 }}:
+                <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
+                    class="css-button-arrow--sky">{{ index+1 }}:
                     {{choice.answer}}</button>
             </div>
         </div>
