@@ -19,6 +19,8 @@ class BaseModeEffect(BaseMode, Effect):
 
     # Path to the directory containing the images for the choices. Must be overridden.
     CHOICE_IMAGES_DIR_PATH: str = ""
+    THUMBNAIL_IMAGES_DIR_PATH: str = ""
+
     SKIN_IMAGE_PATH: str = "i-make/static/facepaints/custom/skin/skin.png"
 
     def __init__(self, *args, **kwargs) -> None:
@@ -190,6 +192,15 @@ class BaseModeEffect(BaseMode, Effect):
             os.path.join(cls.CHOICE_IMAGES_DIR_PATH, file)
             for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
             if file.endswith(".png") and not file == icon_file
+        ]
+
+    @classmethod
+    def get_thumbnail_images_paths(cls):
+        """Get the paths to the thumbnail image."""
+        return [
+            os.path.join(cls.THUMBNAIL_IMAGES_DIR_PATH, file)
+            for file in os.listdir(cls.THUMBNAIL_IMAGES_DIR_PATH)
+            if file.endswith(".png")
         ]
 
     def _convert_bgra_to_bgr(self, image: np.ndarray, return_mask: bool) -> np.ndarray | tuple[np.ndarray, np.ndarray]:

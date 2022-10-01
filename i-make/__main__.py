@@ -30,16 +30,21 @@ class iMake:
             for mode in Mode
         ]
 
-    def set_effect_image_from_path(self, effect_image_path: list[str] | str) -> None:
+    def set_effect_image_from_path(self, thumbnail_path: list[str] | str) -> None:
         """Set effect image from path.
 
         Args:
-            effect_image_path (_type_): path to effect image
+            thumbnail_path (_type_): path to effect image
         """
-        if isinstance(effect_image_path, str):
-            effect_image_path = [effect_image_path]
+        if isinstance(thumbnail_path, str):
+            thumbnail_path = [thumbnail_path]
 
-        effect_image_path = ["i-make/static/" + path.replace("../", "") for path in effect_image_path]
+        effect_image_path = [
+            ("i-make/static/" + path.replace("../", "")).replace(
+                self.mode.THUMBNAIL_IMAGES_DIR_PATH, self.mode.CHOICE_IMAGES_DIR_PATH
+            )
+            for path in thumbnail_path
+        ]
         if self.mode is None:
             raise ValueError("mode is not set")
         self.mode.set_effect_image_from_path(effect_image_path)
@@ -67,6 +72,16 @@ class iMake:
         if self.mode is None:
             raise ValueError("mode is not set")
         return ["../" + file.replace("i-make/static/", "") for file in self.mode.get_choice_images_paths()]
+
+    def get_thumbnail_images(self) -> list[str]:
+        """Get thumbnail images.
+
+        Returns:
+            _type_: thumbnail images
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        return ["../" + file.replace("i-make/static/", "") for file in self.mode.get_thumbnail_images_paths()]
 
     def process(self, mirror: bool = True) -> np.ndarray | None:
         """Process.
@@ -154,7 +169,7 @@ def main():
     eel.expose(imake.get_mode_choices)
     eel.expose(imake.set_effect_image_from_path)
     eel.expose(imake.start)
-    eel.expose(imake.get_choice_images)
+    eel.expose(imake.get_thumbnail_images)
     eel.expose(imake.set_skin_color)
     eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
