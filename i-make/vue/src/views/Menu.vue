@@ -2,8 +2,10 @@
     <div id="container">
         <Video class="video" />
         <div class="mode-list">
-            <div v-for="(mode, i) in modes" :key="i">
-                <img :src="mode.icon_path" @click="setMode(mode.name)" role="button" class="mode-button">
+            <div v-for="(mode, index) in modes" :key="index" class="mode">
+                <label class="circle-number">{{index+1}} </label>
+                <img :src="mode.icon_path" v-shortkey.once="[(index+1)]" @shortkey="setMode(mode.name)"
+                    @click="setMode(mode.name)" role="button" class="mode-button">
             </div>
         </div>
     </div>
@@ -22,7 +24,7 @@ export default {
     methods: {
         setMode(name) {
             window.eel.set_mode(name)();
-            this.$router.push("/mode/" + name);
+            this.$router.push("/mode/"+name);
         },
         async getModes() {
             this.modes=await window.eel.get_mode_choices()();
@@ -52,13 +54,31 @@ export default {
     grid-area: select-mode;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 1080px;
-    margin: 0;
+    margin: auto;
+}
+
+.mode {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+}
+
+.circle-number {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: auto 5px;
+    font-size: 80px;
+    background-color: #aadfec;
+    border-radius: 50%;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .mode-button {
-    width: 960px;
+    width: 800px;
     height: auto;
 }
 </style>
