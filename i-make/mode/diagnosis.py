@@ -20,7 +20,7 @@ class DiagnosisMode(BaseModeEffect):
 
     SET_ANSWER_SUCCESS_MSG = "Success."
     SET_ANSWER_ERROR_MSG = "Invalid input."
-    DIAGNOSIS_FINISH_MSG = "Diagnosis finished."
+    DIAGNOSIS_FINISH_MSG = "診断終了"
 
     DEFAULT_HSV = [0, 0, 0]
 
