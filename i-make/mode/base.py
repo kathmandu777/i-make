@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 import cv2
 import numpy as np
@@ -124,9 +125,9 @@ class BaseModeEffect(BaseMode, Effect):
         """指定したHSVにスキンカラーをセットする.
 
         Args:
-            hue (float, optional): HSVのHueの数値
-            sat (float, optional): HSVのSaturationの数値
-            val (float, optional): HSVのVvalueの数値
+            hue (float, optional): HSVのHueの数値 (o%~100%)
+            sat (float, optional): HSVのSaturationの数値 (o%~100%)
+            val (float, optional): HSVのValueの数値 (o%~100%)
         """
         base_skin_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
         if base_skin_image is None:
@@ -137,7 +138,9 @@ class BaseModeEffect(BaseMode, Effect):
         ):
             raise ValueError("Skin image size must be 1024x1024")
 
-        self.skin_image = self._convert_image_color(base_skin_image, hue, sat, val, True)
+        self.skin_image = self._convert_image_color(
+            base_skin_image, hue * 255 / 100, sat * 255 / 100, val * 255 / 100, True
+        )
 
     def _convert_image_color(
         self, image: np.ndarray, hue: float, sat: float, val: float, include_alpha_ch: bool
@@ -205,3 +208,12 @@ class BaseModeEffect(BaseMode, Effect):
         if return_mask:
             return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8), mask
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
+
+    @classmethod
+    def get_class_vars(cls) -> dict[str, Any]:
+        """Get the class variables.
+
+        Returns:
+            dict[str, Any]: class variables.
+        """
+        return {key: value for key, value in vars(cls).items() if not key.startswith("__")}

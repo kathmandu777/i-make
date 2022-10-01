@@ -1,12 +1,13 @@
 <template>
-<div>
-    <div class="container">
-        <label class="card" v-for="(choiceImagesPath, i) in choiceImagesPaths" :for="i" :key="i">
-            <input type="radio" :id="i" name="select-image" :value="choiceImagesPath" v-model="selectedChoiceImagesPath" v-on:change="confirm" />
-            <img v-bind:src="choiceImagesPath" width="230" height="250" />
-        </label>
+    <div>
+        <div class="container">
+            <label class="card" v-for="(choiceImagesPath, i) in choiceImagesPaths" :for="i" :key="i">
+                <input type="radio" :id="i" name="select-image" :value="choiceImagesPath"
+                    v-model="selectedChoiceImagesPath" v-on:change="confirm" />
+                <img v-bind:src="choiceImagesPath" width="230" height="250" />
+            </label>
+        </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -52,12 +53,11 @@ export default {
     border-radius: 5px;
 }
 
-.card > input {
+.card>input {
     display: none;
 }
 
 .card:has(input:checked) {
     border: 2px solid #000;
 }
-
 </style>

@@ -1,6 +1,7 @@
 import Menu from "@/views/Menu.vue";
 // import Mode from "@/views/Mode.vue";
 import Event from "@/views/mode/Event.vue";
+import Diagnosis from "@/views/mode/Diagnosis.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -18,11 +19,17 @@ const routes = [
     children: [
       {
         // EventMode
-        path: "EVENT", /* Enum をそのまま使っている関係で大文字 */
+        path: "EVENT" /* Enum をそのまま使っている関係で大文字 */,
         name: "Event",
         component: Event,
-      }
-    ]
+      },
+      {
+        // DiagnosisMode
+        path: "DIAGNOSIS",
+        name: "Diagnosis",
+        component: Diagnosis,
+      },
+    ],
   },
 ];
 
