@@ -1,5 +1,7 @@
 <template >
     <div id="container">
+        <h2 class="title">iMake!</h2>
+        <button class="settings" v-on:click="goToSettings">Settings</button>
         <Video class="video" />
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
@@ -28,6 +30,9 @@ export default {
         },
         async getModes() {
             this.modes=await window.eel.get_mode_choices()();
+        },
+        goToSettings() {
+            this.$router.push("/settings");
         }
     },
     created: function () {
@@ -40,22 +45,36 @@ export default {
 <style scoped>
 #container {
     display: grid;
-    grid-template-columns: 960px 960px;
-    grid-template-rows: 1080px;
+    grid-template-columns: 960px 780px 180px;
+    grid-template-rows: 180px 900px;
     grid-template-areas:
-        "video select-mode";
+        "video title settings"
+        "video select-mode select-mode";
+}
+
+.title {
+    grid-area: title;
+    font-size: 120px;
+    line-height: 180px;
+    margin: 0;
+    padding: 0;
+}
+
+.settings {
+    grid-area: settings;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
 }
 
 .video {
     grid-area: video;
 }
 
-#mode-list {
+.mode-list {
     grid-area: select-mode;
     display: flex;
     flex-direction: column;
-    height: 1080px;
-    margin: auto;
 }
 
 .mode {
@@ -69,7 +88,7 @@ export default {
     display: block;
     width: 100px;
     height: 100px;
-    margin: auto 5px;
+    margin: auto 20px;
     font-size: 80px;
     background-color: #aadfec;
     border-radius: 50%;

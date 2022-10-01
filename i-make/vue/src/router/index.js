@@ -1,5 +1,5 @@
 import Menu from "@/views/Menu.vue";
-// import Mode from "@/views/Mode.vue";
+import Settings from "@/views/Settings.vue";
 import Event from "@/views/mode/Event.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -11,6 +11,12 @@ const routes = [
     component: Menu,
   },
   {
+    // 設定
+    path: "/settings",
+    name: "Settings",
+    component: Settings,
+  },
+  {
     // 各モードのページ
     path: "/mode",
     name: "Mode",
@@ -18,11 +24,11 @@ const routes = [
     children: [
       {
         // EventMode
-        path: "EVENT", /* Enum をそのまま使っている関係で大文字 */
+        path: "EVENT" /* Enum をそのまま使っている関係で大文字 */,
         name: "Event",
         component: Event,
-      }
-    ]
+      },
+    ],
   },
 ];
 

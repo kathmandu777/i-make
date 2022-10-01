@@ -47,6 +47,8 @@ class iMake:
         ]
         if self.mode is None:
             raise ValueError("mode is not set")
+
+        self.mode.set_skin_color(*self.skin_hsv)
         self.mode.set_effect_image_from_path(effect_image_path)
 
     def set_skin_color(self, hue: float, sat: float, val: float):
@@ -58,10 +60,7 @@ class iMake:
            val (float, optional): HSVのVvalueの数値
            include_alpha_ch (bool, optional): setする画像にアルファチャンネルを含むか否か
         """
-        if self.mode is None:
-            raise ValueError("mode is not set")
-
-        self.mode.set_skin_color(hue, sat, val)
+        self.skin_hsv = (hue, sat, val)
 
     def get_choice_images(self) -> list[str]:
         """Get choice images.
@@ -82,6 +81,14 @@ class iMake:
         if self.mode is None:
             raise ValueError("mode is not set")
         return ["../" + file.replace("i-make/static/", "") for file in self.mode.get_thumbnail_images_paths()]
+
+    def get_hsv_palette(self) -> list[tuple[float, float, float]]:
+        """Get color palette.
+
+        Returns:
+            _type_: color palette (hsv 100%)
+        """
+        return [(14, 36, 100), (27, 36, 100)]
 
     def process(self, mirror: bool = True) -> np.ndarray | None:
         """Process.
@@ -171,6 +178,7 @@ def main():
     eel.expose(imake.start)
     eel.expose(imake.get_thumbnail_images)
     eel.expose(imake.set_skin_color)
+    eel.expose(imake.get_hsv_palette)
     eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
 
