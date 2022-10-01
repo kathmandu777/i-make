@@ -4,13 +4,15 @@
             <div v-for="(choiceImagesPath, index) in currentChoiceImagesPaths" :key="index" :class="'key' + (index+1)">
                 <label class="card">
                     <input type="radio" :id="index" :value="choiceImagesPath" v-model="selectedChoiceImagesPath"
-                        v-on:change="confirm" />
+                        v-on:change="confirm" v-shortkey.once="[(index+1)]" @shortkey="confirm(choiceImagesPath)" />
                     <img :src="choiceImagesPath" width="230" height="230" />
                 </label>
             </div>
-            <button class="key0 card" @click="goToMenu()">Menu</button>
-            <button class=" key-dot card" @click="setPage(page-1)">Back</button>
-            <button class=" key-enter card" @click="setPage(page+1)">Next</button>
+            <button class="key0 card" v-shortkey.once="[0]" @shortkey="goToMenu" @click="goToMenu">Menu</button>
+            <button class=" key-dot card" v-shortkey.once="['.']" @shortkey="setPage(page-1)"
+                @click="setPage(page-1)">Back</button>
+            <button class=" key-enter card" v-shortkey.once="['enter']" @shortkey="setPage(page+1)"
+                @click="setPage(page+1)">Next</button>
         </div>
     </div>
 </template>
@@ -29,7 +31,9 @@ export default {
         async getChoiceImagesPaths() {
             this.choiceImagesPaths=await window.eel.get_choice_images()()
         },
-        async confirm() {
+        async confirm(path) {
+            if (path)
+                this.selectedChoiceImagesPath=path
             await window.eel.set_skin_color(27.0, 36.0, 100.0)() // TODO: 任意の色を指定できるように
             await window.eel.set_effect_image_from_path(this.selectedChoiceImagesPath)()
             await window.eel.start()
