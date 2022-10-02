@@ -94,5 +94,17 @@
                 "next": null
             }
         ]
+    },
+    "8": {
+        "question": "肌の色は？",
+        "choices": [{
+                "answer": "?",
+                "next": null //ハードコード以外思いつきませんすみません
+            },
+            {
+                "answer": "?",
+                "next": null
+            }
+        ]
     }
 }

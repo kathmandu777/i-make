@@ -194,7 +194,7 @@ def main():
     eel.expose(imake.get_config)
     eel.expose(imake.get_question_and_choices)
     eel.expose(imake.set_answer)
-    eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
+    eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8082, shutdown_delay=0, block=True)
 
 
 if __name__ == "__main__":
