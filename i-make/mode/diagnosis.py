@@ -26,10 +26,11 @@ class DiagnosisMode(BaseModeEffect):
 
     def __init__(self, *args, **kwargs) -> None:
         self.data = load_jsonc(self.DATA_PATH)
-        self.node_id = 2
+        self.node_id = 1
         self.settings = {}
         self.blue_yellow = []
         self.summer_winter_judge = []
+        self.spring_autumn_judge = []
 
         super().__init__(*args, **kwargs)
 
@@ -70,12 +71,14 @@ class DiagnosisMode(BaseModeEffect):
 
             if blue_count > yellow_count:
                 self.node_id = 9
+                return self.SET_ANSWER_SUCCESS_MSG
             else:
-                self.node_id = 10
-        else:
+                self.node_id = 1
+                return self.SET_ANSWER_SUCCESS_MSG
+        elif self.node_id > 1 and self.node_id < 9:
             self.node_id = node["choices"][input_data]["next"]
-        if node["choices"][input_data]["blue_yellow"] is not None:
-            self.blue_yellow.append(node["choices"][input_data]["blue_yellow"])
+            if node["choices"][input_data]["blue_yellow"] is not None:
+                self.blue_yellow.append(node["choices"][input_data]["blue_yellow"])
         #############
 
         if self.node_id == 15:
@@ -84,8 +87,23 @@ class DiagnosisMode(BaseModeEffect):
 
             if summer_count > winter_count:
                 self.node_id = 16
+                return self.SET_ANSWER_SUCCESS_MSG
             else:
                 self.node_id = 17
+                return self.SET_ANSWER_SUCCESS_MSG
+
+        if self.node_id == 26:
+            spring_count = self.spring_autumn_judge.count(0)
+            winter_count = self.spring_autumn_judge.count(1)
+
+            if spring_count > winter_count:
+                self.node_id = 27
+                return self.SET_ANSWER_SUCCESS_MSG
+            else:
+                self.node_id = 28
+                return self.SET_ANSWER_SUCCESS_MSG
+
+        self.node_id = node["choices"][input_data]["next"]
 
         return self.SET_ANSWER_SUCCESS_MSG
 

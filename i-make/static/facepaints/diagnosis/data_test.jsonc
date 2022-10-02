@@ -7,7 +7,7 @@
             },
             {
                 "answer": "女性",
-                "next": 3
+                "next": 25
             }
         ]
     },
@@ -86,7 +86,7 @@
         "choices": [{
                 "answer": "金色",
                 "blue_yellow":0,
-                "next": 8//ハードコード以外思いつきませんすみません
+                "next": 8
             },
             {
                 "answer": "銀色",
@@ -216,7 +216,7 @@
             "eyeliner-color": [240, 51, 23],
             "eyebrow-color": [240, 51, 23]
         },
-        "next": 8
+        "next": 29
     },
     "17": {
         // ブルベ冬
@@ -227,6 +227,245 @@
             "eyeliner-color": [240, 51, 23],
             "eyebrow-color": [240, 51, 23]
         },
-        "next": 8 // TODO 16,17のnextの数値変更
+        "next": 29
+    },
+    //18~はイエベ春か秋かの診断
+    "18": {
+        "question": "肌の色は？",
+        "choices": [{
+                "answer": "細く繊細で透明感",
+                "spring_autumn":0,
+                "next": 19
+            },
+            {
+                "answer": "やや厚みがあってハリがある",
+                "sprint_autumn":1,
+                "next":19
+            }
+        ]
+    },
+    "19": {
+        "question": "地毛の色は？",
+        "choices": [{
+                "answer": "赤みブラウン・グレー寄りブラック",
+                "spring_autumn":0,
+                "next": 20
+            },
+            {
+                "answer": "ブラック系",
+                "sprint_autumn":1,
+                "next":20
+            }
+        ]
+    },
+    "20": {
+        "question": "毛質は？",
+        "choices": [{
+                "answer": "やわらか",
+                "spring_autumn":0,
+                "next": 21
+            },
+            {
+                "answer": "ハリ・コシあり",
+                "sprint_autumn":1,
+                "next":21
+            }
+        ]
+    },
+    "21": {
+        "question": "瞳の色は？",
+        "choices": [{
+                "answer": "赤みブラウン・グレー寄りブラック",
+                "spring_autumn":0,
+                "next": 22
+            },
+            {
+                "answer": "ブラック系",
+                "sprint_autumn":1,
+                "next":22
+            }
+        ]
+    },
+    "22": {
+        "question": "白目と黒目のコントラストは？",
+        "choices": [{
+                "answer": "穏やか",
+                "spring_autumn":0,
+                "next": 23
+            },
+            {
+                "answer": "強い",
+                "sprint_autumn":1,
+                "next":23
+            }
+        ]
+    },
+    "24": {
+        "question": "唇の色は？",
+        "choices": [{
+                "answer": "明るめのピンク色",
+                "spring_autumn":0,
+                "next": 25
+            },
+            {
+                "answer": "深みのある赤色や青ざめたような色",
+                "sprint_autumn":1,
+                "next":25
+            }
+        ]
+    },
+    "26": {
+        "question": "似合うアクセサリーは？",
+        "choices": [{
+                "answer": "ソフトマットなシルバー系",
+                "spring_autumn":0,
+                "next": null
+            },
+            {
+                "answer": "光沢感があるシルバー系",
+                "sprint_autumn":1,
+                "next":null
+            }
+        ]
+    },
+    "27": {
+        // イエベ春
+        "question": null,
+        "settings": {
+            "eyeshadow-color": [15, 45, 82],
+            "eyelash-color": [25, 73, 28],
+            "eyeliner-color": [25, 73, 28],
+            "eyebrow-color": [25, 73, 28]
+        },
+        "next": 29
+    },
+    "28": {
+        // イエベ秋
+        "question": null,
+        "settings": {
+            "eyeshadow-color": [33, 74, 76],
+            "eyelash-color": [25, 73, 28],
+            "eyeliner-color": [25, 73, 28],
+            "eyebrow-color": [25, 73, 28]
+        },
+        "next": 29
+    },
+    "29": {
+        "question": "目の形は？",
+        "choices": [{
+                "answer": "ツリ目",
+                "next": 30
+            },
+            {
+                "answer": "タレ目",
+                "next": 31
+            },
+            {
+                "answer": "丸い目",
+                "next": 32
+            },
+            {
+                "answer": "細い目",
+                "next": 33
+            }
+        ]
+    },
+    "30": {
+        // ツリ目
+        "question": null,
+        "settings": {
+            "eyeshadow": "i-make/static/facepaints/custom/eyeshadow/3eyeshadow.png",
+            "eyeliner": "i-make/static/facepaints/custom/eyeliner/eyeliner1-1.png",
+            "eyelash": "i-make/static/facepaints/custom/eyelashes/eyelashes0-1.png",
+            "u-eyelash": "i-make/static/facepaints/custom/eyelashes/u-eyelashes0-0.png"
+        },
+        "next": 34
+    },
+    "31": {
+        // タレ目
+        "question": null,
+        "settings": { // FIXME
+            "eyeshadow": "i-make/static/facepaints/custom/eyeshadow/3eyeshadow.png",
+            "eyeliner": "i-make/static/facepaints/custom/eyeliner/eyeliner1-1.png",
+            "eyelash": "i-make/static/facepaints/custom/eyelashes/eyelashes0-1.png",
+            "u-eyelash": "i-make/static/facepaints/custom/eyelashes/u-eyelashes0-0.png"
+        },
+        "next": 34
+    },
+    "32": {
+        // 丸い目
+        "question": null,
+        "settings": { // FIXME
+            "eyeshadow": "i-make/static/facepaints/custom/eyeshadow/3eyeshadow.png",
+            "eyeliner": "i-make/static/facepaints/custom/eyeliner/eyeliner1-1.png",
+            "eyelash": "i-make/static/facepaints/custom/eyelashes/eyelashes0-1.png",
+            "u-eyelash": "i-make/static/facepaints/custom/eyelashes/u-eyelashes0-0.png"
+        },
+        "next": 34
+    },
+    "33": {
+        // 細い目
+        "question": null,
+        "settings": { // FIXME
+            "eyeshadow": "i-make/static/facepaints/custom/eyeshadow/3eyeshadow.png",
+            "eyeliner": "i-make/static/facepaints/custom/eyeliner/eyeliner1-1.png",
+            "eyelash": "i-make/static/facepaints/custom/eyelashes/eyelashes0-1.png",
+            "u-eyelash": "i-make/static/facepaints/custom/eyelashes/u-eyelashes0-0.png"
+        },
+        "next": 34
+    },
+    "34": {
+        "question": "顔の形は？",
+        "choices": [{
+                "answer": "面長",
+                "next": 35
+            },
+            {
+                "answer": "丸顔",
+                "next": 36
+            }
+        ]
+    },
+    "35": {
+        // 面長
+        "question": null,
+        "settings": {
+            "eyebrow": "i-make/static/facepaints/custom/eyebrow/eyebrow straight.png",
+            "eyeshadow": "i-make/static/facepaints/custom/eyeshadow/eyeshadow1-0.png"
+        },
+        "next": 37
+    },
+    "36": {
+        // 丸顔
+        "question": null,
+        "settings": {
+            "eyebrow": "i-make/static/facepaints/custom/eyebrow/eyebrow arch.png",
+            "eyebags": "i-make/static/facepaints/custom/eyebags/eyebags0.png"
+        },
+        "next": 37
+    },
+    "37": {
+        "question": "目の間は？",
+        "choices": [{
+                "answer": "広い",
+                "next": 38
+            },
+            {
+                "answer": "狭い",
+                "next": 99
+            }
+        ]
+    },
+    "38": {
+        // 広い
+        "question": null,
+        "settings": {},
+        "next": 99
+    },
+    "99": {
+        // 終了
+        "question": null,
+        "settings": null,
+        "next": null
     }
 }
