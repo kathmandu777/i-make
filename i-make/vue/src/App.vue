@@ -1,12 +1,11 @@
 <template>
-  <router-view></router-view>
+  <TwoColumn></TwoColumn>
 </template>
 
 <script>
+import TwoColumn from './views/TwoColumn.vue';
 export default {
   name: "App",
-  mounted: function () {
-    this.$router.push("/menu")
-  },
+  components: { TwoColumn }
 }
 </script>

@@ -1,12 +1,10 @@
 <template>
     <div>
-        <div class="container">
-            <div v-for="(hsv, index) in currentColorPalette" :key="index" :class="'key' + (index+1)">
-                <label class="card">
-                    <input type="radio" :id="index" :value="hsv" v-model="selectedHSV" v-on:change="confirm()"
-                        v-shortkey.once="[(index+1)]" @shortkey="confirm(hsv)" />
-                    <div class="color-sample" :style="{backgroundColor: hsvToRgbCode(hsv)} "></div>
-                </label>
+        <div class="keypad">
+            <div v-for="(hsv, index) in currentColorPalette" :key="index" :class="'key' + (index+1)" class="card">
+                <input type="radio" :id="index" :value="hsv" v-model="selectedHSV" v-on:change="confirm()"
+                    v-shortkey.once="[(index+1)]" @shortkey="confirm(hsv)" />
+                <div class="color-sample" :style="{backgroundColor: hsvToRgbCode(hsv)} "></div>
             </div>
             <button class="key0 card" v-shortkey.once="[0]" @shortkey="goToMenu" @click="goToMenu">Menu</button>
             <button class=" key-dot card" v-shortkey.once="['.']" @shortkey="setPage(page-1)"
@@ -44,7 +42,7 @@ export default {
             this.page=page
         },
         goToMenu() {
-            this.$router.push("/menu")
+            this.$emit('update-component', 'Menu');
         },
         hsvToRgbCode(hsv) {
             var h=hsv[0]/60;
@@ -95,7 +93,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.keypad {
     display: grid;
     grid-template-columns: 240px 240px 240px 240px;
     grid-template-rows: 60px 240px 240px 240px 240px 60px;

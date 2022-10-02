@@ -1,8 +1,8 @@
 <template >
-    <div id="container">
+    <div class="half-HD">
         <h2 class="title">iMake!</h2>
-        <button class="settings" v-on:click="goToSettings">Settings</button>
-        <Video class="video" />
+        <button class="settings" v-on:click="goToSettings()" v-shortkey.once="['*']"
+            @shortkey="goToSettings()">Settings</button>
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
                 <label class="circle-number">{{index+1}} </label>
@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import Video from '@/components/shared/Video.vue'
-
 export default {
     name: "Menu",
     data: function () {
@@ -26,30 +24,29 @@ export default {
     methods: {
         setMode(name) {
             window.eel.set_mode(name)();
-            this.$router.push("/mode/"+name);
+            this.$emit('update-component', name.slice(0, 1).toUpperCase()+name.slice(1).toLowerCase());
         },
         async getModes() {
             this.modes=await window.eel.get_mode_choices()();
         },
         goToSettings() {
-            this.$router.push("/settings");
+            this.$emit('update-component', "SkinColor");
         }
     },
     created: function () {
         this.getModes();
     },
-    components: { Video }
 }
 </script>
 
 <style scoped>
-#container {
+.half-HD {
     display: grid;
-    grid-template-columns: 960px 780px 180px;
+    grid-template-columns: 780px 180px;
     grid-template-rows: 180px 900px;
     grid-template-areas:
-        "video title settings"
-        "video select-mode select-mode";
+        "title settings"
+        "select-mode select-mode";
 }
 
 .title {
@@ -65,10 +62,6 @@ export default {
     font-size: 20px;
     margin: 0;
     padding: 0;
-}
-
-.video {
-    grid-area: video;
 }
 
 .mode-list {

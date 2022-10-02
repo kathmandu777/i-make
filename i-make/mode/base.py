@@ -1,9 +1,11 @@
 import os
+from dataclasses import asdict
 
 import cv2
 import numpy as np
 from PIL import Image
 
+from ..dataclasses import HSV, FacePaint
 from ..libs.effect import Effect
 
 
@@ -12,6 +14,15 @@ class BaseMode:
 
     ICON_PATH: str = ""
     DESCRIPTION: str = ""
+
+    @classmethod
+    def icon_path_for_frontend(cls) -> str:
+        """Return icon path for frontend.
+
+        Returns:
+            _type_: icon path
+        """
+        return "../" + cls.ICON_PATH.replace("i-make/static/", "")
 
 
 class BaseModeEffect(BaseMode, Effect):
@@ -26,44 +37,16 @@ class BaseModeEffect(BaseMode, Effect):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def set_effect_image_from_path(self, effect_image_path: list[str] | str) -> None:
+    def set_effect_image_by_facepaints(self, facepaints: list[FacePaint]) -> None:
         """Set effect image from path.
 
         Args:
-            effect_image_path (_type_): path to effect image
+            facepaints (_type_): list of FacePaint
         """
-
-        if isinstance(effect_image_path, str):
-            effect_image_path = [effect_image_path]
-        self.effect_image_paths = effect_image_path
+        self.facepaints = facepaints
         self.set_effect_image(self._overlay_effect_images())
 
-    def set_effect_image_from_path_w_hsv(
-        self,
-        effect_image_path: list[str] | str,
-        effect_image_hsv: list[tuple[float, float, float]] | tuple[float, float, float],
-    ) -> None:
-        """Set effect image from path.
-
-        Args:
-            effect_image_path (_type_): path to effect image
-            effect_image_hsv(_type_):HSV figures after change
-        """
-
-        if isinstance(effect_image_path, str):
-            effect_image_path = [effect_image_path]
-
-        if isinstance(effect_image_hsv, tuple):
-            effect_image_hsv = [effect_image_hsv]
-
-        if not (len(effect_image_path) == len(effect_image_hsv)):
-            raise ValueError("The number of image paths and hsv paths do not match")
-
-        self.effect_image_paths = effect_image_path
-        self.effect_image_hsv_list = effect_image_hsv
-        self.set_effect_image(self._overlay_effect_images_w_hsv())
-
-    def _overlay_effect_images(self):
+    def _overlay_effect_images(self) -> np.ndarray:
         """Overlay effect images on skin image.
 
         Returns:
@@ -73,38 +56,15 @@ class BaseModeEffect(BaseMode, Effect):
             raise ValueError("skin_image is None")
 
         effect_image = self.skin_image
-        for image_path in self.effect_image_paths:
-            image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        for facepaint in self.facepaints:
+            image = cv2.imread(facepaint.image_path, cv2.IMREAD_UNCHANGED)
             if image is None:
-                raise ValueError(f"Failed to read image: {image_path}")
+                raise ValueError(f"Failed to read image: {facepaint.image_path}")
             if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
                 raise ValueError("Effect image size must be 1024x1024")
+            image = self._convert_image_color(image, facepaint.hsv, True) if facepaint.hsv is not None else image
             effect_image = self._overlay_alpha_image(effect_image, image)
         return effect_image
-
-    def _overlay_effect_images_w_hsv(self):
-        """Overlay effect images on skin image.
-
-        Returns:
-            _type_: effect image for EffectCreator
-        """
-        if self.skin_image is None:
-            raise ValueError("skin_image is None")
-
-        effect_image = self.skin_image
-        if len(self.effect_image_paths) == len(self.effect_image_hsv_list):
-            for image_path, hsv_list in zip(self.effect_image_paths, self.effect_image_hsv_list):
-                image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-                if image is None:
-                    raise ValueError(f"Failed to read image: {image_path}")
-                if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
-                    raise ValueError("Effect image size must be 1024x1024")
-                h, s, v = hsv_list
-                image = self._convert_image_color(image, h, s, v, True)
-                effect_image = self._overlay_alpha_image(effect_image, image)
-            return effect_image
-        else:
-            raise ValueError("The number of image paths and hsv paths do not match")
 
     def _overlay_alpha_image(self, back, front):
         """Overlay alpha image on the background image.
@@ -122,13 +82,11 @@ class BaseModeEffect(BaseMode, Effect):
         image = Image.alpha_composite(back_pil, front_pil)
         return np.array(image).astype(np.uint8)
 
-    def set_skin_color(self, hue: float, sat: float, val: float) -> None:
+    def set_skin_color(self, hsv: HSV) -> None:
         """指定したHSVにスキンカラーをセットする.
 
         Args:
-            hue (float, optional): HSVのHueの数値
-            sat (float, optional): HSVのSaturationの数値
-            val (float, optional): HSVのVvalueの数値
+            hsv (HSV): HSV
         """
         base_skin_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
         if base_skin_image is None:
@@ -139,36 +97,29 @@ class BaseModeEffect(BaseMode, Effect):
         ):
             raise ValueError("Skin image size must be 1024x1024")
 
-        self.skin_image = self._convert_image_color(base_skin_image, hue, sat, val, True)
+        self.skin_image = self._convert_image_color(base_skin_image, hsv, True)
 
-    def _convert_image_color(
-        self, image: np.ndarray, hue: float, sat: float, val: float, include_alpha_ch: bool
-    ) -> np.ndarray:
+    def _convert_image_color(self, image: np.ndarray, hsv: HSV, include_alpha_ch: bool) -> np.ndarray:
         """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
 
         Args:
             image (np.ndarray): RGB=(0,0,255)で塗りつぶしたアルファチャンネルを含むメイク素材、1024x1024
-            hue (float): HSVのHueの数値(0~255)
-            sat (float): HSVのSaturationの数値(0~255)
-            val (float): HSVのValueの数値(0~255)
+            hsv (HSV): HSV
             include_alpha_ch (bool): returnする画像にアルファチャンネルを含むか否か
         Return:
             np.ndarray: 任意の色、設定に変更したメイクのnumpy配列
         """
-        if not (0.0 <= hue <= 255.0):
-            raise ValueError("hue must be 0.0 <= hue <= 255.0")
-        if not (0.0 <= sat <= 255.0):
-            raise ValueError("sat must be 0.0 <= sat <= 255.0")
-        if not (0.0 <= val <= 255.0):
-            raise ValueError("val must be 0.0 <= val <= 255.0")
-
+        # opencvでのHSVの範囲は0-180,0-255,0-255
+        hue = hsv.h / 2
+        sat = hsv.s / 100 * 255
+        val = hsv.v / 100 * 255
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
         B255_HUE = 120
         B255_SAT = 255
         NO_CHANGE_VAL = 0
-        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == B255_HUE, hue / 2, image_hsv[:, :, 0])
+        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == B255_HUE, hue, image_hsv[:, :, 0])
         image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == B255_SAT, sat, image_hsv[:, :, 1])
         image_hsv[:, :, 2] = np.where(
             image_hsv[:, :, 2] != NO_CHANGE_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
@@ -184,25 +135,6 @@ class BaseModeEffect(BaseMode, Effect):
         else:
             return image_bgr
 
-    @classmethod
-    def get_choice_images_paths(cls):
-        """Get the paths to the images for the choices."""
-        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
-        return [
-            os.path.join(cls.CHOICE_IMAGES_DIR_PATH, file)
-            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
-            if file.endswith(".png") and not file == icon_file
-        ]
-
-    @classmethod
-    def get_thumbnail_images_paths(cls):
-        """Get the paths to the thumbnail image."""
-        return [
-            os.path.join(cls.THUMBNAIL_IMAGES_DIR_PATH, file)
-            for file in os.listdir(cls.THUMBNAIL_IMAGES_DIR_PATH)
-            if file.endswith(".png")
-        ]
-
     def _convert_bgra_to_bgr(self, image: np.ndarray, return_mask: bool) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
         """Convert RGBA image to RGB image.
 
@@ -216,3 +148,29 @@ class BaseModeEffect(BaseMode, Effect):
         if return_mask:
             return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8), mask
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
+
+    @classmethod
+    def get_choice_facepaints(cls) -> list[dict]:
+        """選択肢のメイクを取得する.
+
+        Returns:
+            list[FacePaint]: メイクのリスト
+        """
+        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
+        facepaints = [
+            FacePaint(
+                filename=file,
+                image_dir_path=cls.CHOICE_IMAGES_DIR_PATH,
+                thumbnail_dir_path=cls.THUMBNAIL_IMAGES_DIR_PATH,
+            )
+            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
+            if file.endswith(".png") and not file == icon_file
+        ]
+        return [
+            {
+                **asdict(facepaint),
+                "thumbnail_path_for_frontend": facepaint.thumbnail_path_for_frontend,
+                "image_path": facepaint.image_path,
+            }
+            for facepaint in facepaints
+        ]
