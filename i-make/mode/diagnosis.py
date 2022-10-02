@@ -46,7 +46,6 @@ class DiagnosisMode(BaseModeEffect):
             self._set_effect_image_by_settings()
             return self.DIAGNOSIS_FINISH_MSG, {}
         else:
-            print("test3")
             self.settings |= node["settings"]
             self.node_id = node["next"]
             return self.get_question_and_choices()
@@ -91,6 +90,10 @@ class DiagnosisMode(BaseModeEffect):
             else:
                 self.node_id = 17
                 return self.SET_ANSWER_SUCCESS_MSG
+        elif self.node_id > 8 and self.node_id < 16:
+            self.node_id = node["choices"][input_data]["next"]
+            if node["choices"][input_data]["summer_winter"] is not None:
+                self.summer_winter_judge.append(node["choices"][input_data]["summer_winter"])
 
         if self.node_id == 26:
             spring_count = self.spring_autumn_judge.count(0)
@@ -102,6 +105,10 @@ class DiagnosisMode(BaseModeEffect):
             else:
                 self.node_id = 28
                 return self.SET_ANSWER_SUCCESS_MSG
+        elif self.node_id > 17 and self.node_id < 27:
+            self.node_id = node["choices"][input_data]["next"]
+            if node["choices"][input_data]["spring_autumn"] is not None:
+                self.spring_autumn_judge.append(node["choices"][input_data]["spring_autumn"])
 
         self.node_id = node["choices"][input_data]["next"]
 
