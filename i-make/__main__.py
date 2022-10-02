@@ -8,7 +8,7 @@ import numpy as np
 
 from .dataclasses import HSV, FacePaint
 from .libs.facemesh import FaceMesh
-from .mode import BaseModeEffectType, Mode
+from .mode import BaseModeEffectType, DiagnosisMode, Mode
 
 
 class iMake:
@@ -73,7 +73,7 @@ class iMake:
         palette = [HSV(h=14, s=36, v=100), HSV(h=27, s=36, v=100)]
         return [asdict(hsv) for hsv in palette]
 
-    def process(self, mirror: bool = True) -> np.ndarray | None:
+    def _process(self, mirror: bool = True) -> np.ndarray | None:
         """Process.
 
         Returns:
@@ -95,7 +95,7 @@ class iMake:
     def start(self):
         while True:
             eel.sleep(0.000001)
-            effect = self.process()
+            effect = self._process()
             if effect is None:
                 continue
 
@@ -138,9 +138,44 @@ class iMake:
         """
         return image[:, image.shape[1] // 4 : image.shape[1] * 3 // 4, :]
 
+    def get_config(self):
+        """Get config.
+
+        Returns:
+            _type_: config
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        return self.mode.get_class_vars()
+
     def close(self):
         self.cap.release()
         self.face_mesh.close()
+
+    ### Diagnosis
+    def get_question_and_choices(self):
+        """Get question and choices.
+
+        Returns:
+            _type_: question and choices
+        """
+        assert isinstance(self.mode, DiagnosisMode)
+        return self.mode.get_question_and_choices()
+
+    def set_answer(self, answer: int) -> str:
+        """Set answer.
+
+        Args:
+            answer (_type_): answer
+
+        Returns:
+            _type_: message
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+
+        assert isinstance(self.mode, DiagnosisMode)
+        return self.mode.set_answer(answer)
 
 
 def main():
@@ -158,6 +193,9 @@ def main():
     eel.expose(imake.get_choice_facepaints)
     eel.expose(imake.set_skin_color)
     eel.expose(imake.get_hsv_palette)
+    eel.expose(imake.get_config)
+    eel.expose(imake.get_question_and_choices)
+    eel.expose(imake.set_answer)
     eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
 

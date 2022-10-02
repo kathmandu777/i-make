@@ -1,5 +1,6 @@
 import os
 from dataclasses import asdict
+from typing import Any
 
 import cv2
 import numpy as np
@@ -174,3 +175,12 @@ class BaseModeEffect(BaseMode, Effect):
             }
             for facepaint in facepaints
         ]
+
+    @classmethod
+    def get_class_vars(cls) -> dict[str, Any]:
+        """Get the class variables.
+
+        Returns:
+            dict[str, Any]: class variables.
+        """
+        return {key: value for key, value in vars(cls).items() if not key.startswith("__")}
