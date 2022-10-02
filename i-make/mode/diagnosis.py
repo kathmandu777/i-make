@@ -28,7 +28,8 @@ class DiagnosisMode(BaseModeEffect):
         self.data = load_jsonc(self.DATA_PATH)
         self.node_id = 2
         self.settings = {}
-        self.blue_yellow = [0]
+        self.blue_yellow = []
+        self.summer_winter_judge = []
 
         super().__init__(*args, **kwargs)
 
@@ -62,16 +63,30 @@ class DiagnosisMode(BaseModeEffect):
         if not (0 <= input_data < len(node["choices"])):
             return self.SET_ANSWER_ERROR_MSG
 
-        if self.node_id == 7:
+        ##############
+        if self.node_id == 8:
             blue_count = self.blue_yellow.count(0)
             yellow_count = self.blue_yellow.count(1)
 
             if blue_count > yellow_count:
-                self.node_id = 8
+                self.node_id = 9
+            else:
+                self.node_id = 10
         else:
             self.node_id = node["choices"][input_data]["next"]
         if node["choices"][input_data]["blue_yellow"] is not None:
             self.blue_yellow.append(node["choices"][input_data]["blue_yellow"])
+        #############
+
+        if self.node_id == 15:
+            summer_count = self.summer_winter_judge.count(0)
+            winter_count = self.summer_winter_judge.count(1)
+
+            if summer_count > winter_count:
+                self.node_id = 16
+            else:
+                self.node_id = 17
+
         return self.SET_ANSWER_SUCCESS_MSG
 
     def _set_effect_image_by_settings(self) -> None:

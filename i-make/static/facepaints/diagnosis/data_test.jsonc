@@ -86,12 +86,12 @@
         "choices": [{
                 "answer": "金色",
                 "blue_yellow":0,
-                "next": null //ハードコード以外思いつきませんすみません
+                "next": 8//ハードコード以外思いつきませんすみません
             },
             {
                 "answer": "銀色",
                 "blue_yellow":1,
-                "next": null
+                "next":8
             }
         ]
     },
@@ -99,12 +99,134 @@
         "question": "肌の色は？",
         "choices": [{
                 "answer": "?",
-                "next": null //ハードコード以外思いつきませんすみません
+                "blue_yellow":0,
+                "next": null
             },
             {
                 "answer": "?",
+                "blue_yellow":1,
                 "next": null
             }
         ]
+    },
+    "9": {
+        "question": "肌の色は？",
+        "choices": [{
+                "answer": "明るくツヤあり",
+                "summer_winter":0,
+                "next": 10
+            },
+            {
+                "answer": "やや暗くトーンのマットな質",
+                "summer_winter":1,
+                "next":10
+            }
+        ]
+    },
+    "10": {
+        "question": "地毛の色は？",
+        "choices": [{
+                "answer": "ライトブラウン系",
+                "summer_winter":0,
+                "next": 11
+            },
+            {
+                "answer": "ダークブラウン~ブラック系",
+                "summer_winter":1,
+                "next":11
+            }
+        ]
+    },
+    "11": {
+        "question": "毛質は？",
+        "choices": [{
+                "answer": "細くやわらか",
+                "summer_winter":0,
+                "next": 12
+            },
+            {
+                "answer": "ハリ・コシあり",
+                "summer_winter":1,
+                "next":12
+            }
+        ]
+    },
+    "12": {
+        "question": "瞳の色は？",
+        "choices": [{
+                "answer":"ライトブラウン",
+                "summer_winter":0,
+                "next": 13
+            },
+            {
+                "answer": "ダークブラウン~ブラック系",
+                "summer_winter":1,
+                "next":13
+            }
+        ]
+    },
+    "13": {
+        "question": "白目と黒目のコントラストは？",
+        "choices": [{
+                "answer": "はっきり",
+                "summer_winter":0,
+                "next": 14
+            },
+            {
+                "answer": "穏やか",
+                "summer_winter":1,
+                "next":14
+            }
+        ]
+    },
+    "14": {
+        "question": "唇は？",
+        "choices": [{
+                "answer": "血色感のあるピーチ色",
+                "summer_winter":0,
+                "next": 15
+            },
+            {
+                "answer": "くすみありベージュ系・オレンジ系",
+                "summer_winter":1,
+                "next":15
+            }
+        ]
+    },
+    "15": {
+        "question": "似合うアクセは？",
+        "choices": [{
+                "answer": "光沢感のある華やかなゴールド",
+                "summer_winter":0,
+                "next": null
+            },
+            {
+                "answer": "マットな質感やアンティーク調のゴールド",
+                "summer_winter":1,
+                "next":null
+            }
+        ]
+    },
+    "16": {
+        // ブルベ夏
+        "question": null,
+        "settings": {
+            "eyeshadow-color": [14, 21, 89],
+            "eyelash-color": [240, 51, 23],
+            "eyeliner-color": [240, 51, 23],
+            "eyebrow-color": [240, 51, 23]
+        },
+        "next": 8
+    },
+    "17": {
+        // ブルベ冬
+        "question": null,
+        "settings": {
+            "eyeshadow-color": [138, 44, 32],
+            "eyelash-color": [240, 51, 23],
+            "eyeliner-color": [240, 51, 23],
+            "eyebrow-color": [240, 51, 23]
+        },
+        "next": 8 // TODO 16,17のnextの数値変更
     }
 }
