@@ -1,12 +1,12 @@
 <template>
-    <SingleEffect>Event Mode</SingleEffect>
+    <SingleEffect>Easy Mode</SingleEffect>
 </template>
 
 <script>
 import SingleEffect from '@/components/shared/SingleEffect.vue'
 
 export default {
-    name: "Event",
+    name: "Easy",
     components: { SingleEffect }
 }
 </script>

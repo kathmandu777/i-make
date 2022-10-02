@@ -16,7 +16,9 @@ import Video from '@/components/shared/Video.vue'
 import Menu from '@/components/shared/Menu.vue';
 import SkinColor from '@/components/shared/SkinColor.vue';
 import Event from '@/components/mode/Event.vue';
+import Easy from '@/components/mode/Easy.vue';
 import Custom from '@/components/mode/Custom.vue';
+import Practice from '@/components/mode/Practice.vue';
 
 export default {
     name: "Settings",
@@ -31,7 +33,7 @@ export default {
             this.rightComponent=component
         }
     },
-    components: { Video, Menu, SkinColor, Event, Custom }
+    components: { Video, Menu, SkinColor, Event, Custom, Easy, Practice }
 }
 </script>
 

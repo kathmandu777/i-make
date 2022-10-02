@@ -5,6 +5,7 @@ class EasyMode(BaseModeEffect):
     """Easy makeup mode."""
 
     CHOICE_IMAGES_DIR_PATH = "i-make/static/facepaints/easy"
+    THUMBNAIL_IMAGES_DIR_PATH = "i-make/static/facepaints/easy/thumbnails"
     ICON_PATH: str = "i-make/static/facepaints/easy/easy.png"
 
     def __init__(self, *args, **kwargs) -> None:
