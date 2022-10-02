@@ -1,0 +1,98 @@
+{
+    "1": {
+        "question": "男性？女性？",
+        "choices": [{
+                "answer": "男性",
+                "next": 2
+            },
+            {
+                "answer": "女性",
+                "next": 3
+            }
+        ]
+    },
+    "2": {
+        "question": "手のひらの色は？",
+        "choices": [{
+                "answer": "黄みピンク〜オレンジ？",
+                "blue_yellow":0,
+                "next": 3
+            },
+            {
+                "answer": "青みピンク〜赤紫？",
+                "blue_yellow":1,
+                "next": 3
+            }
+        ]
+    },
+    "3": {
+        "question": "手首の血管の色は？",
+        "choices": [{
+                "answer": "緑系",
+                "blue_yellow":0,
+                "next": 4
+            },
+            {
+                "answer": "青系・赤紫系",
+                "blue_yellow":1,
+                "next": 4
+            }
+        ]
+    },
+    "4": {
+        "question": "瞳の色は？",
+        "choices": [{
+                "answer": "黄み・こげ茶",
+                "blue_yellow":0,
+                "next": 5
+            },
+            {
+                "answer": "黒・グレー・赤茶色",
+                "blue_yellow":1,
+                "next": 5
+            }
+        ]
+    },
+    "5": {
+        "question": "似合うリップの色は？",
+        "choices": [{
+                "answer": "ベージュ・コーラル・ピンク・オレンジ",
+                "blue_yellow":0,
+                "next": 6
+            },
+            {
+                "answer": "ピンク・ローズピンク・赤色",
+                "blue_yellow":1,
+                "next": 6
+            }
+        ]
+    },
+    "6": {
+        "question": "地毛の色は？",
+        "choices": [{
+                "answer": "黒ブラウン・黄色ブラウン",
+                "blue_yellow":0,
+                "next": 7
+            },
+            {
+                "answer": "黒・グレー・赤ブラウン",
+                "blue_yellow":1,
+                "next": 7
+            }
+        ]
+    },
+    "7": {
+        "question": "指を乗せてきれいな色は？",
+        "choices": [{
+                "answer": "金色",
+                "blue_yellow":0,
+                "next": null //ハードコード以外思いつきませんすみません
+            },
+            {
+                "answer": "銀色",
+                "blue_yellow":1,
+                "next": null
+            }
+        ]
+    }
+}
