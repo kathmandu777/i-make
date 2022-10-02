@@ -15,6 +15,9 @@ class FacePaint:
     thumbnail_dir_path: str | None = None
     hsv: HSV | None = None
 
+    # custom
+    dir: str | None = None
+
     @property
     def image_path(self) -> str:
         return os.path.join(self.image_dir_path, self.filename)

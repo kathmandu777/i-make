@@ -1,5 +1,6 @@
 import argparse
 import base64
+from dataclasses import asdict
 
 import cv2
 import eel
@@ -52,7 +53,7 @@ class iMake:
             raise ValueError("mode is not set")
         return self.mode.get_choice_facepaints()
 
-    def set_skin_color(self, hue: float, sat: float, val: float):
+    def set_skin_color(self, hsv: dict):
         """Set skin color.
 
         Args:
@@ -61,15 +62,16 @@ class iMake:
            val (float, optional): HSVのValueの数値
            include_alpha_ch (bool, optional): setする画像にアルファチャンネルを含むか否か
         """
-        self.skin_hsv = HSV(h=hue, s=sat, v=val)
+        self.skin_hsv = HSV(**hsv)
 
-    def get_hsv_palette(self) -> list[tuple[float, float, float]]:
+    def get_hsv_palette(self) -> list[dict]:
         """Get color palette.
 
         Returns:
-            _type_: color palette (hsv 100%)
+            _type_: color palette
         """
-        return [(14, 36, 100), (27, 36, 100)]
+        palette = [HSV(h=14, s=36, v=100), HSV(h=27, s=36, v=100)]
+        return [asdict(hsv) for hsv in palette]
 
     def process(self, mirror: bool = True) -> np.ndarray | None:
         """Process.

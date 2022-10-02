@@ -2,7 +2,7 @@
     <div>
         <div class="keypad">
             <div v-for="(facepaint, index) in pageFacepaints" :key="index" :class="'key' + (index+1)" class="card">
-                <input type="radio" :id="index" :value="facepaint" v-model="selectedFacepaints" v-on:change="confirm()"
+                <input type="radio" :id="index" :value="facepaint" v-model="selectedFacepaint" v-on:change="confirm()"
                     v-shortkey.once="[(index+1)]" @shortkey="confirm(facepaint)" />
                 <img :src="facepaint.thumbnail_path_for_frontend" width="230" height="230" />
             </div>
@@ -21,7 +21,7 @@ export default {
     data: function () {
         return {
             facepaints: [],
-            selectedFacepaints: [],
+            selectedFacepaint: [],
             page: 0
         }
     },
@@ -31,8 +31,8 @@ export default {
         },
         async confirm(facepaints) {
             if (facepaints)
-                this.selectedFacepaints=facepaints
-            await window.eel.set_effect_image(this.selectedFacepaints)()
+                this.selectedFacepaint=facepaints
+            await window.eel.set_effect_image(this.selectedFacepaint)()
             await window.eel.start()
         },
         setPage(page) {

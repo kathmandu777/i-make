@@ -1,49 +1,41 @@
 <template>
     <div>
-        <div class="keypad">
-            <div v-for="(hsv, index) in currentColorPalette" :key="index" :class="'key' + (index+1)" class="card">
-                <input type="radio" :id="index" :value="hsv" v-model="selectedHSV" v-on:change="confirm()"
-                    v-shortkey.once="[(index+1)]" @shortkey="confirm(hsv)" />
-                <div class="color-sample" :style="{backgroundColor: hsvToRgbCode(hsv)} "></div>
+        <div class="tenkey-cursor">
+            <div v-for="(choice, index) in pageChoiceList" :key="index" :class="'key' + (index+1)" class="card">
+                <input type="radio" :id="index" :value="choice" v-model="selectedChoice" v-shortkey.once="[(index+1)]"
+                    @shortkey="confirm(choice)" />
+                <slot v-bind:choice="choice"></slot>
             </div>
 
-            <button class="key0 card" v-shortkey.once="[0]" @shortkey="goToMenu" @click="goToMenu">Menu</button>
-            <button class=" key-dot card" v-shortkey.once="['.']" @shortkey="setPage(page-1)"
-                @click="setPage(page-1)">Back</button>
-            <button class=" key-enter card" v-shortkey.once="['enter']" @shortkey="setPage(page+1)"
-                @click="setPage(page+1)">Next</button>
+            <button class=" key-slush card" v-shortkey.once="['/']" @shortkey="setPage(page-1)"
+                @click="setPage(page-1)">←</button>
+            <button class=" key-asterisk card" v-shortkey.once="['*']" @shortkey="setPage(page+1)"
+                @click="setPage(page+1)">→</button>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'SkinColor',
+    name: 'TenkeyCursor',
+    props: ['choiceList'],
     data: function () {
         return {
-            hsvPalette: [],
-            selectedHSV: null,
+            selectedChoice: null,
             page: 0
         }
     },
     methods: {
-        async getHSVPalette() {
-            this.hsvPalette=await window.eel.get_hsv_palette()()
-        },
-        async confirm(hsv) {
-            if (hsv)
-                this.selectedHSV=hsv
-            await window.eel.set_skin_color(this.selectedHSV)()
-        },
         setPage(page) {
             if (page<0)
                 page=0
-            else if (page>Math.floor((this.hsvPalette.length-1)/9))
-                page=Math.floor((this.hsvPalette.length-1)/9)
+            else if (page>Math.floor((this.choiceList.length-1)/9))
+                page=Math.floor((this.choiceList.length-1)/9)
             this.page=page
         },
-        goToMenu() {
-            this.$emit('update-component', 'Menu');
+        confirm(choice) {
+            this.selectedChoice=choice
+            this.$emit('update', choice)
         },
         hsvToRgbCode(hsv) {
             var h=hsv.h/60;
@@ -83,28 +75,23 @@ export default {
         }
     },
     computed: {
-        currentColorPalette() {
-            return this.hsvPalette.slice(this.page*9, this.page*9+9)
+        pageChoiceList() {
+            return this.choiceList.slice(this.page*9, this.page*9+9)
         }
-    },
-    mounted: function () {
-        this.getHSVPalette()
     }
 }
 </script>
 
 <style scoped>
-.keypad {
+.tenkey-cursor {
     display: grid;
-    grid-template-columns: 240px 240px 240px 240px;
-    grid-template-rows: 60px 240px 240px 240px 240px 60px;
+    grid-template-columns: 240px 240px 240px;
+    grid-template-rows: 210px 210px 210px 210px;
     grid-template-areas:
-        ". . . ."
+        "key-numlock key-slush key-asterisk key-backspace"
         "key7 key8 key9 key-minus"
         "key4 key5 key6 key-plus"
-        "key1 key2 key3 key-enter"
-        "key0 key0 key-dot key-enter"
-        ". . . .";
+        "key1 key2 key3 key-enter";
 }
 
 .card {
@@ -126,10 +113,6 @@ export default {
 .color-sample {
     width: 230px;
     height: 230px;
-}
-
-.key0 {
-    grid-area: key0;
 }
 
 .key1 {
@@ -182,5 +165,37 @@ export default {
 
 .key-dot {
     grid-area: key-dot;
+}
+
+.key-slush {
+    grid-area: key-slush;
+}
+
+.key-asterisk {
+    grid-area: key-asterisk;
+}
+
+.key-backspace {
+    grid-area: key-backspace;
+}
+
+.key-numlock {
+    grid-area: key-numlock;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    margin: 5px;
+}
+
+.card>input {
+    display: none;
+}
+
+.card:has(input:checked) {
+    border: 2px solid #000;
 }
 </style>
