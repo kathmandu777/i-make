@@ -1,19 +1,19 @@
 <template>
     <div>
         <div class="keypad">
-            <h1 class="title">
-                <slot></slot>
-            </h1>
-            <div v-for="(facepaint, index) in pageFacepaints" :key="index" :class="'key' + (index+1)" class="card">
+            <div v-for="(facepaint, index) in pageFacepaints" :key="index" :class="'key-' + keyClassNames[index]"
+                class="card">
                 <input type="radio" :id="index" :value="facepaint" v-model="selectedFacepaint" v-on:change="confirm()"
-                    v-shortkey.once="[(index+1)]" @shortkey="confirm(facepaint)" />
-                <img :src="facepaint.thumbnail_path_for_frontend" width="230" height="230" />
+                    v-shortkey.once="[keys[index]]" @shortkey="confirm(facepaint)" />
+                <img :src="facepaint.thumbnail_path_for_frontend" width="200" height="200" />
             </div>
-            <button class="key0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu">Menu</button>
-            <button class=" key-dot card" v-shortkey.once="['.']" @shortkey="setPage(page-1)"
-                @click="setPage(page-1)">Back</button>
-            <button class=" key-enter card" v-shortkey.once="['enter']" @shortkey="setPage(page+1)"
-                @click="setPage(page+1)">Next</button>
+
+            <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.jpg"
+                width="400" height="200">
+            <img class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)" @click="setPage(page-1)"
+                src="/dist/next.jpg" width="200" height="200">
+            <img class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)" @click="setPage(page+1)"
+                src="/dist/next.jpg" width="200" height="200">
         </div>
     </div>
 </template>
@@ -25,7 +25,11 @@ export default {
         return {
             facepaints: [],
             selectedFacepaint: [],
-            page: 0
+            page: 0,
+            keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
+            keyClassNames: [
+                '4', '5', '6', '7', '8', '9', 'numlock', 'slash', 'asterisk'
+            ]
         }
     },
     methods: {
@@ -63,14 +67,16 @@ export default {
 <style scoped>
 .keypad {
     display: grid;
-    grid-template-columns: 240px 240px 240px 240px;
-    grid-template-rows: 120px 240px 240px 240px 240px;
+    grid-template-columns: 165px 210px 210px 210px 165px;
+    grid-template-rows: 15px 210px 210px 210px 210px 210px 15px;
     grid-template-areas:
-        "title title title title"
-        "key7 key8 key9 key-minus"
-        "key4 key5 key6 key-plus"
-        "key1 key2 key3 key-enter"
-        "key0 key0 key-dot key-enter"
+        ". . . . ."
+        ". key-numlock key-slash key-asterisk ."
+        ". key-7 key-8 key-9 ."
+        ". key-4 key-5 key-6 ."
+        ". key-1 key-2 key-3 ."
+        ". key-0 key-0 key-dot ."
+        ". . . . .";
     ;
 }
 
@@ -82,60 +88,60 @@ export default {
     padding: 0;
 }
 
-.key0 {
-    grid-area: key0;
+.key-0 {
+    grid-area: key-0;
 }
 
-.key1 {
-    grid-area: key1;
+.key-1 {
+    grid-area: key-1;
 }
 
-.key2 {
-    grid-area: key2;
+.key-2 {
+    grid-area: key-2;
 }
 
-.key3 {
-    grid-area: key3;
+.key-3 {
+    grid-area: key-3;
 }
 
-.key4 {
-    grid-area: key4;
+.key-4 {
+    grid-area: key-4;
 }
 
-.key5 {
-    grid-area: key5;
+.key-5 {
+    grid-area: key-5;
 }
 
-.key6 {
-    grid-area: key6;
+.key-6 {
+    grid-area: key-6;
 }
 
-.key7 {
-    grid-area: key7;
+.key-7 {
+    grid-area: key-7;
 }
 
-.key8 {
-    grid-area: key8;
+.key-8 {
+    grid-area: key-8;
 }
 
-.key9 {
-    grid-area: key9;
-}
-
-.key-minus {
-    grid-area: key-minus;
-}
-
-.key-plus {
-    grid-area: key-plus;
-}
-
-.key-enter {
-    grid-area: key-enter;
+.key-9 {
+    grid-area: key-9;
 }
 
 .key-dot {
     grid-area: key-dot;
+}
+
+.key-numlock {
+    grid-area: key-numlock;
+}
+
+.key-slash {
+    grid-area: key-slash;
+}
+
+.key-asterisk {
+    grid-area: key-asterisk;
 }
 
 .card {
