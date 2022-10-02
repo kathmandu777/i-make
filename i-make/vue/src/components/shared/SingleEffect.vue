@@ -8,12 +8,12 @@
                 <img :src="facepaint.thumbnail_path_for_frontend" width="200" height="200" />
             </div>
 
-            <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.jpg"
+            <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
                 width="400" height="200">
             <img class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)" @click="setPage(page-1)"
-                src="/dist/back.jpg" width="200" height="200">
+                src="/dist/back.png" width="200" height="200">
             <img class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)" @click="setPage(page+1)"
-                src="/dist/next.jpg" width="200" height="200">
+                src="/dist/next.png" width="200" height="200">
         </div>
     </div>
 </template>
@@ -78,14 +78,6 @@ export default {
         ". key-0 key-0 key-dot ."
         ". . . . .";
     ;
-}
-
-.title {
-    grid-area: title;
-    font-size: 80px;
-    line-height: 120px;
-    margin: 0;
-    padding: 0;
 }
 
 .key-0 {
