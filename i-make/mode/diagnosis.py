@@ -73,7 +73,7 @@ class DiagnosisMode(BaseModeEffect):
                 self.node_id = 9
                 return self.SET_ANSWER_SUCCESS_MSG
             else:
-                self.node_id = 1
+                self.node_id = 18
                 return self.SET_ANSWER_SUCCESS_MSG
         elif self.node_id > 1 and self.node_id < 9:
             self.node_id = node["choices"][input_data]["next"]
