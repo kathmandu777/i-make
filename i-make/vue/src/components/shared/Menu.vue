@@ -2,7 +2,7 @@
     <div class="half-HD">
         <h2 class="title">iMake!</h2>
         <img class="settings" v-on:click="goToSettings()" v-shortkey.once="['*']" @shortkey="goToSettings()"
-            src="/dist/settings.jpg" width="180" height="180" />
+            src="/dist/setting.png" width="180" height="180" />
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
                 <label class="circle-number">{{index+1}} </label>

@@ -11,7 +11,7 @@
             <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.jpg"
                 width="400" height="200">
             <img class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)" @click="setPage(page-1)"
-                src="/dist/next.jpg" width="200" height="200">
+                src="/dist/back.jpg" width="200" height="200">
             <img class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)" @click="setPage(page+1)"
                 src="/dist/next.jpg" width="200" height="200">
         </div>
