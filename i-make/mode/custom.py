@@ -9,7 +9,7 @@ class CustomMode(BaseModeEffect):
     """Custom makeup mode."""
 
     CHOICE_IMAGES_DIR_PATH = "i-make/static/facepaints/custom"
-    ICON_PATH: str = "i-make/static/facepaints/custom/costom.png"
+    ICON_PATH: str = "i-make/static/facepaints/custom/custom.png"
 
     IGNORE_DIRS = ["skin"]
 
@@ -31,12 +31,12 @@ class CustomMode(BaseModeEffect):
         facepaints = [
             FacePaint(
                 filename=file,
-                image_dir_path=os.path.join(cls.CHOICE_IMAGES_DIR_PATH, dir),
+                image_dir_path=os.path.join(cls.CHOICE_IMAGES_DIR_PATH, dirname),
                 thumbnail_dir_path=cls.THUMBNAIL_IMAGES_DIR_PATH,
-                dir=dir,
+                dir=dirname,
             )
-            for dir in dirs
-            for file in os.listdir(os.path.join(cls.CHOICE_IMAGES_DIR_PATH, dir))
+            for dirname in dirs
+            for file in os.listdir(os.path.join(cls.CHOICE_IMAGES_DIR_PATH, dirname))
             if file.endswith(".png")
         ]
         return [
