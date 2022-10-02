@@ -1,11 +1,12 @@
 import argparse
 import base64
-import time
+from dataclasses import asdict
 
 import cv2
 import eel
 import numpy as np
 
+from .dataclasses import HSV, FacePaint
 from .libs.facemesh import FaceMesh
 from .mode import BaseModeEffectType, DiagnosisMode, Mode
 
@@ -14,6 +15,7 @@ class iMake:
     def __init__(self, camera_id: int = 0):
         self.face_mesh = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
+        self.skin_hsv = HSV(h=14, s=36, v=100)
 
     def set_mode(self, mode_name: str, *args, **kwargs):
         """Set mode.
@@ -25,48 +27,51 @@ class iMake:
 
     def get_mode_choices(self) -> list[dict[str, str]]:
         """Get mode choices."""
-        return [
-            {"name": mode.name, "icon_path": "../" + mode.value.ICON_PATH.replace("i-make/static/", "")}
-            for mode in Mode
-        ]
+        return [{"name": mode.name, "icon_path": mode.value.icon_path_for_frontend()} for mode in Mode]
 
-    def set_effect_image_from_path(self, effect_image_path: list[str] | str) -> None:
+    def set_effect_image(self, facepaints: list[dict] | dict) -> None:
         """Set effect image from path.
 
         Args:
-            effect_image_path (_type_): path to effect image
+            facepaints (_type_): facepaint
         """
-        if isinstance(effect_image_path, str):
-            effect_image_path = [effect_image_path]
-
-        effect_image_path = ["i-make/static/" + path.replace("../", "") for path in effect_image_path]
         if self.mode is None:
             raise ValueError("mode is not set")
-        self.mode.set_effect_image_from_path(effect_image_path)
+        if isinstance(facepaints, dict):
+            facepaints = [facepaints]
 
-    def set_skin_color(self, hue: float, sat: float, val: float):
+        self.mode.set_skin_color(self.skin_hsv)
+        self.mode.set_effect_image_by_facepaints([FacePaint(**facepaint) for facepaint in facepaints])
+
+    def get_choice_facepaints(self) -> list[dict]:
+        """Get choice facepaints.
+
+        Returns:
+            _type_: choice facepaints
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        return self.mode.get_choice_facepaints()
+
+    def set_skin_color(self, hsv: dict):
         """Set skin color.
 
         Args:
-           hue (float, optional): HSVのHueの数値 (o%~100%)
-           sat (float, optional): HSVのSaturationの数値 (o%~100%)
-           val (float, optional): HSVのVvalueの数値 (o%~100%)
+           hue (float, optional): HSVのHueの数値
+           sat (float, optional): HSVのSaturationの数値
+           val (float, optional): HSVのValueの数値
            include_alpha_ch (bool, optional): setする画像にアルファチャンネルを含むか否か
         """
-        if self.mode is None:
-            raise ValueError("mode is not set")
+        self.skin_hsv = HSV(**hsv)
 
-        self.mode.set_skin_color(hue, sat, val)
-
-    def get_choice_images(self) -> list[str]:
-        """Get choice images.
+    def get_hsv_palette(self) -> list[dict]:
+        """Get color palette.
 
         Returns:
-            _type_: choice images
+            _type_: color palette
         """
-        if self.mode is None:
-            raise ValueError("mode is not set")
-        return ["../" + file.replace("i-make/static/", "") for file in self.mode.get_choice_images_paths()]
+        palette = [HSV(h=14, s=36, v=100), HSV(h=27, s=36, v=100)]
+        return [asdict(hsv) for hsv in palette]
 
     def _process(self, mirror: bool = True) -> np.ndarray | None:
         """Process.
@@ -82,14 +87,13 @@ class iMake:
         if landmarks is None:
             return None
 
-        effect_w_alpha = self.mode.create_effect(image, landmarks)
+        effect_w_alpha = self.mode._create_effect(image, landmarks)
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
         cropped = self._crop_center_x(effect)
         return cv2.flip(cropped, 1) if mirror else cropped
 
     def start(self):
         while True:
-            start_time = time.time()
             eel.sleep(0.000001)
             effect = self._process()
             if effect is None:
@@ -98,9 +102,6 @@ class iMake:
             _, imencode_image = cv2.imencode(".jpg", effect)
             base64_image = base64.b64encode(imencode_image)
             eel.setBase64Image("data:image/jpg;base64," + base64_image.decode("ascii"))
-
-            elapsed_time = round((time.time() - start_time), 3)
-            eel.setFPS(1 / 1 / elapsed_time)
 
     def _get_image(self) -> np.ndarray | None:
         """Get image.
@@ -187,10 +188,11 @@ def main():
     eel.init("i-make/static")
     eel.expose(imake.set_mode)
     eel.expose(imake.get_mode_choices)
-    eel.expose(imake.set_effect_image_from_path)
+    eel.expose(imake.set_effect_image)
     eel.expose(imake.start)
-    eel.expose(imake.get_choice_images)
+    eel.expose(imake.get_choice_facepaints)
     eel.expose(imake.set_skin_color)
+    eel.expose(imake.get_hsv_palette)
     eel.expose(imake.get_config)
     eel.expose(imake.get_question_and_choices)
     eel.expose(imake.set_answer)
