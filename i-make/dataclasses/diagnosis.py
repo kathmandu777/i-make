@@ -12,6 +12,7 @@ class Choice:
 class Question:
     text: str
     choices: list[Choice]
+    function: str | None = None
 
 
 @dataclass

@@ -3,7 +3,10 @@
         <h2 class="mode">診断モード</h2>
         <h3 class="question">{{question}}</h3>
         <div class="container">
-            <div class="choice" v-for="(choice, index) in choices" :key="index">
+            <div v-if="!choices" class="choice">
+                <button class="css-button-arrow--sky" @click="setAnswer(-1)">自動診断する</button>
+            </div>
+            <div v-else class="choice" v-for="(choice, index) in choices" :key="index">
                 <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
                     class="css-button-arrow--sky">{{ index+1 }}:
                     {{choice}}</button>
@@ -33,6 +36,8 @@ export default {
             if (res==this.config.SET_ANSWER_ERROR_MSG)
                 alert(res);
             else if (res==this.config.DIAGNOSIS_FINISH_MSG) {
+                this.question="診断終了"
+                this.choices=[];
                 await window.eel.set_effect_image_by_settings()();
                 await window.eel.start();
             }

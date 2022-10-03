@@ -7,6 +7,7 @@ import eel
 import numpy as np
 
 from .dataclasses import HSV, FacePaint
+from .libs.diagnosis import EyeDiagnosis
 from .libs.facemesh import FaceMesh
 from .mode import BaseModeEffectType, CustomMode, DiagnosisMode, Mode
 
@@ -14,6 +15,7 @@ from .mode import BaseModeEffectType, CustomMode, DiagnosisMode, Mode
 class iMake:
     def __init__(self, camera_id: int = 0):
         self.face_mesh = FaceMesh(refine_landmarks=True)
+        self.camera_id = camera_id
         self.cap = cv2.VideoCapture(camera_id)
 
         self.skin_hsv = HSV(h=14, s=36, v=100)
@@ -184,6 +186,18 @@ class iMake:
             raise ValueError("mode is not set")
 
         assert isinstance(self.mode, DiagnosisMode)
+        if answer == -1:  # FIXME magic number
+            image = self._get_image()
+            if image is None:
+                raise ValueError("failed to get image")
+
+            landmarks = self.face_mesh.get_landmarks(image)
+            if landmarks is None:
+                raise ValueError("failed to get landmarks")
+
+            if self.mode.node.questions[self.mode.child_node_id].function == "eye_distance":  # FIXME: hard coding
+                result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks)
+                return self.mode.set_answer(1 if result else 0)  # FIXME
         return self.mode.set_answer(answer)
 
     def set_effect_image_by_settings(self):

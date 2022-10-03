@@ -491,6 +491,7 @@
         "questions": {
             "1": {
                 "text": "目の間隔は？",
+                "function": "eye_distance", // FIXME: hard coding
                 "choices": [{
                         "text": "近い",
                         "answer_id": "目が近い",

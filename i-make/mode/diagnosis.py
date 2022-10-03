@@ -37,14 +37,17 @@ class DiagnosisMode(BaseModeEffect):
         self.settings = {}
         super().__init__(*args, **kwargs)
 
-    def get_question_and_choices(self) -> tuple[str, list[str]]:
+    def get_question_and_choices(self) -> tuple[str, list[str] | None]:
         """Get question and choices.
 
         Returns:
             tuple[str, list[str]]: Question and choices.
         """
         question = self.node.questions[self.child_node_id]
-        choices = [choice.text for choice in question.choices]
+        if question.function is not None:
+            choices = None
+        else:
+            choices = [choice.text for choice in question.choices]
         return question.text, choices
 
     def set_answer(self, input_data: int) -> str:
