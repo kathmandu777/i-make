@@ -1,28 +1,29 @@
 <template>
     <div>
-        <div class="keypad">
-            <div v-for="(facepaint, index) in pageFacepaints" :key="index" :class="'key-' + keyClassNames[index]"
-                class="card">
-                <input type="radio" :id="index" :value="facepaint" v-model="selectedFacepaint" v-on:change="confirm()"
-                    v-shortkey.once="[keys[index]]" @shortkey="confirm(facepaint)" />
-                <img :src="facepaint.thumbnail_path_for_frontend" width="200" height="200" />
+        <div class="choices">
+            <div v-if="!selectedFacepaint" class="choices-page">
+                <Choices :choiceList="facepaints" @update="setFacepaint">
+                    <template v-slot:default="{choice}">
+                        <img :src="choice.thumbnail_path_for_frontend" width="200" height="200" />
+                    </template>
+                </Choices>
             </div>
-
-            <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
-                width="400" height="200">
-            <img class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)" @click="setPage(page-1)"
-                src="/dist/back.png" width="200" height="200">
-            <button class="key-2 card" v-shortkey.once="[2]" @shortkey="goToMode" @click="goToMode">Parts</button>
-            <img class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)" @click="setPage(page+1)"
-                src="/dist/next.png" width="200" height="200">
+            <div v-else-if="!selectedColor" class="choices-page">
+                <Choices :choiceList="hsvPalette" @update="setHSV">
+                    <template v-slot:default="{choice}">
+                        <div class="color-sample" :style="{backgroundColor: hsvToRgbCode(choice)} "></div>
+                    </template>
+                </Choices>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import Choices from '@/components/shared/Choices.vue'
 export default {
-    name: 'Custom',
-    props: ['args'],
+    name: "CustomChoices",
+    props: ["partKind"],
     data: function () {
         return {
             facepaints: [],
@@ -30,49 +31,46 @@ export default {
             selectedFacepaint: null,
             selectedColor: null,
             page: 0,
-
-            //UI
-            keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
-            keyClassNames: [
-                '4', '5', '6', '7', '8', '9', 'numlock', 'slash', 'asterisk'
-            ]
-        }
+        };
     },
     methods: {
         async getChoiceFacepaints() {
-            console.log(this.args)
-            this.facepaints=await window.eel.get_choice_facepaints_by_part(this.args[0].part_kind)()
+            this.facepaints=await window.eel.get_choice_facepaints_by_part(this.partKind.part_kind)();
         },
         async getHsvPalette() {
-            this.hsvPalette=await window.eel.get_hsv_palette()()
+            this.hsvPalette=await window.eel.get_hsv_palette()();
         },
         setFacepaint(facepaint) {
             if (facepaint)
-                this.selectedFacepaint=facepaint
+                this.selectedFacepaint=facepaint;
+            this.setFacepaintHSV();
         },
         setHSV(hsv) {
             if (hsv)
-                this.selectedColor=hsv
+                this.selectedColor=hsv;
+            this.setFacepaintHSV();
+        },
+        setFacepaintHSV() {
+            if (this.selectedFacepaint&&this.selectedColor) {
+                this.selectedFacepaint.hsv=this.selectedColor;
+                this.$emit('update', this.selectedFacepaint);
+            }
         },
         goToMenu() {
-            this.$emit('update-component', 'Menu')
-        },
-        goToMode() {
-            this.$emit('update-component', 'Custom')
+            this.$emit("update-component", "Menu");
         },
         hsvToRgbCode(hsv) {
             var h=hsv.h/60;
             var s=hsv.s/100;
             var v=hsv.v/100;
-            if (s==0) return [v*255, v*255, v*255];
-
+            if (s==0)
+                return [v*255, v*255, v*255];
             var rgb;
             var i=parseInt(h);
             var f=h-i;
             var v1=v*(1-s);
             var v2=v*(1-s*f);
             var v3=v*(1-s*(1-f));
-
             switch (i) {
                 case 0:
                 case 6:
@@ -99,101 +97,36 @@ export default {
     },
     computed: {
         pageFacepaints() {
-            return this.facepaints.slice(this.page*9, this.page*9+9)
+            return this.facepaints.slice(this.page*9, this.page*9+9);
         }
     },
     mounted: function () {
-        this.getChoiceFacepaints()
-        this.getHsvPalette()
-    }
+        this.getChoiceFacepaints();
+        this.getHsvPalette();
+    },
+    components: { Choices }
 }
 </script>
 
 <style scoped>
-.keypad {
+.choices {
     display: grid;
-    grid-template-columns: 165px 210px 210px 210px 165px;
-    grid-template-rows: 15px 210px 210px 210px 210px 210px 15px;
+    grid-template-columns: 210px 210px 210px;
+    grid-template-rows: 210px 210px 210px 210px;
     grid-template-areas:
-        ". . . . ."
-        ". key-numlock key-slash key-asterisk ."
-        ". key-7 key-8 key-9 ."
-        ". key-4 key-5 key-6 ."
-        ". key-1 key-2 key-3 ."
-        ". key-0 key-0 key-dot ."
-        ". . . . .";
-    ;
+        "key-numlock key-slush key-asterisk"
+        "key-7 key-8 key-9"
+        "key-4 key-5 key-6"
+        "key-1 key-2 key-3";
 }
 
-.key-0 {
-    grid-area: key-0;
+.choices-page {
+    grid-row: 1/5;
+    grid-column: 1/4;
 }
 
-.key-1 {
-    grid-area: key-1;
-}
-
-.key-2 {
-    grid-area: key-2;
-}
-
-.key-3 {
-    grid-area: key-3;
-}
-
-.key-4 {
-    grid-area: key-4;
-}
-
-.key-5 {
-    grid-area: key-5;
-}
-
-.key-6 {
-    grid-area: key-6;
-}
-
-.key-7 {
-    grid-area: key-7;
-}
-
-.key-8 {
-    grid-area: key-8;
-}
-
-.key-9 {
-    grid-area: key-9;
-}
-
-.key-dot {
-    grid-area: key-dot;
-}
-
-.key-numlock {
-    grid-area: key-numlock;
-}
-
-.key-slash {
-    grid-area: key-slash;
-}
-
-.key-asterisk {
-    grid-area: key-asterisk;
-}
-
-.card {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    display: block;
-    padding: 0;
-    margin: 5px;
-}
-
-.card>input {
-    display: none;
-}
-
-.card:has(input:checked) {
-    border: 2px solid #000;
+.color-sample {
+    width: 200px;
+    height: 200px;
 }
 </style>

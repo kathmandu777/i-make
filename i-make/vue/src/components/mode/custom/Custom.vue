@@ -1,67 +1,68 @@
 <template>
     <div>
         <div class="keypad">
-            <div v-for="(partKind, index) in pagePartKinds" :key="index" :class="'key-' + keyClassNames[index]"
-                class="card">
-                <input type="radio" :id="index" :value="partKind" v-model="selectedPartKind" v-on:change="confirm()"
-                    v-shortkey.once="[keys[index]]" @shortkey="confirm(partKind)" />
-                <img :src="partKind.thumbnail_path_for_frontend" width="200" height="200" />
+            <div v-if="!selectedPartKind" class="choices-page">
+                <Choices :choiceList="partKinds" @update="setPart">
+                    <template v-slot:default="{choice}">
+                        <img :src="choice.thumbnail_path_for_frontend" width="200" height="200" />
+                    </template>
+                </Choices>
+            </div>
+            <div v-else class="choices-page">
+                <CustomChoices :partKind="selectedPartKind" @update="pushFacepaints"></CustomChoices>
             </div>
 
             <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
                 width="400" height="200">
-            <img class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)" @click="setPage(page-1)"
-                src="/dist/back.png" width="200" height="200">
-            <img class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)" @click="setPage(page+1)"
-                src="/dist/next.png" width="200" height="200">
+
+            <button v-if="!!selectedPartKind" class="key-dot card" v-shortkey.once="['.']" @shortkey="goToParts()"
+                @click="goToParts">Parts</button>
         </div>
     </div>
 </template>
 
 <script>
+import Choices from '@/components/shared/Choices.vue'
+import CustomChoices from './CustomChoices.vue';
 export default {
-    name: 'CustomMode',
+    name: "CustomMode",
     data: function () {
         return {
             partKinds: [],
-            selectedPartKind: [],
-            page: 0,
-
-            // UI
-            keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
-            keyClassNames: [
-                '4', '5', '6', '7', '8', '9', 'numlock', 'slash', 'asterisk'
-            ]
-        }
+            selectedPartKind: null,
+            selectedFacepaints: [],
+        };
     },
     methods: {
         async getPartKinds() {
-            this.partKinds=await window.eel.get_part_kinds()()
-        },
-        async confirm(partKind) {
-            if (partKind)
-                this.selectedPartKind=partKind
-            this.$emit('update-component', 'CustomChoices', this.selectedPartKind)
-        },
-        setPage(page) {
-            if (page<0)
-                page=0
-            else if (page>Math.floor((this.partKinds.length-1)/9))
-                page=Math.floor((this.partKinds.length-1)/9)
-            this.page=page
+            this.partKinds=await window.eel.get_part_kinds()();
         },
         goToMenu() {
-            this.$emit('update-component', 'Menu')
-        }
-    },
-    computed: {
-        pagePartKinds() {
-            return this.partKinds.slice(this.page*9, this.page*9+9)
-        }
+            this.$emit("update-component", "Menu");
+        },
+        setPart(partKind) {
+            if (partKind)
+                this.selectedPartKind=partKind;
+        },
+        pushFacepaints(facepaint) {
+            if (facepaint)
+                this.selectedFacepaints.push(facepaint);
+            this.selectedPartKind=null;
+            this.confirm();
+        },
+        goToParts() {
+            this.selectedPartKind=null;
+
+        },
+        async confirm() {
+            await window.eel.set_effect_image(this.selectedFacepaints)();
+            await window.eel.start();
+        },
     },
     mounted: function () {
-        this.getPartKinds()
-    }
+        this.getPartKinds();
+    },
+    components: { Choices, CustomChoices }
 }
 </script>
 
@@ -135,6 +136,11 @@ export default {
 
 .key-asterisk {
     grid-area: key-asterisk;
+}
+
+.choices-page {
+    grid-row: 2/6;
+    grid-column: 2/5;
 }
 
 .card {
