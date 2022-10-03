@@ -6,7 +6,7 @@
             </keep-alive>
         </section>
         <section class="right">
-            <component :is="rightComponent" @update-component="setRightComponent"></component>
+            <component :is="rightComponent" @update-component="setRightComponent" :args="args"></component>
         </section>
     </div>
 </template>
@@ -16,22 +16,27 @@ import Video from '@/components/shared/Video.vue'
 import Menu from '@/components/shared/Menu.vue';
 import SkinColor from '@/components/shared/SkinColor.vue';
 import Event from '@/components/mode/Event.vue';
-import Custom from '@/components/mode/Custom.vue';
+import Easy from '@/components/mode/Easy.vue';
+import Custom from '@/components/mode/custom/Custom.vue';
+import CustomChoices from '@/components/mode/custom/CustomChoices.vue';
+import Practice from '@/components/mode/Practice.vue';
 
 export default {
     name: "Settings",
     data: function () {
         return {
             leftComponent: Video,
-            rightComponent: Menu
+            rightComponent: Menu,
+            args: null
         };
     },
     methods: {
-        setRightComponent(component) {
+        setRightComponent(component, ...args) {
+            this.args=args
             this.rightComponent=component
         }
     },
-    components: { Video, Menu, SkinColor, Event, Custom }
+    components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice }
 }
 </script>
 

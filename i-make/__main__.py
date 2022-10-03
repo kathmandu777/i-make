@@ -8,7 +8,7 @@ import numpy as np
 
 from .dataclasses import HSV, FacePaint
 from .libs.facemesh import FaceMesh
-from .mode import BaseModeEffectType, DiagnosisMode, Mode
+from .mode import BaseModeEffectType, CustomMode, DiagnosisMode, Mode
 
 
 class iMake:
@@ -177,6 +177,34 @@ class iMake:
         assert isinstance(self.mode, DiagnosisMode)
         return self.mode.set_answer(answer)
 
+    ### Custom
+    def get_part_kinds(self) -> list[dict]:
+        """Get part kinds.
+
+        Returns:
+            _type_: part kinds
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+
+        assert isinstance(self.mode, CustomMode)
+        return self.mode.get_part_kinds()
+
+    def get_choice_facepaints_by_part(self, part: str) -> list[dict]:
+        """Get choice facepaints by part.
+
+        Args:
+            part (_type_): part
+
+        Returns:
+            _type_: choice facepaints
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+
+        assert isinstance(self.mode, CustomMode)
+        return self.mode.get_choice_facepaints_by_part(part)
+
 
 def main():
     parser = argparse.ArgumentParser(description="iMake!")
@@ -196,6 +224,9 @@ def main():
     eel.expose(imake.get_config)
     eel.expose(imake.get_question_and_choices)
     eel.expose(imake.set_answer)
+    eel.expose(imake.get_part_kinds)
+    eel.expose(imake.get_choice_facepaints_by_part)
+
     eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
 

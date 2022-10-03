@@ -1,11 +1,11 @@
 <template>
     <div>
         <div class="keypad">
-            <div v-for="(hsv, index) in currentColorPalette" :key="index" :class="'key-' + keyClassNames[index]"
+            <div v-for="(facepaint, index) in pageFacepaints" :key="index" :class="'key-' + keyClassNames[index]"
                 class="card">
-                <input type="radio" :id="index" :value="hsv" v-model="selectedHSV" v-on:change="confirm()"
-                    v-shortkey.once="[keys[index]]" @shortkey="confirm(hsv)" />
-                <div class="color-sample" :style="{backgroundColor: hsvToRgbCode(hsv)} "></div>
+                <input type="radio" :id="index" :value="facepaint" v-model="selectedFacepaint" v-on:change="confirm()"
+                    v-shortkey.once="[keys[index]]" @shortkey="confirm(facepaint)" />
+                <img :src="facepaint.thumbnail_path_for_frontend" width="200" height="200" />
             </div>
 
             <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
@@ -20,11 +20,11 @@
 
 <script>
 export default {
-    name: 'SkinColor',
+    name: 'SingleEffect',
     data: function () {
         return {
-            hsvPalette: [],
-            selectedHSV: null,
+            facepaints: [],
+            selectedFacepaint: [],
             page: 0,
             keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
             keyClassNames: [
@@ -33,68 +33,33 @@ export default {
         }
     },
     methods: {
-        async getHSVPalette() {
-            this.hsvPalette=await window.eel.get_hsv_palette()()
+        async getChoiceFacepaints() {
+            this.facepaints=await window.eel.get_choice_facepaints()()
         },
-        async confirm(hsv) {
-            if (hsv)
-                this.selectedHSV=hsv
-            await window.eel.set_skin_color(this.selectedHSV)()
+        async confirm(facepaints) {
+            if (facepaints)
+                this.selectedFacepaint=facepaints
+            await window.eel.set_effect_image(this.selectedFacepaint)()
+            await window.eel.start()
         },
         setPage(page) {
             if (page<0)
                 page=0
-            else if (page>Math.floor((this.hsvPalette.length-1)/9))
-                page=Math.floor((this.hsvPalette.length-1)/9)
+            else if (page>Math.floor((this.facepaints.length-1)/9))
+                page=Math.floor((this.facepaints.length-1)/9)
             this.page=page
         },
         goToMenu() {
-            this.$emit('update-component', 'Menu');
-        },
-        hsvToRgbCode(hsv) {
-            var h=hsv.h/60;
-            var s=hsv.s/100;
-            var v=hsv.v/100;
-            if (s==0) return [v*255, v*255, v*255];
-
-            var rgb;
-            var i=parseInt(h);
-            var f=h-i;
-            var v1=v*(1-s);
-            var v2=v*(1-s*f);
-            var v3=v*(1-s*(1-f));
-
-            switch (i) {
-                case 0:
-                case 6:
-                    rgb=[v, v3, v1];
-                    break;
-                case 1:
-                    rgb=[v2, v, v1];
-                    break;
-                case 2:
-                    rgb=[v1, v, v3];
-                    break;
-                case 3:
-                    rgb=[v1, v2, v];
-                    break;
-                case 4:
-                    rgb=[v3, v1, v];
-                    break;
-                case 5:
-                    rgb=[v, v1, v2];
-                    break;
-            }
-            return "rgb("+parseInt(rgb[0]*255)+","+parseInt(rgb[1]*255)+","+parseInt(rgb[2]*255)+")";
+            this.$emit('update-component', 'Menu')
         }
     },
     computed: {
-        currentColorPalette() {
-            return this.hsvPalette.slice(this.page*9, this.page*9+9)
+        pageFacepaints() {
+            return this.facepaints.slice(this.page*9, this.page*9+9)
         }
     },
     mounted: function () {
-        this.getHSVPalette()
+        this.getChoiceFacepaints()
     }
 }
 </script>
@@ -185,10 +150,5 @@ export default {
 
 .card:has(input:checked) {
     border: 2px solid #000;
-}
-
-.color-sample {
-    width: 200px;
-    height: 200px;
 }
 </style>
