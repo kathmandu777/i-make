@@ -12,6 +12,7 @@ class CustomMode(BaseModeEffect):
     ICON_PATH: str = "i-make/static/facepaints/custom/custom.png"
 
     THUMBNAIL_IMAGE_NAME = "thumbnail.png"
+    THUMBNAIL_DIR_NAME = "thumbnails"
 
     IGNORE_DIRS = ["skin"]
 
@@ -32,6 +33,7 @@ class CustomMode(BaseModeEffect):
             FacePaint(
                 filename=file,
                 image_dir_path=os.path.join(cls.CHOICE_IMAGES_DIR_PATH, part_kind),
+                thumbnail_dir_path=os.path.join(cls.CHOICE_IMAGES_DIR_PATH, part_kind, cls.THUMBNAIL_DIR_NAME),
                 part_kind=part_kind,
             )
             for file in os.listdir(os.path.join(cls.CHOICE_IMAGES_DIR_PATH, part_kind))
