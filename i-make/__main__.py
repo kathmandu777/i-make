@@ -214,18 +214,9 @@ def main():
     imake = iMake(camera_id=args.camera_id)
 
     eel.init("i-make/static")
-    eel.expose(imake.set_mode)
-    eel.expose(imake.get_mode_choices)
-    eel.expose(imake.set_effect_image)
-    eel.expose(imake.start)
-    eel.expose(imake.get_choice_facepaints)
-    eel.expose(imake.set_skin_color)
-    eel.expose(imake.get_hsv_palette)
-    eel.expose(imake.get_config)
-    eel.expose(imake.get_question_and_choices)
-    eel.expose(imake.set_answer)
-    eel.expose(imake.get_part_kinds)
-    eel.expose(imake.get_choice_facepaints_by_part)
+    for attr in dir(imake):
+        if callable(getattr(imake, attr)) and not attr.startswith("_"):
+            eel.expose(getattr(imake, attr))
 
     eel.start("dist/index.html", mode="chrome", size=(1920, 1080), port=8080, shutdown_delay=0, block=True)
 
