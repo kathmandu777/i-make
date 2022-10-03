@@ -6,7 +6,7 @@
             <div class="choice" v-for="(choice, index) in choices" :key="index">
                 <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
                     class="css-button-arrow--sky">{{ index+1 }}:
-                    {{choice.answer}}</button>
+                    {{choice}}</button>
             </div>
         </div>
     </div>
@@ -27,13 +27,15 @@ export default {
             const res=await window.eel.get_question_and_choices()();
             this.question=res[0];
             this.choices=res[1];
-            if (res[0]==this.config.DIAGNOSIS_FINISH_MSG)
-                await window.eel.start();
         },
         async setAnswer(index) {
             const res=await window.eel.set_answer(index)();
             if (res==this.config.SET_ANSWER_ERROR_MSG)
                 alert(res);
+            else if (res==this.config.DIAGNOSIS_FINISH_MSG) {
+                await window.eel.set_effect_image_by_settings()();
+                await window.eel.start();
+            }
             else
                 this.getQuestionAndChoices();
         },
@@ -56,7 +58,7 @@ export default {
 }
 
 .question {
-    font-size: 128px;
+    font-size: 70px;
     margin: 0;
     padding: 0;
     text-align: center;
@@ -80,7 +82,7 @@ export default {
     height: 100%;
     color: #fff;
     padding: 30px 60px;
-    font-size: 64px;
+    font-size: 40px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;

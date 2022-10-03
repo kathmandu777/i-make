@@ -162,7 +162,7 @@ class iMake:
         self.face_mesh.close()
 
     ### Diagnosis
-    def get_question_and_choices(self):
+    def get_question_and_choices(self) -> tuple[str, list[str]]:
         """Get question and choices.
 
         Returns:
@@ -185,6 +185,15 @@ class iMake:
 
         assert isinstance(self.mode, DiagnosisMode)
         return self.mode.set_answer(answer)
+
+    def set_effect_image_by_settings(self):
+        """Set effect image by settings."""
+        if self.mode is None:
+            raise ValueError("mode is not set")
+
+        assert isinstance(self.mode, DiagnosisMode)
+        self.mode.set_skin_color(self.skin_hsv)
+        self.mode.set_effect_image_by_settings()
 
     ### Custom
     def get_part_kinds(self) -> list[dict]:
