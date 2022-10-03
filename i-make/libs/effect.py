@@ -57,27 +57,6 @@ class Effect:
             raise ValueError("Effect image size must be 1024x1024")
         self.effect_image = effect_image
 
-    # def render_effect_on_target_image(
-    #     self, target_image: np.ndarray, target_landmarks: np.ndarray, mirror: bool = False
-    # ) -> np.ndarray:
-    #     """Render effect on the target image. Otherwise, the effect will be
-    #     rendered on a black background(BGRA).
-
-    #     Args:
-    #         target_image (np.ndarray): 描画する画像(カメラ画像)
-    #         target_landmarks (np.ndarray): target_image上でのランドマークの座標
-    #         mirror (bool, optional): ミラー処理をするかどうか. Defaults to False.
-
-    #     Returns:
-    #         np.array: 描画された映像
-    #     """
-
-    #     effect = self.create_effect(target_image, target_landmarks)
-    #     rendered = self._overlay_image(target_image, effect)
-    #     if mirror:
-    #         return cv2.flip(rendered, 1)
-    #     return rendered
-
     def _create_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray) -> np.ndarray:
         """Creates effect image that can be rendered into an image the size of
         the target image.
@@ -127,35 +106,6 @@ class Effect:
                 overlay_crop += cropped_triangle
 
         return overlay
-
-    # def _overlay_image(
-    #     self, background_image: np.ndarray, foreground_image: np.ndarray, blur: float = 0
-    # ) -> np.ndarray:
-    #     """Take the two images, and produce an image where foreground image
-    #     overlays the background image.
-
-    #     Args:
-    #         background_image (np.ndarray): background BRG or BGRA image with 0-255 values, transparency will be ignored in the result
-    #         foreground_image (np.ndarray): foreground BGRA image with 0-255 values
-    #         blur (int, optional): blur. Defaults to 0.
-
-    #     Returns:
-    #         np.ndarray: BGR image with foreground image overlaying the background image
-    #     """
-
-    #     mask = foreground_image[:, :, 3]
-
-    #     if blur > 0:
-    #         mask = cv2.medianBlur(mask, blur)
-
-    #     mask_inv = 255 - mask
-
-    #     overlayed = foreground_image[:, :, :3] * np.dstack([mask / 255.0] * 3) + background_image[
-    #         :, :, :3
-    #     ] * np.dstack([mask_inv / 255.0] * 3)
-    #     overlayed = overlayed.astype(np.uint8)
-
-    #     return overlayed
 
     def _crop_triangle_bb(self, image: np.ndarray, triangle: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Create a triangle bounding box and return cropped image.
