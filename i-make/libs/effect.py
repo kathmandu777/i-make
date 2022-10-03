@@ -19,7 +19,7 @@ class Effect:
 
         Args:
             effect_image (np.ndarray): effect image (1024 x 1024)
-            use_filter_points (bool, optional): use filter landmarks. Defaults to True.
+            use_filter_points (bool, optional): use filter landmarks. Defaults to True. (If False, use all landmarks)
         """
         if effect_image is not None:
             self.set_effect_image(effect_image)
