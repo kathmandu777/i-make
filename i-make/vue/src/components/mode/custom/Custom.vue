@@ -37,8 +37,9 @@ export default {
         async getPartKinds() {
             this.partKinds=await window.eel.get_part_kinds()();
         },
-        goToMenu() {
-            this.$emit("update-component", "Menu");
+        async goToMenu() {
+            await window.eel.stop()();
+            this.$emit("update-component", "Menu", { "resetVideoSrc": true });
         },
         setPart(partKind) {
             if (partKind)

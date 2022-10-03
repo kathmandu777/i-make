@@ -2,11 +2,11 @@
     <div class="full-HD">
         <section class="left">
             <keep-alive>
-                <component :is="leftComponent"></component>
+                <Video />
             </keep-alive>
         </section>
         <section class="right">
-            <component :is="rightComponent" @update-component="setRightComponent" :args="args"></component>
+            <component :is="rightComponent" @update-component="setRightComponent"></component>
         </section>
     </div>
 </template>
@@ -25,14 +25,11 @@ export default {
     name: "Settings",
     data: function () {
         return {
-            leftComponent: Video,
             rightComponent: Menu,
-            args: null
         };
     },
     methods: {
-        setRightComponent(component, ...args) {
-            this.args=args
+        setRightComponent(component) {
             this.rightComponent=component
         }
     },

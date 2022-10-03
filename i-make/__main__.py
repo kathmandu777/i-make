@@ -15,7 +15,9 @@ class iMake:
     def __init__(self, camera_id: int = 0):
         self.face_mesh = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
+
         self.skin_hsv = HSV(h=14, s=36, v=100)
+        self.update_image = False
 
     def set_mode(self, mode_name: str, *args, **kwargs):
         """Set mode.
@@ -93,15 +95,19 @@ class iMake:
         return cv2.flip(cropped, 1) if mirror else cropped
 
     def start(self):
-        while True:
-            eel.sleep(0.000001)
+        self.update_image = True
+        while self.update_image:
+            eel.sleep(0.000000001)
             effect = self._process()
             if effect is None:
                 continue
 
             _, imencode_image = cv2.imencode(".jpg", effect)
             base64_image = base64.b64encode(imencode_image)
-            eel.setBase64Image("data:image/jpg;base64," + base64_image.decode("ascii"))
+            eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
+
+    def stop(self):
+        self.update_image = False
 
     def _get_image(self) -> np.ndarray | None:
         """Get image.

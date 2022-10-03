@@ -48,8 +48,9 @@ export default {
                 page=Math.floor((this.hsvPalette.length-1)/9)
             this.page=page
         },
-        goToMenu() {
-            this.$emit('update-component', 'Menu');
+        async goToMenu() {
+            await window.eel.stop()();
+            this.$emit('update-component', 'Menu', { "resetVideoSrc": true });
         },
         hsvToRgbCode(hsv) {
             var h=hsv.h/60;
