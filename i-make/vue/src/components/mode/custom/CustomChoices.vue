@@ -56,8 +56,9 @@ export default {
                 this.$emit('update', this.selectedFacepaint);
             }
         },
-        goToMenu() {
-            this.$emit("update-component", "Menu");
+        async goToMenu() {
+            await window.eel.stop()();
+            this.$emit("update-component", "Menu", { "resetVideoSrc": true });
         },
         hsvToRgbCode(hsv) {
             var h=hsv.h/60;

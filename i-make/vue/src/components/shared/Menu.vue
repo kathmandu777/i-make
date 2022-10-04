@@ -53,7 +53,7 @@ export default {
     grid-area: title;
     font-size: 120px;
     line-height: 180px;
-    margin: 0;
+    margin: 0 20px;
     padding: 0;
 }
 

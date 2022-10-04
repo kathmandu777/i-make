@@ -2,11 +2,11 @@
     <div class="full-HD">
         <section class="left">
             <keep-alive>
-                <component :is="leftComponent"></component>
+                <Video />
             </keep-alive>
         </section>
         <section class="right">
-            <component :is="rightComponent" @update-component="setRightComponent" :args="args"></component>
+            <component :is="rightComponent" @update-component="setRightComponent"></component>
         </section>
     </div>
 </template>
@@ -20,23 +20,21 @@ import Easy from '@/components/mode/Easy.vue';
 import Custom from '@/components/mode/custom/Custom.vue';
 import CustomChoices from '@/components/mode/custom/CustomChoices.vue';
 import Practice from '@/components/mode/Practice.vue';
+import Diagnosis from '@/components/mode/Diagnosis.vue';
 
 export default {
     name: "Settings",
     data: function () {
         return {
-            leftComponent: Video,
             rightComponent: Menu,
-            args: null
         };
     },
     methods: {
-        setRightComponent(component, ...args) {
-            this.args=args
+        setRightComponent(component) {
             this.rightComponent=component
         }
     },
-    components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice }
+    components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice, Diagnosis }
 }
 </script>
 
@@ -55,5 +53,12 @@ export default {
 
 .right {
     grid-area: right;
+}
+</style>
+
+<style>
+body {
+    padding: 0;
+    margin: 0;
 }
 </style>

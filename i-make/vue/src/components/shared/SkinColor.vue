@@ -1,9 +1,9 @@
 <template>
     <div>
         <div class="keypad">
-            <div v-for="(hsv, index) in currentColorPalette" :key="index" :class="'key-' + keyClassNames[index]"
+            <div v-for="(hsv, index) in currentColorPalette" :key="page*9+index" :class="'key-' + keyClassNames[index]"
                 class="card">
-                <input type="radio" :id="index" :value="hsv" v-model="selectedHSV" v-on:change="confirm()"
+                <input type="radio" :id="page*9+index" :value="hsv" v-model="selectedHSV" v-on:change="confirm()"
                     v-shortkey.once="[keys[index]]" @shortkey="confirm(hsv)" />
                 <div class="color-sample" :style="{backgroundColor: hsvToRgbCode(hsv)} "></div>
             </div>
@@ -48,8 +48,9 @@ export default {
                 page=Math.floor((this.hsvPalette.length-1)/9)
             this.page=page
         },
-        goToMenu() {
-            this.$emit('update-component', 'Menu');
+        async goToMenu() {
+            await window.eel.stop()();
+            this.$emit('update-component', 'Menu', { "resetVideoSrc": true });
         },
         hsvToRgbCode(hsv) {
             var h=hsv.h/60;

@@ -1,5 +1,5 @@
 <template>
-    <img id="video" width="960" height="1080" v-bind:src="videosrc">
+    <img id="video" width="960" height="1080" :src="videoSrc">
 </template>
 
 <script>
@@ -7,16 +7,16 @@ export default {
     name: 'Video',
     data: function () {
         return {
-            videosrc: "/dist/woman.jpg"
+            videoSrc: "/dist/woman.jpg",
         }
     },
     methods: {
-        setBase64Image(base64image) {
-            this.videosrc=base64image;
+        setVideoSrc(value) {
+            this.videoSrc=value
         }
     },
     mounted: function () {
-        window.eel.expose(this.setBase64Image, 'setBase64Image')
+        window.eel.expose(this.setVideoSrc, 'setVideoSrc')
     }
 }
 </script>
