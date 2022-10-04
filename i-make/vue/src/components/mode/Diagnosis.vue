@@ -15,8 +15,7 @@
             </div>
             <div v-else class="choice" v-for="(choice, index) in choices" :key="index">
                 <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
-                    class="css-button-arrow--sky">{{ index+1 }}:
-                    {{choice}}</button>
+                    class="css-button-arrow--sky">{{choice}}</button>
             </div>
         </div>
     </div>
