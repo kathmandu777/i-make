@@ -14,6 +14,8 @@
                 @click="setPage(page-1)" src="/dist/back.png" width="200" height="200">
             <img v-if="canGoToNextPage" class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)"
                 @click="setPage(page+1)" src="/dist/next.png" width="200" height="200">
+
+            <img class="key-2 card" :src="modeIconPath" width="200" height="200">
         </div>
     </div>
 </template>
@@ -21,6 +23,7 @@
 <script>
 export default {
     name: 'SingleEffect',
+    props: ['modeIconPath'],
     data: function () {
         return {
             facepaints: [],
@@ -29,7 +32,7 @@ export default {
             keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
             keyClassNames: [
                 '4', '5', '6', '7', '8', '9', 'numlock', 'slash', 'asterisk'
-            ]
+            ],
         }
     },
     methods: {

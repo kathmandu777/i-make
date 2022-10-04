@@ -35,7 +35,14 @@ class iMake:
 
     def get_mode_choices(self) -> list[dict[str, str]]:
         """Get mode choices."""
-        return [{"name": mode.name, "icon_path": mode.value.icon_path_for_frontend()} for mode in Mode]
+        return [
+            {
+                "name": mode.name,
+                "icon_path": mode.value.icon_path_for_frontend(),
+                "menu_image_path": mode.value.menu_image_path_for_frontend(),
+            }
+            for mode in Mode
+        ]
 
     def set_effect_image(self, facepaints: list[dict] | dict) -> None:
         """Set effect image from path.
