@@ -19,7 +19,6 @@ class DiagnosisMode(BaseModeEffect):
     SET_ANSWER_ERROR_MSG = "Invalid input."
     DIAGNOSIS_FINISH_MSG = "診断終了"
 
-    DEFAULT_HSV = HSV(h=0, s=0, v=0)
     SUB_HSV_DIFF = (0.0, 25.0, -10.0)
 
     CALL_FUNC_ID: int = -1
@@ -91,17 +90,16 @@ class DiagnosisMode(BaseModeEffect):
             if "color" in key:
                 continue
 
+            color: tuple[float, float, float] | None = self.settings.get(f'{key.replace("-sub","")}-color')
+            if color is not None:
+                if "-sub" in key:
+                    color = tuple([x + y for x, y in zip(color, self.SUB_HSV_DIFF)])
+                hsv = HSV(h=color[0], s=color[1], v=color[2])
+            else:
+                hsv = None
+
             for value in values:
                 dir_path, filename = value.rsplit("/", 1)
-
-                color: tuple[float, float, float] | None = self.settings.get(f'{key.replace("-sub","")}-color')
-                if color is None:
-                    hsv = self.DEFAULT_HSV
-                else:
-                    if "-sub" in key:
-                        color = tuple([x + y for x, y in zip(color, self.SUB_HSV_DIFF)])
-                    hsv = HSV(h=color[0], s=color[1], v=color[2])
-
                 facepaints.append(FacePaint(filename=filename, image_dir_path=dir_path, hsv=hsv))
 
         self.set_effect_image_by_facepaints(facepaints)
