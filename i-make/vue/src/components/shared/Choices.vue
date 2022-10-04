@@ -120,7 +120,6 @@ export default {
 }
 
 .card {
-    border: 1px solid #ccc;
     border-radius: 5px;
     display: block;
     padding: 0;
@@ -132,6 +131,6 @@ export default {
 }
 
 .card:has(input:checked) {
-    border: 2px solid #000;
+    border: 2px solid lightgreen;
 }
 </style>

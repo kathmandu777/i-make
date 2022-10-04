@@ -4,7 +4,7 @@
             <div v-if="!selectedPartKind" class="choices-page">
                 <Choices :choiceList="partKinds" @update="setPart">
                     <template v-slot:default="{choice}">
-                        <img :src="choice.thumbnail_path_for_frontend" width="200" height="200" />
+                        <img :src="choice.thumbnail_path_for_frontend" width="195" height="195" />
                     </template>
                 </Choices>
             </div>
@@ -15,8 +15,9 @@
             <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
                 width="400" height="200">
 
-            <button v-if="!!selectedPartKind" class="key-dot card" v-shortkey.once="['.']" @shortkey="goToParts()"
-                @click="goToParts">Parts</button>
+            <!-- <button v-if="!!selectedPartKind" class="key-dot card" v-shortkey.once="['.']" @shortkey="goToParts()"
+                @click="goToParts">Parts</button> -->
+            <!-- TODO: 戻るボタン -->
         </div>
     </div>
 </template>
@@ -51,10 +52,9 @@ export default {
             this.selectedPartKind=null;
             this.confirm();
         },
-        goToParts() {
-            this.selectedPartKind=null;
-
-        },
+        // goToParts() {
+        //     this.selectedPartKind=null;
+        // },
         async confirm() {
             await window.eel.set_effect_image(this.selectedFacepaints)();
             await window.eel.start();
@@ -145,7 +145,6 @@ export default {
 }
 
 .card {
-    border: 1px solid #ccc;
     border-radius: 5px;
     display: block;
     padding: 0;
@@ -157,6 +156,6 @@ export default {
 }
 
 .card:has(input:checked) {
-    border: 2px solid #000;
+    border: 2px solid lightgreen;
 }
 </style>
