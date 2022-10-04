@@ -2,9 +2,10 @@
     <div>
         <h2 class="mode">診断モード</h2>
         <h3 class="question">{{question}}</h3>
+        <h3 v-if="!choices" class="result">{{result}}</h3>
         <div class="container">
             <div v-if="!choices" class="choice">
-                <button class="css-button-arrow--sky" @click="setAnswer(config.CALL_FUNC_ID)">自動診断する</button>
+                <button class="css-button-arrow--sky" @click="setAnswer(config.CALL_FUNC_ID)">次へ</button>
             </div>
             <div v-else class="choice" v-for="(choice, index) in choices" :key="index">
                 <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
@@ -21,6 +22,7 @@ export default {
     data: function () {
         return {
             question: '',
+            result: '',
             choices: [],
             config: {}
         };
@@ -30,6 +32,9 @@ export default {
             const res=await window.eel.get_question_and_choices()();
             this.question=res[0];
             this.choices=res[1];
+
+            if (!this.choices)
+                await window.eel.start_diagnosis_func()();
         },
         async setAnswer(index) {
             const res=await window.eel.set_answer(index)();
@@ -46,9 +51,13 @@ export default {
         },
         async getConfig() {
             this.config=await window.eel.get_config()();
+        },
+        setResult(value) {
+            this.result=value;
         }
     },
     mounted: function () {
+        window.eel.expose(this.setResult, 'setResult');
         this.getConfig();
         this.getQuestionAndChoices();
     }
