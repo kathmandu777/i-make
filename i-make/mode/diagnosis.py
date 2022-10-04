@@ -9,7 +9,8 @@ from ..mode.base import BaseModeEffect
 class DiagnosisMode(BaseModeEffect):
     """Diagnosis makeup mode."""
 
-    ICON_PATH: str = "i-make/static/facepaints/diagnosis/diagnosis.png"
+    ICON_PATH: str = "i-make/static/facepaints/diagnosis/icon.png"
+    MENU_IMAGE_PATH: str = "i-make/static/facepaints/diagnosis/menu.png"
 
     DATA_PATH: str = "i-make/static/facepaints/diagnosis/data.jsonc"
     FIRST_NODE_ID: str = "first"

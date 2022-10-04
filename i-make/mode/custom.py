@@ -9,7 +9,8 @@ class CustomMode(BaseModeEffect):
     """Custom makeup mode."""
 
     CHOICE_IMAGES_DIR_PATH = "i-make/static/facepaints/custom"
-    ICON_PATH: str = "i-make/static/facepaints/custom/custom.png"
+    ICON_PATH: str = "i-make/static/facepaints/custom/icon.png"
+    MENU_IMAGE_PATH: str = "i-make/static/facepaints/custom/menu.png"
 
     THUMBNAIL_IMAGE_NAME = "thumbnail.png"
     THUMBNAIL_DIR_NAME = "thumbnails"

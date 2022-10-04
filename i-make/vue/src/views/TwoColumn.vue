@@ -6,7 +6,7 @@
             </keep-alive>
         </section>
         <section class="right">
-            <component :is="rightComponent" @update-component="setRightComponent"></component>
+            <component :is="rightComponent" @update-component="setRightComponent" :kwargs="kwargs"></component>
         </section>
     </div>
 </template>
@@ -27,11 +27,13 @@ export default {
     data: function () {
         return {
             rightComponent: Menu,
+            kwargs: {},
         };
     },
     methods: {
-        setRightComponent(component) {
+        setRightComponent(component, kwargs) {
             this.rightComponent=component
+            this.kwargs=kwargs
         }
     },
     components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice, Diagnosis }

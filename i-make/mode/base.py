@@ -14,6 +14,7 @@ class BaseMode:
     """Base class for all modes."""
 
     ICON_PATH: str = ""
+    MENU_IMAGE_PATH: str = ""
     DESCRIPTION: str = ""
 
     @classmethod
@@ -24,6 +25,15 @@ class BaseMode:
             _type_: icon path
         """
         return "../" + cls.ICON_PATH.replace("i-make/static/", "")
+
+    @classmethod
+    def menu_image_path_for_frontend(cls) -> str:
+        """Return menu image path for frontend.
+
+        Returns:
+            _type_: menu image path
+        """
+        return "../" + cls.MENU_IMAGE_PATH.replace("i-make/static/", "")
 
 
 class BaseModeEffect(BaseMode, Effect):
@@ -158,6 +168,7 @@ class BaseModeEffect(BaseMode, Effect):
             list[FacePaint]: メイクのリスト
         """
         icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
+        menu_image_file = cls.MENU_IMAGE_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
         facepaints = [
             FacePaint(
                 filename=file,
@@ -165,7 +176,7 @@ class BaseModeEffect(BaseMode, Effect):
                 thumbnail_dir_path=cls.THUMBNAIL_IMAGES_DIR_PATH,
             )
             for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
-            if file.endswith(".png") and not file == icon_file
+            if file.endswith(".png") and file != menu_image_file and file != icon_file
         ]
         return [
             {

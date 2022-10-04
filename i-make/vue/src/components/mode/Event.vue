@@ -1,5 +1,5 @@
 <template>
-    <SingleEffect>Event Mode</SingleEffect>
+    <SingleEffect :modeIconPath="kwargs.modeIconPath">Event Mode</SingleEffect>
 </template>
 
 <script>
@@ -7,6 +7,7 @@ import SingleEffect from '@/components/shared/SingleEffect.vue'
 
 export default {
     name: "Event",
+    props: ["kwargs"],
     components: { SingleEffect }
 }
 </script>

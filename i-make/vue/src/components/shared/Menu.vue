@@ -6,8 +6,8 @@
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
                 <!-- <label class="circle-number">{{index+1}} </label> -->
-                <img :src="mode.icon_path" v-shortkey.once="[(index+1)]" @shortkey="setMode(mode.name)"
-                    @click="setMode(mode.name)" role="button" class="mode-button">
+                <img :src="mode.menu_image_path" v-shortkey.once="[(index+1)]" @shortkey="setMode(mode)"
+                    @click="setMode(mode)" role="button" class="mode-button">
             </div>
         </div>
     </div>
@@ -22,9 +22,12 @@ export default {
         };
     },
     methods: {
-        setMode(name) {
+        setMode(mode) {
+            const name=mode.name;
             window.eel.set_mode(name)();
-            this.$emit('update-component', name.slice(0, 1).toUpperCase()+name.slice(1).toLowerCase());
+            this.$emit('update-component', name.slice(0, 1).toUpperCase()+name.slice(1).toLowerCase(), {
+                "modeIconPath": mode.icon_path
+            });
         },
         async getModes() {
             this.modes=await window.eel.get_mode_choices()();
