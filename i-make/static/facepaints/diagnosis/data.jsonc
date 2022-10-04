@@ -119,7 +119,7 @@
                 "next_node_id": "eye_shape",
                 "settings": {
                     "eyeshadow-sub": "i-make/static/facepaints/custom/eyeshadow/eyeshadow0-0.png",
-                    "eyeshadow-color ": [14, 21, 89],
+                    "eyeshadow-color": [14, 21, 89],
                     "glitter": "i-make/static/facepaints/custom/glitter/glitterS.png",
                     "glitter-color": [14, 21, 89],
                     "eyelash-color": [240, 51, 23],
