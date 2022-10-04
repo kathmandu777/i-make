@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="keypad">
-            <div v-for="(facepaint, index) in pageFacepaints" :key="index" :class="'key-' + keyClassNames[index]"
+            <div v-for="(facepaint, index) in pageFacepaints" :key="page*9+index" :class="'key-' + keyClassNames[index]"
                 class="card">
-                <input type="radio" :id="index" :value="facepaint" v-model="selectedFacepaint" v-on:change="confirm()"
-                    v-shortkey.once="[keys[index]]" @shortkey="confirm(facepaint)" />
+                <input type="radio" :id="page*9+index" :value="facepaint" v-model="selectedFacepaint"
+                    v-on:change="confirm()" v-shortkey.once="[keys[index]]" @shortkey="confirm(facepaint)" />
                 <img :src="facepaint.thumbnail_path_for_frontend" width="200" height="200" />
             </div>
 

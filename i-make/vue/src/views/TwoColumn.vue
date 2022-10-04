@@ -20,6 +20,7 @@ import Easy from '@/components/mode/Easy.vue';
 import Custom from '@/components/mode/custom/Custom.vue';
 import CustomChoices from '@/components/mode/custom/CustomChoices.vue';
 import Practice from '@/components/mode/Practice.vue';
+import Diagnosis from '@/components/mode/Diagnosis.vue';
 
 export default {
     name: "Settings",
@@ -33,7 +34,7 @@ export default {
             this.rightComponent=component
         }
     },
-    components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice }
+    components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice, Diagnosis }
 }
 </script>
 
@@ -52,5 +53,12 @@ export default {
 
 .right {
     grid-area: right;
+}
+</style>
+
+<style>
+body {
+    padding: 0;
+    margin: 0;
 }
 </style>
