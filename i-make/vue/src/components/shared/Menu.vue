@@ -5,7 +5,7 @@
             src="/dist/setting.png" width="180" height="180" />
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
-                <label class="circle-number">{{index+1}} </label>
+                <!-- <label class="circle-number">{{index+1}} </label> -->
                 <img :src="mode.icon_path" v-shortkey.once="[(index+1)]" @shortkey="setMode(mode.name)"
                     @click="setMode(mode.name)" role="button" class="mode-button">
             </div>
@@ -77,7 +77,7 @@ export default {
     margin: 10px;
 }
 
-.circle-number {
+/* .circle-number {
     display: block;
     width: 100px;
     height: 100px;
@@ -87,10 +87,11 @@ export default {
     border-radius: 50%;
     text-align: center;
     box-sizing: border-box;
-}
+} */
 
 .mode-button {
-    width: 800px;
+    width: calc(100% - 120px);
     height: auto;
+    margin: 0 60px;
 }
 </style>
