@@ -38,6 +38,13 @@ export default {
 }
 </script>
 
+<style>
+* {
+    background-color: black;
+    color: white;
+}
+</style>
+
 <style scoped>
 .full-HD {
     display: grid;

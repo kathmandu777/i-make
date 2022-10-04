@@ -5,7 +5,7 @@
                 class="card">
                 <input type="radio" :id="page*9+index" :value="facepaint" v-model="selectedFacepaint"
                     v-on:change="confirm()" v-shortkey.once="[keys[index]]" @shortkey="confirm(facepaint)" />
-                <img :src="facepaint.thumbnail_path_for_frontend" width="200" height="200" />
+                <img :src="facepaint.thumbnail_path_for_frontend" width="195" height="195" />
             </div>
 
             <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
@@ -144,7 +144,6 @@ export default {
 }
 
 .card {
-    border: 1px solid #ccc;
     border-radius: 5px;
     display: block;
     padding: 0;
@@ -156,6 +155,6 @@ export default {
 }
 
 .card:has(input:checked) {
-    border: 2px solid #000;
+    border: 2px solid lightgreen;
 }
 </style>
