@@ -1,17 +1,9 @@
-import json
 import re
 
 from ..dataclasses import HSV, FacePaint
 from ..dataclasses.diagnosis import Node
+from ..libs.jsonc import load_jsonc
 from ..mode.base import BaseModeEffect
-
-
-def load_jsonc(file_path: str):
-    with open(file_path, "r", encoding="utf-8") as f:
-        text = f.read()
-    re_text = re.sub(r"/\*[\s\S]*?\*/|//.*", "", text)
-    json_obj = json.loads(re_text)
-    return json_obj
 
 
 class DiagnosisMode(BaseModeEffect):
