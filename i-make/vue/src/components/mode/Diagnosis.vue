@@ -1,6 +1,10 @@
 <template>
     <div>
-        <h2 class="mode">診断モード</h2>
+        <div class="top">
+            <h2 class="mode">診断モード</h2>
+            <img class="menu-button" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu"
+                src="/dist/home.png">
+        </div>
         <h3 class="question">{{question}}</h3>
         <h3 v-if="!choices" class="result">{{result}}</h3>
         <div class="container">
@@ -56,6 +60,10 @@ export default {
         },
         setResult(value) {
             this.result=value;
+        },
+        async goToMenu() {
+            await window.eel.stop()();
+            this.$emit('update-component', 'Menu', { "resetVideoSrc": true })
         }
     },
     mounted: function () {
@@ -67,10 +75,21 @@ export default {
 </script>
 
 <style>
-.mode {
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top>.mode {
     font-size: 64px;
     margin: 30px;
     padding: 0;
+}
+
+.top>.menu-button {
+    height: 100px;
+    width: auto;
 }
 
 .question {
@@ -101,8 +120,7 @@ export default {
 }
 
 .css-button-arrow--sky {
-    width: 100%;
-    height: 100%;
+    width: calc(100% - 60px);
     color: #fff;
     padding: 15px 30px;
     margin: 10px 30px;
