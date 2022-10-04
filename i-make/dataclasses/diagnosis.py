@@ -6,6 +6,7 @@ class Choice:
     text: str
     answer_id: str
     next_node_id: str | int | None
+    result: str | None = None  # function call result
 
 
 @dataclass

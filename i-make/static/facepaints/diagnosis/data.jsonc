@@ -491,16 +491,18 @@
         "questions": {
             "1": {
                 "text": "目の間隔は？",
-                "function": "eye_distance", // FIXME: hard coding
+                "function": "is_longer_distance_between_eye_than_eye_size", // FIXME: hard coding
                 "choices": [{
                         "text": "近い",
                         "answer_id": "目が近い",
-                        "next_node_id": null
+                        "next_node_id": null,
+                        "result": "False"
                     },
                     {
                         "text": "離れている",
                         "answer_id": "目が離れている",
-                        "next_node_id": null
+                        "next_node_id": null,
+                        "result": "True"
                     }
                 ]
             }

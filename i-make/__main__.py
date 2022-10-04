@@ -195,9 +195,17 @@ class iMake:
             if landmarks is None:
                 raise ValueError("failed to get landmarks")
 
-            if self.mode.node.questions[self.mode.child_node_id].function == "eye_distance":  # FIXME: hard coding
+            if (
+                self.mode.node.questions[self.mode.child_node_id].function
+                == "is_longer_distance_between_eye_than_eye_size"
+            ):  # FIXME: hard coding
                 result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks)
-                return self.mode.set_answer(1 if result else 0)  # FIXME
+                answer = next(
+                    i
+                    for i, choice in enumerate(self.mode.node.questions[self.mode.child_node_id].choices)
+                    if choice.result == str(result)
+                )
+
         return self.mode.set_answer(answer)
 
     def set_effect_image_by_settings(self):

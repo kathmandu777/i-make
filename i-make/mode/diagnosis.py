@@ -99,7 +99,6 @@ class DiagnosisMode(BaseModeEffect):
                     hsv = self.DEFAULT_HSV
                 else:
                     if "-sub" in key:
-                        print(color, self.SUB_HSV_DIFF)
                         color = tuple([x + y for x, y in zip(color, self.SUB_HSV_DIFF)])
                     hsv = HSV(h=color[0], s=color[1], v=color[2])
 
