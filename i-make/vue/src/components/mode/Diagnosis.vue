@@ -5,7 +5,9 @@
         <h3 v-if="!choices" class="result">{{result}}</h3>
         <div class="container">
             <div v-if="!choices" class="choice">
-                <button class="css-button-arrow--sky" @click="setAnswer(config.CALL_FUNC_ID)">次へ</button>
+                <button class="css-button-arrow--sky" v-shortkey.once="['enter']"
+                    @shortkey="setAnswer(config.CALL_FUNC_ID)"
+                    @click="setAnswer(config.CALL_FUNC_ID)">次へ(Enter)</button>
             </div>
             <div v-else class="choice" v-for="(choice, index) in choices" :key="index">
                 <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
@@ -78,6 +80,13 @@ export default {
     text-align: center;
 }
 
+.result {
+    font-size: 55px;
+    margin: 10px 40px;
+    padding: 0;
+    text-align: center;
+}
+
 .container {
     width: 100%;
     height: 100%;
@@ -95,7 +104,8 @@ export default {
     width: 100%;
     height: 100%;
     color: #fff;
-    padding: 30px 60px;
+    padding: 15px 30px;
+    margin: 10px 30px;
     font-size: 40px;
     font-weight: bold;
     cursor: pointer;
@@ -107,27 +117,5 @@ export default {
     border-radius: 20px;
     border: none;
     background-color: #3a86ff
-}
-
-.css-button-arrow--sky:hover {
-    border-radius: 20px;
-    padding-right: 24px;
-    padding-left: 8px;
-}
-
-.css-button-arrow--sky:hover:after {
-    opacity: 1;
-    right: 10px;
-}
-
-.css-button-arrow--sky:after {
-    content: "\00BB";
-    position: absolute;
-    opacity: 0;
-    font-size: 64px;
-    line-height: 64px;
-    top: 32px;
-    right: -20px;
-    transition: 0.4s;
 }
 </style>
