@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="choices">
-            <div v-for="(choice, index) in pageChoiceList" :key="index" :class="'key-' + keyClassNames[index]"
+            <div v-for="(choice, index) in pageChoiceList" :key="page*9+index" :class="'key-' + keyClassNames[index]"
                 class="card">
-                <input type="radio" :id="index" :value="choice" v-model="selectedChoice" v-shortkey.once="[keys[index]]"
-                    @shortkey="confirm(choice)" />
+                <input type="radio" :id="page*9+index" :value="choice" v-model="selectedChoice"
+                    v-shortkey.once="[keys[index]]" @shortkey="confirm(choice)" />
                 <slot v-bind:choice="choice"></slot>
             </div>
 
