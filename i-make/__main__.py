@@ -164,7 +164,7 @@ class iMake:
         self.face_mesh.close()
 
     ### Diagnosis
-    def get_question_and_choices(self) -> tuple[str, list[str]]:
+    def get_question_and_choices(self) -> tuple[str, list[str] | None]:
         """Get question and choices.
 
         Returns:
@@ -186,7 +186,7 @@ class iMake:
             raise ValueError("mode is not set")
 
         assert isinstance(self.mode, DiagnosisMode)
-        if answer == -1:  # FIXME magic number
+        if answer == self.mode.CALL_FUNC_ID:
             image = self._get_image()
             if image is None:
                 raise ValueError("failed to get image")

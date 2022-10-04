@@ -22,6 +22,8 @@ class DiagnosisMode(BaseModeEffect):
     DEFAULT_HSV = HSV(h=0, s=0, v=0)
     SUB_HSV_DIFF = (0.0, 25.0, -10.0)
 
+    CALL_FUNC_ID: int = -1
+
     def __init__(self, *args, **kwargs) -> None:
         self.data = load_jsonc(self.DATA_PATH)
         self.node = Node(**self.data[self.FIRST_NODE_ID])

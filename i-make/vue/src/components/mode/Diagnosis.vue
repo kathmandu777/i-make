@@ -4,7 +4,7 @@
         <h3 class="question">{{question}}</h3>
         <div class="container">
             <div v-if="!choices" class="choice">
-                <button class="css-button-arrow--sky" @click="setAnswer(-1)">自動診断する</button>
+                <button class="css-button-arrow--sky" @click="setAnswer(config.CALL_FUNC_ID)">自動診断する</button>
             </div>
             <div v-else class="choice" v-for="(choice, index) in choices" :key="index">
                 <button v-shortkey.once="[(index+1)]" @shortkey="setAnswer(index)" @click="setAnswer(index)"
