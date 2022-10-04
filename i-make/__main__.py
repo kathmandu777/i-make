@@ -106,6 +106,9 @@ class iMake:
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
 
+            if not self.update_image:  # FIXME: Vue側で制御したい
+                eel.setVideoSrc("/dist/woman.jpg")
+
     def stop(self):
         self.update_image = False
 
