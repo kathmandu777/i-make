@@ -55,3 +55,10 @@ export default {
     grid-area: right;
 }
 </style>
+
+<style>
+body {
+    padding: 0;
+    margin: 0;
+}
+</style>
