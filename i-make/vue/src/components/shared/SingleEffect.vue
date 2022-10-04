@@ -10,10 +10,10 @@
 
             <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
                 width="400" height="200">
-            <img class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)" @click="setPage(page-1)"
-                src="/dist/back.png" width="200" height="200">
-            <img class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)" @click="setPage(page+1)"
-                src="/dist/next.png" width="200" height="200">
+            <img v-if="canGoToPrevPage" class="key-1 card" v-shortkey.once="[1]" @shortkey="setPage(page-1)"
+                @click="setPage(page-1)" src="/dist/back.png" width="200" height="200">
+            <img v-if="canGoToNextPage" class="key-3 card" v-shortkey.once="[3]" @shortkey="setPage(page+1)"
+                @click="setPage(page+1)" src="/dist/next.png" width="200" height="200">
         </div>
     </div>
 </template>
@@ -57,6 +57,12 @@ export default {
     computed: {
         pageFacepaints() {
             return this.facepaints.slice(this.page*9, this.page*9+9)
+        },
+        canGoToPrevPage() {
+            return this.page>0
+        },
+        canGoToNextPage() {
+            return this.page<Math.floor((this.facepaints.length-1)/9)
         }
     },
     mounted: function () {
