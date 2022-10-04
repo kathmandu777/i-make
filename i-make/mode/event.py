@@ -5,6 +5,7 @@ class EventMode(BaseModeEffect):
     """Event makeup mode."""
 
     CHOICE_IMAGES_DIR_PATH = "i-make/static/facepaints/event"
+    THUMBNAIL_IMAGES_DIR_PATH = "i-make/static/facepaints/event/thumbnails"
     ICON_PATH: str = "i-make/static/facepaints/event/event.png"
 
     def __init__(self, *args, **kwargs) -> None:
