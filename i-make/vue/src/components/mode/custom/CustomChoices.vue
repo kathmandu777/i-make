@@ -127,7 +127,9 @@ export default {
 }
 
 .color-sample {
-    width: 200px;
-    height: 200px;
+    width: 190px;
+    height: 190px;
+    border-radius: 60px;
+    margin: 4px 6px 6px 4px;
 }
 </style>
