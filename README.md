@@ -48,8 +48,3 @@ commitする前に実行するコマンドを定義するツールです。`.pre
 
 iMake! に必要なファイルやモジュールが入っているメインのソースコードです。
 このコードの実行に必要となるライブラリの情報は、`pyproject.toml` の [tool.poetry.dependencies] タグに記載しています。
-
-### gen2-facemesh
-
-i-makeの開発時に参考にした、<https://github.com/luxonis/depthai-experiments/tree/master/gen2-facemesh> のソースコードのコピーが入っています。開発に際して一部加筆修正があります。
-このコードの実行に必要となるライブラリの情報は、このフォルダ配下にある `requirements.txt` に記載されています。
