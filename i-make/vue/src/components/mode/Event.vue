@@ -6,8 +6,8 @@
 import SingleEffect from '@/components/shared/SingleEffect.vue'
 
 export default {
-    name: "Event",
-    props: ["kwargs"],
-    components: { SingleEffect }
+    name: 'Event',
+    props: ['kwargs'],
+    components: { SingleEffect },
 }
 </script>

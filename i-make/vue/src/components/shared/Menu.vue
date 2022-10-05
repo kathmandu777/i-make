@@ -1,13 +1,26 @@
-<template >
+<template>
     <div class="half-HD">
         <h2 class="title">iMake!</h2>
-        <img class="settings" v-on:click="goToSettings()" v-shortkey.once="['*']" @shortkey="goToSettings()"
-            src="/dist/setting.png" width="180" height="180" />
+        <img
+            class="settings"
+            v-on:click="goToSettings()"
+            v-shortkey.once="['*']"
+            @shortkey="goToSettings()"
+            src="/dist/setting.png"
+            width="180"
+            height="180"
+        />
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
                 <!-- <label class="circle-number">{{index+1}} </label> -->
-                <img :src="mode.menu_image_path" v-shortkey.once="[(index+1)]" @shortkey="setMode(mode)"
-                    @click="setMode(mode)" role="button" class="mode-button">
+                <img
+                    :src="mode.menu_image_path"
+                    v-shortkey.once="[index + 1]"
+                    @shortkey="setMode(mode)"
+                    @click="setMode(mode)"
+                    role="button"
+                    class="mode-button"
+                />
             </div>
         </div>
     </div>
@@ -15,29 +28,33 @@
 
 <script>
 export default {
-    name: "Menu",
+    name: 'Menu',
     data: function () {
         return {
-            modes: []
-        };
+            modes: [],
+        }
     },
     methods: {
         setMode(mode) {
-            const name=mode.name;
-            window.eel.set_mode(name)();
-            this.$emit('update-component', name.slice(0, 1).toUpperCase()+name.slice(1).toLowerCase(), {
-                "modeIconPath": mode.icon_path
-            });
+            const name = mode.name
+            window.eel.set_mode(name)()
+            this.$emit(
+                'update-component',
+                name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase(),
+                {
+                    modeIconPath: mode.icon_path,
+                }
+            )
         },
         async getModes() {
-            this.modes=await window.eel.get_mode_choices()();
+            this.modes = await window.eel.get_mode_choices()()
         },
         goToSettings() {
-            this.$emit('update-component', "SkinColor");
-        }
+            this.$emit('update-component', 'SkinColor')
+        },
     },
     created: function () {
-        this.getModes();
+        this.getModes()
     },
 }
 </script>
@@ -48,8 +65,8 @@ export default {
     grid-template-columns: 780px 180px;
     grid-template-rows: 180px 900px;
     grid-template-areas:
-        "title settings"
-        "select-mode select-mode";
+        'title settings'
+        'select-mode select-mode';
 }
 
 .title {
