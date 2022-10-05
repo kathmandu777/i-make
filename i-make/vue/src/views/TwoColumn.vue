@@ -6,37 +6,51 @@
             </keep-alive>
         </section>
         <section class="right">
-            <component :is="rightComponent" @update-component="setRightComponent" :kwargs="kwargs"></component>
+            <component
+                :is="rightComponent"
+                @update-component="setRightComponent"
+                :kwargs="kwargs"
+            ></component>
         </section>
     </div>
 </template>
 
 <script>
 import Video from '@/components/shared/Video.vue'
-import Menu from '@/components/shared/Menu.vue';
-import SkinColor from '@/components/shared/SkinColor.vue';
-import Event from '@/components/mode/Event.vue';
-import Easy from '@/components/mode/Easy.vue';
-import Custom from '@/components/mode/custom/Custom.vue';
-import CustomChoices from '@/components/mode/custom/CustomChoices.vue';
-import Practice from '@/components/mode/Practice.vue';
-import Diagnosis from '@/components/mode/Diagnosis.vue';
+import Menu from '@/components/shared/Menu.vue'
+import SkinColor from '@/components/shared/SkinColor.vue'
+import Event from '@/components/mode/Event.vue'
+import Easy from '@/components/mode/Easy.vue'
+import Custom from '@/components/mode/custom/Custom.vue'
+import CustomChoices from '@/components/mode/custom/CustomChoices.vue'
+import Practice from '@/components/mode/Practice.vue'
+import Diagnosis from '@/components/mode/Diagnosis.vue'
 
 export default {
-    name: "Settings",
+    name: 'Settings',
     data: function () {
         return {
             rightComponent: Menu,
             kwargs: {},
-        };
+        }
     },
     methods: {
         setRightComponent(component, kwargs) {
-            this.rightComponent=component
-            this.kwargs=kwargs
-        }
+            this.rightComponent = component
+            this.kwargs = kwargs
+        },
     },
-    components: { Video, Menu, SkinColor, Event, Custom, CustomChoices, Easy, Practice, Diagnosis }
+    components: {
+        Video,
+        Menu,
+        SkinColor,
+        Event,
+        Custom,
+        CustomChoices,
+        Easy,
+        Practice,
+        Diagnosis,
+    },
 }
 </script>
 
@@ -45,6 +59,11 @@ export default {
     background-color: black;
     color: white;
 }
+
+body {
+    padding: 0;
+    margin: 0;
+}
 </style>
 
 <style scoped>
@@ -52,8 +71,7 @@ export default {
     display: grid;
     grid-template-columns: 960px 960px;
     grid-template-rows: 1080px;
-    grid-template-areas:
-        "left right";
+    grid-template-areas: 'left right';
 }
 
 .left {
@@ -62,12 +80,5 @@ export default {
 
 .right {
     grid-area: right;
-}
-</style>
-
-<style>
-body {
-    padding: 0;
-    margin: 0;
 }
 </style>

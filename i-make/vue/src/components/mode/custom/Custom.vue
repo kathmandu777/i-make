@@ -3,17 +3,31 @@
         <div class="keypad">
             <div v-if="!selectedPartKind" class="choices-page">
                 <Choices :choiceList="partKinds" @update="setPart">
-                    <template v-slot:default="{choice}">
-                        <img :src="choice.thumbnail_path_for_frontend" width="195" height="195" />
+                    <template v-slot:default="{ choice }">
+                        <img
+                            :src="choice.thumbnail_path_for_frontend"
+                            width="195"
+                            height="195"
+                        />
                     </template>
                 </Choices>
             </div>
             <div v-else class="choices-page">
-                <CustomChoices :partKind="selectedPartKind" @update="pushFacepaints"></CustomChoices>
+                <CustomChoices
+                    :partKind="selectedPartKind"
+                    @update="pushFacepaints"
+                ></CustomChoices>
             </div>
 
-            <img class="key-0 card" v-shortkey.once="[0]" @shortkey="goToMenu()" @click="goToMenu" src="/dist/home.png"
-                width="400" height="200">
+            <img
+                class="key-0 card"
+                v-shortkey.once="[0]"
+                @shortkey="goToMenu()"
+                @click="goToMenu"
+                src="/dist/home.png"
+                width="400"
+                height="200"
+            />
 
             <!-- <button v-if="!!selectedPartKind" class="key-dot card" v-shortkey.once="['.']" @shortkey="goToParts()"
                 @click="goToParts">Parts</button> -->
@@ -24,46 +38,44 @@
 
 <script>
 import Choices from '@/components/shared/Choices.vue'
-import CustomChoices from './CustomChoices.vue';
+import CustomChoices from './CustomChoices.vue'
 export default {
-    name: "CustomMode",
+    name: 'CustomMode',
     data: function () {
         return {
             partKinds: [],
             selectedPartKind: null,
             selectedFacepaints: [],
-        };
+        }
     },
     methods: {
         async getPartKinds() {
-            this.partKinds=await window.eel.get_part_kinds()();
+            this.partKinds = await window.eel.get_part_kinds()()
         },
         async goToMenu() {
-            await window.eel.stop()();
-            this.$emit("update-component", "Menu", { "resetVideoSrc": true });
+            await window.eel.stop()()
+            this.$emit('update-component', 'Menu', { resetVideoSrc: true })
         },
         setPart(partKind) {
-            if (partKind)
-                this.selectedPartKind=partKind;
+            if (partKind) this.selectedPartKind = partKind
         },
         pushFacepaints(facepaint) {
-            if (facepaint)
-                this.selectedFacepaints.push(facepaint);
-            this.selectedPartKind=null;
-            this.confirm();
+            if (facepaint) this.selectedFacepaints.push(facepaint)
+            this.selectedPartKind = null
+            this.confirm()
         },
         // goToParts() {
         //     this.selectedPartKind=null;
         // },
         async confirm() {
-            await window.eel.set_effect_image(this.selectedFacepaints)();
-            await window.eel.start();
+            await window.eel.set_effect_image(this.selectedFacepaints)()
+            await window.eel.start()
         },
     },
     mounted: function () {
-        this.getPartKinds();
+        this.getPartKinds()
     },
-    components: { Choices, CustomChoices }
+    components: { Choices, CustomChoices },
 }
 </script>
 
@@ -73,14 +85,13 @@ export default {
     grid-template-columns: 165px 210px 210px 210px 165px;
     grid-template-rows: 15px 210px 210px 210px 210px 210px 15px;
     grid-template-areas:
-        ". . . . ."
-        ". key-numlock key-slash key-asterisk ."
-        ". key-7 key-8 key-9 ."
-        ". key-4 key-5 key-6 ."
-        ". key-1 key-2 key-3 ."
-        ". key-0 key-0 key-dot ."
-        ". . . . .";
-    ;
+        '. . . . .'
+        '. key-numlock key-slash key-asterisk .'
+        '. key-7 key-8 key-9 .'
+        '. key-4 key-5 key-6 .'
+        '. key-1 key-2 key-3 .'
+        '. key-0 key-0 key-dot .'
+        '. . . . .';
 }
 
 .key-0 {
@@ -151,7 +162,7 @@ export default {
     margin: 5px;
 }
 
-.card>input {
+.card > input {
     display: none;
 }
 

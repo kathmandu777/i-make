@@ -1,5 +1,5 @@
 <template>
-    <img id="video" width="960" height="1080" :src="videoSrc">
+    <img id="video" width="960" height="1080" :src="videoSrc" />
 </template>
 
 <script>
@@ -7,16 +7,16 @@ export default {
     name: 'Video',
     data: function () {
         return {
-            videoSrc: "/dist/woman.jpg",
+            videoSrc: '/dist/woman.jpg',
         }
     },
     methods: {
         setVideoSrc(value) {
-            this.videoSrc=value
-        }
+            this.videoSrc = value
+        },
     },
     mounted: function () {
         window.eel.expose(this.setVideoSrc, 'setVideoSrc')
-    }
+    },
 }
 </script>
