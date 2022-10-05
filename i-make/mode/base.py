@@ -45,6 +45,8 @@ class BaseModeEffect(BaseMode, Effect):
 
     SKIN_IMAGE_PATH: str = "i-make/static/facepaints/custom/skin/skin.png"
 
+    BASE_IMAGE_SUFFIX = "-base.png"
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
@@ -73,6 +75,19 @@ class BaseModeEffect(BaseMode, Effect):
                 raise ValueError(f"Failed to read image: {facepaint.image_path}")
             if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
                 raise ValueError("Effect image size must be 1024x1024")
+
+            base_image_path = facepaint.image_path.replace(".png", self.BASE_IMAGE_SUFFIX)
+            if os.path.exists(base_image_path):
+                base_image = cv2.imread(base_image_path, cv2.IMREAD_UNCHANGED)
+                if base_image is None:
+                    raise ValueError(f"Failed to read image: {base_image_path}")
+                if not (
+                    base_image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT
+                    and base_image.shape[1] == Effect.EFFECT_IMAGE_WIDTH
+                ):
+                    raise ValueError("Base image size must be 1024x1024")
+                image = self._overlay_alpha_image(effect_image, base_image)
+
             image = self._convert_image_color(image, facepaint.hsv, True) if facepaint.hsv is not None else image
             effect_image = self._overlay_alpha_image(effect_image, image)
         return effect_image
@@ -176,7 +191,10 @@ class BaseModeEffect(BaseMode, Effect):
                 thumbnail_dir_path=cls.THUMBNAIL_IMAGES_DIR_PATH,
             )
             for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
-            if file.endswith(".png") and file != menu_image_file and file != icon_file
+            if file.endswith(".png")
+            and file != menu_image_file
+            and file != icon_file
+            and not (cls.BASE_IMAGE_SUFFIX in file)
         ]
         return [
             {
