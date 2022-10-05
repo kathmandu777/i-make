@@ -7,8 +7,8 @@ import numpy as np
 class Effect:
     EFFECT_IMAGE_WIDTH: Final = 1024
     EFFECT_IMAGE_HEIGHT: Final = 1024
-    SRC_POINTS_PATH: Final = "i-make/res/source_landmarks.npy"
-    FILTER_POINTS_PATH: Final = "i-make/res/filter_points.npy"
+    SRC_POINTS_PATH: Final = "imake/res/source_landmarks.npy"
+    FILTER_POINTS_PATH: Final = "imake/res/filter_points.npy"
 
     def __init__(
         self,

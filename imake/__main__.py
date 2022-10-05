@@ -1,7 +1,7 @@
 import argparse
 import base64
 from dataclasses import asdict
-from typing import Final
+from typing import Any, Final
 
 import cv2
 import eel
@@ -14,7 +14,7 @@ from .libs.facemesh import FaceMesh
 from .mode import BaseModeEffectType, CustomMode, DiagnosisMode, Mode
 
 
-class iMake:
+class IMake:
     EEL_SLEEP_TIME: Final = 0.00000001
 
     def __init__(self, camera_id: int = 0):
@@ -25,7 +25,7 @@ class iMake:
         self.skin_hsv = HSV(h=14, s=36, v=100)
         self.back_process = None
 
-    def set_mode(self, mode_name: str, *args, **kwargs):
+    def set_mode(self, mode_name: str, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         """Set mode.
 
         Args:
@@ -68,7 +68,7 @@ class iMake:
             raise ValueError("mode is not set")
         return self.mode.get_choice_facepaints()
 
-    def set_skin_color(self, hsv: dict):
+    def set_skin_color(self, hsv: dict) -> None:
         """Set skin color.
 
         Args:
@@ -113,12 +113,12 @@ class iMake:
         cropped = self._crop_center_x(effect)
         return cv2.flip(cropped, 1) if mirror else cropped
 
-    def start(self):
+    def start(self) -> None:
         """Start."""
         self._kill_back_process()
         self.back_process = eel.spawn(self._start)
 
-    def _start(self):
+    def _start(self) -> None:
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
             effect = self._process()
@@ -129,7 +129,7 @@ class iMake:
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
 
-    def stop(self):
+    def stop(self) -> None:
         self._kill_back_process()
         eel.setVideoSrc("/dist/guide.png")
 
@@ -168,7 +168,7 @@ class iMake:
         """
         return image[:, image.shape[1] // 4 : image.shape[1] * 3 // 4, :]
 
-    def get_config(self):
+    def get_config(self) -> dict[str, Any]:
         """Get config.
 
         Returns:
@@ -178,16 +178,16 @@ class iMake:
             raise ValueError("mode is not set")
         return self.mode.get_class_vars()
 
-    def _kill_back_process(self):
+    def _kill_back_process(self) -> None:
         """Kill back process."""
         if self.back_process is not None:
             self.back_process.kill()
 
-    def close(self):
+    def close(self) -> None:
         self.cap.release()
         self.face_mesh.close()
 
-    ### Diagnosis
+    # Diagnosis
     def get_question_and_choices(self) -> tuple[str, list[str] | None]:
         """Get question and choices.
 
@@ -218,7 +218,7 @@ class iMake:
 
         return self.mode.set_answer(answer)
 
-    def set_effect_image_by_settings(self):
+    def set_effect_image_by_settings(self) -> None:
         """Set effect image by settings."""
         if self.mode is None:
             raise ValueError("mode is not set")
@@ -227,12 +227,12 @@ class iMake:
         self.mode.set_skin_color(self.skin_hsv)
         self.mode.set_effect_image_by_settings()
 
-    def start_diagnosis_func(self):
+    def start_diagnosis_func(self) -> None:
         """Start diagnosis func."""
         self._kill_back_process()
         self.back_process = eel.spawn(self._start_diagnosis_func)
 
-    def _start_diagnosis_func(self):
+    def _start_diagnosis_func(self) -> None:
         if self.mode is None:
             raise ValueError("mode is not set")
 
@@ -282,7 +282,7 @@ class iMake:
         else:
             raise ValueError("invalid function")
 
-    ### Custom
+    # Custom
     def get_part_kinds(self) -> list[dict]:
         """Get part kinds.
 
@@ -311,14 +311,14 @@ class iMake:
         return self.mode.get_choice_facepaints_by_part(part)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="iMake!")
     parser.add_argument("--camera_id", type=int, default=0, help="camera id")
     args = parser.parse_args()
 
-    imake = iMake(camera_id=args.camera_id)
+    imake = IMake(camera_id=args.camera_id)
 
-    eel.init("i-make/static")
+    eel.init("imake/static")
     for attr in dir(imake):
         if callable(getattr(imake, attr)) and not attr.startswith("_"):
             eel.expose(getattr(imake, attr))

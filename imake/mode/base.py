@@ -24,7 +24,7 @@ class BaseMode:
         Returns:
             _type_: icon path
         """
-        return "../" + cls.ICON_PATH.replace("i-make/static/", "")
+        return "../" + cls.ICON_PATH.replace("imake/static/", "")
 
     @classmethod
     def menu_image_path_for_frontend(cls) -> str:
@@ -33,7 +33,7 @@ class BaseMode:
         Returns:
             _type_: menu image path
         """
-        return "../" + cls.MENU_IMAGE_PATH.replace("i-make/static/", "")
+        return "../" + cls.MENU_IMAGE_PATH.replace("imake/static/", "")
 
 
 class BaseModeEffect(BaseMode, Effect):
@@ -43,11 +43,15 @@ class BaseModeEffect(BaseMode, Effect):
     CHOICE_IMAGES_DIR_PATH: str = ""
     THUMBNAIL_IMAGES_DIR_PATH: str = ""
 
-    SKIN_IMAGE_PATH: str = "i-make/static/facepaints/custom/skin/skin.png"
+    SKIN_IMAGE_PATH: str = "imake/static/facepaints/custom/skin/skin.png"
+
+    B255_HUE = 120
+    B255_SAT = 255
+    NO_CHANGE_VAL = 0
 
     BASE_IMAGE_SUFFIX = "-base.png"
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)
 
     def set_effect_image_by_facepaints(self, facepaints: list[FacePaint]) -> None:
@@ -92,7 +96,7 @@ class BaseModeEffect(BaseMode, Effect):
             effect_image = self._overlay_alpha_image(effect_image, image)
         return effect_image
 
-    def _overlay_alpha_image(self, back, front):
+    def _overlay_alpha_image(self, back: np.ndarray, front: np.ndarray) -> np.ndarray:
         """Overlay alpha image on the background image.
 
         Args:
@@ -142,13 +146,10 @@ class BaseModeEffect(BaseMode, Effect):
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
-        B255_HUE = 120
-        B255_SAT = 255
-        NO_CHANGE_VAL = 0
-        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == B255_HUE, hue, image_hsv[:, :, 0])
-        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == B255_SAT, sat, image_hsv[:, :, 1])
+        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == self.B255_HUE, hue, image_hsv[:, :, 0])
+        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == self.B255_SAT, sat, image_hsv[:, :, 1])
         image_hsv[:, :, 2] = np.where(
-            image_hsv[:, :, 2] != NO_CHANGE_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
+            image_hsv[:, :, 2] != self.NO_CHANGE_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
         )
         # ↑グラデーションの比率を保ったまま、明度を変更する
 

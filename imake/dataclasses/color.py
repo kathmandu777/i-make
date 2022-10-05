@@ -8,7 +8,7 @@ class RGB:
     g: int = Field(..., ge=0, le=255)
     b: int = Field(..., ge=0, le=255)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"RGB({self.r}, {self.g}, {self.b})"
 
 
@@ -18,5 +18,5 @@ class HSV:
     s: float = Field(..., ge=0, le=100)
     v: float = Field(..., ge=0, le=100)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"HSV({self.h}, {self.s}%, {self.v}%)"
