@@ -6,8 +6,6 @@
 
 `git clone https://github.com/kathmandu777/i-make`
 
-### iMake
-
 ```bash
 poetry install
 cd i-make/vue
@@ -22,14 +20,6 @@ python -m i-make
 ```bash
 ./build.sh
 ```
-
-### gen2-facemesh
-
-```bash
-cd i-make/gen2-facemesh
-```
-
-`main_***.py` のソースコード内に記載
 
 ## Setup for development
 
