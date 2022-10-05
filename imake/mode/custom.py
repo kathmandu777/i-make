@@ -1,5 +1,6 @@
 import os
 from dataclasses import asdict
+from typing import Any
 
 from ..dataclasses import FacePaint
 from ..mode.base import BaseModeEffect
@@ -8,16 +9,16 @@ from ..mode.base import BaseModeEffect
 class CustomMode(BaseModeEffect):
     """Custom makeup mode."""
 
-    CHOICE_IMAGES_DIR_PATH = "i-make/static/facepaints/custom"
-    ICON_PATH: str = "i-make/static/facepaints/custom/icon.png"
-    MENU_IMAGE_PATH: str = "i-make/static/facepaints/custom/menu.png"
+    CHOICE_IMAGES_DIR_PATH = "imake/static/facepaints/custom"
+    ICON_PATH: str = "imake/static/facepaints/custom/icon.png"
+    MENU_IMAGE_PATH: str = "imake/static/facepaints/custom/menu.png"
 
     THUMBNAIL_IMAGE_NAME = "thumbnail.png"
     THUMBNAIL_DIR_NAME = "thumbnails"
 
     IGNORE_DIRS = ["skin"]
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)
 
     @classmethod
@@ -61,7 +62,7 @@ class CustomMode(BaseModeEffect):
                 part_kind=dirname,
                 thumbnail_path_for_frontend="../"
                 + os.path.join(cls.CHOICE_IMAGES_DIR_PATH, dirname, cls.THUMBNAIL_IMAGE_NAME).replace(
-                    "i-make/static/", ""
+                    "imake/static/", ""
                 ),
             )
             for dirname in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)

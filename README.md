@@ -12,7 +12,7 @@ cd i-make/vue
 npm install (初回のみ)
 npm run build (vueフォルダ内のファイルを変更する度)
 cd ../..
-python -m i-make
+python -m imake
 ```
 
 ※ 上記の2行目移行(`npm install` を除く)は `build.sh` にも記述してあるため、下記コマンドで実行可能

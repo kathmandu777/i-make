@@ -32,12 +32,12 @@ class FacePaint:
 
     @property
     def image_path_for_frontend(self) -> str:
-        return "../" + self.image_path.replace("i-make/static/", "")
+        return "../" + self.image_path.replace("imake/static/", "")
 
     @property
     def thumbnail_path_for_frontend(self) -> str:
         return (
-            "../" + self.thumbnail_path.replace("i-make/static/", "")
+            "../" + self.thumbnail_path.replace("imake/static/", "")
             if self.thumbnail_path
             else self.image_path_for_frontend
         )

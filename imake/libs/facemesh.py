@@ -40,14 +40,14 @@ class FaceMesh:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         self.face_mesh_results = self.face_mesh.process(image)
 
-        if not self.face_mesh_results.multi_face_landmarks:
+        if not self.face_mesh_results.multi_face_landmarks:  # type: ignore
             return None
 
         landmarks = []
-        for landmark in self.face_mesh_results.multi_face_landmarks[0].landmark:
+        for landmark in self.face_mesh_results.multi_face_landmarks[0].landmark:  # type: ignore
             landmarks.append([landmark.x * image.shape[1], landmark.y * image.shape[0], landmark.z])
         return np.array(landmarks)
 
-    def close(self):
+    def close(self) -> None:
         """Close."""
         self.face_mesh.close()

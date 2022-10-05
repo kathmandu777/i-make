@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from ..dataclasses import HSV, FacePaint
 from ..dataclasses.diagnosis import Node
@@ -9,10 +10,10 @@ from ..mode.base import BaseModeEffect
 class DiagnosisMode(BaseModeEffect):
     """Diagnosis makeup mode."""
 
-    ICON_PATH: str = "i-make/static/facepaints/diagnosis/icon.png"
-    MENU_IMAGE_PATH: str = "i-make/static/facepaints/diagnosis/menu.png"
+    ICON_PATH: str = "imake/static/facepaints/diagnosis/icon.png"
+    MENU_IMAGE_PATH: str = "imake/static/facepaints/diagnosis/menu.png"
 
-    DATA_PATH: str = "i-make/static/facepaints/diagnosis/data.jsonc"
+    DATA_PATH: str = "imake/static/facepaints/diagnosis/data.jsonc"
     FIRST_NODE_ID: str = "first"
     FIRST_CHILD_NODE_ID: str = "1"
 
@@ -24,12 +25,12 @@ class DiagnosisMode(BaseModeEffect):
 
     CALL_FUNC_ID: int = -1
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         self.data = load_jsonc(self.DATA_PATH)
         self.node = Node(**self.data[self.FIRST_NODE_ID])
         self.child_node_id = self.FIRST_CHILD_NODE_ID
-        self.settings = {}
-        self.results = {}
+        self.settings: dict[str, Any] = {}
+        self.results: dict[str, Any] = {}
         super().__init__(*args, **kwargs)
 
     def get_question_and_choices(self) -> tuple[str, list[str] | None]:
