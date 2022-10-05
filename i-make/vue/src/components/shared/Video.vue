@@ -7,7 +7,7 @@ export default {
     name: 'Video',
     data: function () {
         return {
-            videoSrc: '/dist/woman.jpg',
+            videoSrc: '/dist/guide.png',
         }
     },
     methods: {
