@@ -197,7 +197,7 @@ class iMake:
         assert isinstance(self.mode, DiagnosisMode)
         return self.mode.get_question_and_choices()
 
-    def set_answer(self, answer: int) -> str:
+    def set_answer(self, answer: int) -> tuple[str, dict[str, str] | None]:
         """Set answer.
 
         Args:

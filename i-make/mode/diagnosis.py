@@ -29,6 +29,7 @@ class DiagnosisMode(BaseModeEffect):
         self.node = Node(**self.data[self.FIRST_NODE_ID])
         self.child_node_id = self.FIRST_CHILD_NODE_ID
         self.settings = {}
+        self.results = {}
         super().__init__(*args, **kwargs)
 
     def get_question_and_choices(self) -> tuple[str, list[str] | None]:
@@ -44,7 +45,7 @@ class DiagnosisMode(BaseModeEffect):
             choices = [choice.text for choice in question.choices]
         return question.text, choices
 
-    def set_answer(self, input_data: int) -> str:
+    def set_answer(self, input_data: int) -> tuple[str, dict[str, str] | None]:
         """Set answer.
 
         Args:
@@ -54,7 +55,7 @@ class DiagnosisMode(BaseModeEffect):
             str: Message.
         """
         if not (0 <= input_data < len(self.node.questions[self.child_node_id].choices)):
-            return self.SET_ANSWER_ERROR_MSG
+            return self.SET_ANSWER_ERROR_MSG, None
 
         answer = self.node.questions[self.child_node_id].choices[input_data]
         self.node.answers[answer.answer_id].count += 1
@@ -70,19 +71,23 @@ class DiagnosisMode(BaseModeEffect):
                         self.settings[key] = [value]
                 else:
                     self.settings[key].append(value)
+
+            question_text = self.node.category or self.node.questions[self.FIRST_CHILD_NODE_ID].text
+            self.results[question_text] = max_answer_id
+
             next_node_id = self.node.answers[max_answer_id].next_node_id
 
             if next_node_id is None:  # 診断終了
-                return self.DIAGNOSIS_FINISH_MSG
+                return self.DIAGNOSIS_FINISH_MSG, self.results
 
             # 次のカテゴリの質問へ
             self.node = Node(**self.data[str(next_node_id)])
             self.child_node_id = self.FIRST_CHILD_NODE_ID
-            return self.SET_ANSWER_SUCCESS_MSG
+            return self.SET_ANSWER_SUCCESS_MSG, None
 
         # カテゴリ内の次の質問へ
         self.child_node_id = str(answer.next_node_id)
-        return self.SET_ANSWER_SUCCESS_MSG
+        return self.SET_ANSWER_SUCCESS_MSG, None
 
     def set_effect_image_by_settings(self) -> None:
         """Set effect image by settings."""
