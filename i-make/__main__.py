@@ -85,8 +85,13 @@ class iMake:
         Returns:
             _type_: color palette
         """
-        palette = [HSV(h=14, s=36, v=100), HSV(h=27, s=36, v=100), 
-                   HSV(h=41, s=74, v=55), HSV(h=40, s=51, v=86), HSV(h=15, s=45, v=82)]
+        palette = [
+            HSV(h=14, s=36, v=100),
+            HSV(h=27, s=36, v=100),
+            HSV(h=41, s=74, v=55),
+            HSV(h=40, s=51, v=86),
+            HSV(h=15, s=45, v=82),
+        ]
         return [asdict(hsv) for hsv in palette]
 
     def _process(self, mirror: bool = True) -> np.ndarray | None:
