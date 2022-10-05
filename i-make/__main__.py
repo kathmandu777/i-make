@@ -131,7 +131,7 @@ class iMake:
 
     def stop(self):
         self._kill_back_process()
-        eel.setVideoSrc("/dist/woman.jpg")
+        eel.setVideoSrc("/dist/guide.png")
 
     def _get_image(self) -> np.ndarray | None:
         """Get image.
