@@ -1,7 +1,51 @@
 <template>
     <div>
-        <div class="top">
-            <h2 class="mode">診断モード</h2>
+        <div class="half-HD">
+            <div class="main-content">
+                <h2 class="mode">診断モード</h2>
+
+                <h3 class="question">{{ question }}</h3>
+                <h3 v-if="!choices" class="result">{{ result }}</h3>
+                <div v-if="!!diagnosisResult" class="diagnosis-results">
+                    <p
+                        v-for="(value, key) in diagnosisResult"
+                        :key="key"
+                        class="diagnosis-result"
+                    >
+                        {{ key }}: {{ value }}
+                    </p>
+                </div>
+                <div>
+                    <div class="container">
+                        <div v-if="!choices" class="choice">
+                            <button
+                                class="css-button-arrow--sky"
+                                v-shortkey.once="['enter']"
+                                @shortkey="setAnswer(config.CALL_FUNC_ID)"
+                                @click="setAnswer(config.CALL_FUNC_ID)"
+                            >
+                                次へ(Enter)
+                            </button>
+                        </div>
+                        <div
+                            v-else
+                            class="choice"
+                            v-for="(choice, index) in choices"
+                            :key="index"
+                        >
+                            <button
+                                v-shortkey.once="[index + 1]"
+                                @shortkey="setAnswer(index)"
+                                @click="setAnswer(index)"
+                                class="css-button-arrow--sky"
+                            >
+                                {{ choice }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <img
                 class="menu-button"
                 v-shortkey.once="[0]"
@@ -9,35 +53,6 @@
                 @click="goToMenu"
                 src="/dist/home.png"
             />
-        </div>
-        <h3 class="question">{{ question }}</h3>
-        <h3 v-if="!choices" class="result">{{ result }}</h3>
-        <div class="container">
-            <div v-if="!choices" class="choice">
-                <button
-                    class="css-button-arrow--sky"
-                    v-shortkey.once="['enter']"
-                    @shortkey="setAnswer(config.CALL_FUNC_ID)"
-                    @click="setAnswer(config.CALL_FUNC_ID)"
-                >
-                    次へ(Enter)
-                </button>
-            </div>
-            <div
-                v-else
-                class="choice"
-                v-for="(choice, index) in choices"
-                :key="index"
-            >
-                <button
-                    v-shortkey.once="[index + 1]"
-                    @shortkey="setAnswer(index)"
-                    @click="setAnswer(index)"
-                    class="css-button-arrow--sky"
-                >
-                    {{ choice }}
-                </button>
-            </div>
         </div>
     </div>
 </template>
@@ -51,6 +66,7 @@ export default {
             result: '',
             choices: [],
             config: {},
+            diagnosisResult: null,
         }
     },
     methods: {
@@ -63,10 +79,13 @@ export default {
         },
         async setAnswer(index) {
             const res = await window.eel.set_answer(index)()
-            if (res == this.config.SET_ANSWER_ERROR_MSG) alert(res)
-            else if (res == this.config.DIAGNOSIS_FINISH_MSG) {
+            const msg = res[0]
+            const diagnosisResult = res[1]
+            if (msg == this.config.SET_ANSWER_ERROR_MSG) alert(res)
+            else if (msg == this.config.DIAGNOSIS_FINISH_MSG) {
                 this.question = '診断終了'
                 this.choices = []
+                this.diagnosisResult = diagnosisResult
                 await window.eel.set_effect_image_by_settings()()
                 await window.eel.start()
             } else this.getQuestionAndChoices()
@@ -91,21 +110,29 @@ export default {
 </script>
 
 <style>
-.top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.half-HD {
+    display: grid;
+    grid-template-columns: 960px;
+    grid-template-rows: 920px 160px;
+    grid-template-areas:
+        'main-content'
+        'menu-button';
 }
 
-.top > .mode {
+.main-content {
+    grid-area: main-content;
+}
+
+.menu-button {
+    grid-area: menu-button;
+    width: auto;
+    height: 160px;
+}
+
+.mode {
     font-size: 64px;
     margin: 30px;
     padding: 0;
-}
-
-.top > .menu-button {
-    height: 100px;
-    width: auto;
 }
 
 .question {
@@ -124,7 +151,7 @@ export default {
 
 .container {
     width: 100%;
-    height: 100%;
+    height: auto;
     padding: 0;
     margin: 0;
     display: flex;
@@ -133,6 +160,24 @@ export default {
     align-content: center;
     justify-content: space-around;
     gap: 10px;
+}
+
+.diagnosis-results {
+    width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 30px 80px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-around;
+}
+
+.diagnosis-result {
+    font-size: 40px;
+    margin: 0;
+    padding: 0;
 }
 
 .css-button-arrow--sky {
