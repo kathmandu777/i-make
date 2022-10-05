@@ -14,7 +14,12 @@ class EyeDiagnosis:
         self.PROPER_RATIO_THRESHOLD = threshold
 
     def render_eye_edge(
-        self, landmarks: np.ndarray, image: np.ndarray, radius: int = 1, color: Tuple[int, int, int] = (0, 0, 255)
+        self,
+        landmarks: np.ndarray,
+        image: np.ndarray,
+        radius: int = 1,
+        color: Tuple[int, int, int] = (0, 0, 255),
+        do_overlay: bool = True,
     ) -> np.ndarray:
         """左右の目の端に点を描画する.
 
@@ -27,6 +32,9 @@ class EyeDiagnosis:
         Returns:
             _type_: 描画した画像
         """
+        if not do_overlay:
+            image = np.zeros((image.shape[0], image.shape[1], 4), dtype=np.uint8)
+
         for idx in (
             self.LEFT_EYE_LEFTMOST_IDX,
             self.LEFT_EYE_RIGHTMOST_IDX,
