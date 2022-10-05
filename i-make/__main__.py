@@ -264,7 +264,7 @@ class iMake:
         assert isinstance(self.mode, DiagnosisMode)
 
         question = self.mode.node.questions[self.mode.child_node_id]
-        if question.function == "is_longer_distance_between_eye_than_eye_size":
+        if question.function == "is_longer_distance_between_eye_than_eye_size":  # FIXME: hard coding
             image = self._get_image()
             if image is None:
                 raise ValueError("failed to get image")
@@ -273,7 +273,7 @@ class iMake:
             if landmarks is None:
                 return "顔をカメラに向けてください", image
 
-            effect = EyeDiagnosis().render_eye_edge(landmarks, image)
+            effect = EyeDiagnosis().render_eye_edge(landmarks, image, do_overlay=False)
             result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks)
             if result is None:
                 return "正面を向いてください", effect
