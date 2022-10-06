@@ -11,7 +11,7 @@ class EyeDiagnosis:
     RIGHT_EYE_RIGHTMOST_IDX: Final = 263
 
     def __init__(self, threshold: float = 0.2):
-        self.PROPER_RATIO_THRESHOLD = threshold
+        self.PROPER_RATIO_THRESHOLD: Final = threshold
 
     def render_eye_edge(
         self,
@@ -28,6 +28,7 @@ class EyeDiagnosis:
             image (_type_): 描画する画像
             radius (int, optional): 半径. Defaults to 1.
             color (tuple, optional): 点の色. Defaults to (0, 0, 255).
+            do_overlay (bool, optional): imageに重ねるかどうか. Defaults to True.
 
         Returns:
             _type_: 描画した画像
@@ -107,7 +108,7 @@ class EyeDiagnosis:
         right_eye_leftmost: Tuple[float, float, float] = landmarks[self.RIGHT_EYE_LEFTMOST_IDX]
         return right_eye_leftmost[0] - left_eye_rightmost[0]
 
-    def is_longer_distance_between_eye_than_eye_size(self, landmarks: np.ndarray) -> bool | None:
+    def is_longer_distance_between_eye_than_eye_size(self, landmarks: np.ndarray) -> bool:
         """目のサイズより目の間の距離が長いかどうかを判定する.
 
         Args:
@@ -119,7 +120,7 @@ class EyeDiagnosis:
         left_eye_size = self.calculate_left_eye_size(landmarks)
         right_eye_size = self.calculate_right_eye_size(landmarks)
         eye_ratio = self.calculate_eye_ratio(landmarks)
-        if eye_ratio < 1.0 - self.PROPER_RATIO_THRESHOLD or eye_ratio > 1.0 + self.PROPER_RATIO_THRESHOLD:
-            return None
+        if not (1.0 - self.PROPER_RATIO_THRESHOLD < eye_ratio < 1.0 + self.PROPER_RATIO_THRESHOLD):
+            raise Exception("正面を向いていません")
         distance_between_eye = self.calculate_distance_between_eye(landmarks)
         return distance_between_eye > (left_eye_size + right_eye_size) / 2

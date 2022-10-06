@@ -31,7 +31,7 @@ class IMake:
         Args:
             mode_name (_type_): mode name
         """
-        self.mode: BaseModeEffectType = Mode[mode_name].value(**kwargs)
+        self.mode: BaseModeEffectType = Mode[mode_name].value(**kwargs)  # type: ignore
 
     def get_mode_choices(self) -> list[dict[str, str]]:
         """Get mode choices."""
@@ -108,7 +108,7 @@ class IMake:
         if landmarks is None:
             return None
 
-        effect_w_alpha = self.mode._create_effect(image, landmarks)
+        effect_w_alpha = self.mode.create_effect(image, landmarks)
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
         cropped = self._crop_center_x(effect)
         return cv2.flip(cropped, 1) if mirror else cropped
@@ -274,9 +274,10 @@ class IMake:
                 return "顔をカメラに向けてください", image
 
             effect = EyeDiagnosis().render_eye_edge(landmarks, image, do_overlay=False)
-            result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks)
-            if result is None:
-                return "正面を向いてください", effect
+            try:
+                result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks)
+            except Exception as e:
+                return e.args[0], effect
             choice = next((i, choice) for i, choice in enumerate(question.choices) if choice.result == str(result))
             return choice, effect
         else:
