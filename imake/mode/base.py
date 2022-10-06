@@ -42,7 +42,7 @@ class BaseModeEffect(BaseMode, Effect):
     MAKEUP_IMAGES_DIR_PATH: str = ""
     THUMBNAILS_DIR_PATH: str = ""
 
-    SKIN_IMAGE_PATH: str = "imake/static/facepaints/custom/skin/skin.png"
+    SKIN_IMAGE_PATH: str = "imake/static/modes/custom/skin/skin.png"
 
     B255_HUE = 120
     B255_SAT = 255
