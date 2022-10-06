@@ -17,7 +17,7 @@ class CustomMode(BaseModeEffect):
     THUMBNAIL_IMAGE_NAME = "thumbnail.png"
     THUMBNAIL_DIR_NAME = "thumbnails"
 
-    IGNORE_DIRS = ["skin"]
+    IGNORE_DIRS = ["skin", "README.md"]
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)
