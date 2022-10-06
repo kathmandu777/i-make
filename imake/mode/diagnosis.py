@@ -15,8 +15,7 @@ class DiagnosisMode(BaseModeEffect):
     MENU_IMAGE_PATH: str = "imake/static/modes/diagnosis/menu.png"
 
     DATA_PATH: Final = "imake/static/modes/diagnosis/data.yml"
-    FIRST_NODE_ID: Final = "first"
-    FIRST_CHILD_NODE_ID: Final = "1"
+    FIRST_NODE_ID: Final = "1"
 
     SET_ANSWER_SUCCESS_MSG: Final = "Success."
     SET_ANSWER_ERROR_MSG: Final = "Invalid input."
@@ -31,7 +30,7 @@ class DiagnosisMode(BaseModeEffect):
             self.data = yaml.safe_load(f)
 
         self.node = Node(**self.data[self.FIRST_NODE_ID])
-        self.child_node_id = self.FIRST_CHILD_NODE_ID
+        self.child_node_id = self.FIRST_NODE_ID
         self.settings: dict[str, Any] = {}
         self.results: dict[str, Any] = {}
         super().__init__(*args, **kwargs)
@@ -56,7 +55,7 @@ class DiagnosisMode(BaseModeEffect):
             input_data (int): Input data (choices 0 index).
 
         Returns:
-            str: Message.
+            _type_: Message and results.
         """
         if not (0 <= input_data < len(self.node.questions[self.child_node_id].choices)):
             return self.SET_ANSWER_ERROR_MSG, None
@@ -74,10 +73,11 @@ class DiagnosisMode(BaseModeEffect):
                     else:
                         self.settings[key] = [value]
                 else:
-                    self.settings[key].append(value)
+                    if value not in self.settings[key]:
+                        self.settings[key].append(value)
 
-            question_text = self.node.category or self.node.questions[self.FIRST_CHILD_NODE_ID].text
-            self.results[question_text] = self.node.answers[max_answer_id].label
+            category_or_question = self.node.category or self.node.questions[self.FIRST_NODE_ID].text
+            self.results[category_or_question] = self.node.answers[max_answer_id].label
 
             next_node_id = self.node.answers[max_answer_id].next_node_id
 
@@ -86,7 +86,7 @@ class DiagnosisMode(BaseModeEffect):
 
             # 次のカテゴリの質問へ
             self.node = Node(**self.data[str(next_node_id)])
-            self.child_node_id = self.FIRST_CHILD_NODE_ID
+            self.child_node_id = self.FIRST_NODE_ID
             return self.SET_ANSWER_SUCCESS_MSG, None
 
         # カテゴリ内の次の質問へ
