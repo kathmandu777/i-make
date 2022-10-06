@@ -9,9 +9,10 @@ from ..mode.base import BaseModeEffect
 class CustomMode(BaseModeEffect):
     """Custom makeup mode."""
 
-    MAKEUP_IMAGES_DIR_PATH = "imake/static/facepaints/custom"
-    ICON_PATH: str = "imake/static/facepaints/custom/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/facepaints/custom/menu.png"
+    ICON_PATH: str = "imake/static/modes/custom/icon.png"
+    MENU_IMAGE_PATH: str = "imake/static/modes/custom/menu.png"
+
+    MAKEUP_IMAGES_DIR_PATH = "imake/static/modes/custom"
 
     THUMBNAIL_IMAGE_NAME = "thumbnail.png"
     THUMBNAIL_DIR_NAME = "thumbnails"

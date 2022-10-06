@@ -10,10 +10,10 @@ from ..mode.base import BaseModeEffect
 class DiagnosisMode(BaseModeEffect):
     """Diagnosis makeup mode."""
 
-    ICON_PATH: str = "imake/static/facepaints/diagnosis/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/facepaints/diagnosis/menu.png"
+    ICON_PATH: str = "imake/static/modes/diagnosis/icon.png"
+    MENU_IMAGE_PATH: str = "imake/static/modes/diagnosis/menu.png"
 
-    DATA_PATH: str = "imake/static/facepaints/diagnosis/data.jsonc"
+    DATA_PATH: str = "imake/static/modes/diagnosis/data.jsonc"
     FIRST_NODE_ID: str = "first"
     FIRST_CHILD_NODE_ID: str = "1"
 

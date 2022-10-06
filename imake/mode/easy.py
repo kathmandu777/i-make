@@ -6,11 +6,11 @@ from ..mode.base import BaseModeEffect
 class EasyMode(BaseModeEffect):
     """Easy makeup mode."""
 
-    MAKEUP_IMAGES_DIR_PATH = "imake/static/facepaints/easy"
-    THUMBNAILS_DIR_PATH = "imake/static/facepaints/easy/thumbnails"
+    MAKEUP_IMAGES_DIR_PATH = "imake/static/modes/easy"
+    THUMBNAILS_DIR_PATH = "imake/static/modes/easy/thumbnails"
 
-    ICON_PATH: str = "imake/static/facepaints/easy/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/facepaints/easy/menu.png"
+    ICON_PATH: str = "imake/static/modes/easy/icon.png"
+    MENU_IMAGE_PATH: str = "imake/static/modes/easy/menu.png"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)

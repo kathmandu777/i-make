@@ -118,9 +118,9 @@
             "ブルベ夏": {
                 "next_node_id": "eye_shape",
                 "settings": {
-                    "eyeshadow-sub": "imake/static/facepaints/custom/eyeshadow/eyeshadow0-0.png",
+                    "eyeshadow-sub": "imake/static/modes/custom/eyeshadow/eyeshadow0-0.png",
                     "eyeshadow-color": [14, 21, 89],
-                    "glitter": "imake/static/facepaints/custom/glitter/glitterS.png",
+                    "glitter": "imake/static/modes/custom/glitter/glitterS.png",
                     "glitter-color": [14, 21, 89],
                     "eyelash-color": [240, 51, 23],
                     "eyeliner-color": [240, 51, 23],
@@ -130,9 +130,9 @@
             "ブルベ冬": {
                 "next_node_id": "eye_shape",
                 "settings": {
-                    "eyeshadow-sub": "imake/static/facepaints/custom/eyeshadow/eyeshadow0-0.png",
+                    "eyeshadow-sub": "imake/static/modes/custom/eyeshadow/eyeshadow0-0.png",
                     "eyeshadow-color": [138, 44, 32],
-                    "glitter": "imake/static/facepaints/custom/glitter/glitterS.png",
+                    "glitter": "imake/static/modes/custom/glitter/glitterS.png",
                     "glitter-color": [138, 44, 32],
                     "eyelash-color": [240, 51, 23],
                     "eyeliner-color": [240, 51, 23],
@@ -247,9 +247,9 @@
             "イエベ春": {
                 "next_node_id": "eye_shape",
                 "settings": {
-                    "eyeshadow-sub": "imake/static/facepaints/custom/eyeshadow/eyeshadow0-0.png",
+                    "eyeshadow-sub": "imake/static/modes/custom/eyeshadow/eyeshadow0-0.png",
                     "eyeshadow-color": [15, 45, 82],
-                    "glitter": "imake/static/facepaints/custom/glitter/glitterS.png",
+                    "glitter": "imake/static/modes/custom/glitter/glitterS.png",
                     "glitter-color": [15, 45, 82],
                     "eyelash-color": [25, 73, 28],
                     "eyeliner-color": [25, 73, 28],
@@ -259,9 +259,9 @@
             "イエベ秋": {
                 "next_node_id": "eye_shape",
                 "settings": {
-                    "eyeshadow-sub": "imake/static/facepaints/custom/eyeshadow/eyeshadow0-0.png",
+                    "eyeshadow-sub": "imake/static/modes/custom/eyeshadow/eyeshadow0-0.png",
                     "eyeshadow-color": [33, 74, 76],
-                    "glitter": "imake/static/facepaints/custom/glitter/glitterS.png",
+                    "glitter": "imake/static/modes/custom/glitter/glitterS.png",
                     "glitter-color": [33, 74, 76],
                     "eyelash-color": [25, 73, 28],
                     "eyeliner-color": [25, 73, 28],
@@ -376,38 +376,38 @@
             "釣り目": {
                 "next_node_id": "face_shape",
                 "settings": {
-                    "eyeshadow": "imake/static/facepaints/custom/eyeshadow/3eyeshadow.png",
-                    "eyeliner": "imake/static/facepaints/custom/eyeliner/eyeliner1-1.png",
-                    "eyelash": "imake/static/facepaints/custom/eyelashes/eyelashes0-1.png",
-                    "eyelash1": "imake/static/facepaints/custom/u-eyelashes/u-eyelashes0-0.png"
+                    "eyeshadow": "imake/static/modes/custom/eyeshadow/3eyeshadow.png",
+                    "eyeliner": "imake/static/modes/custom/eyeliner/eyeliner1-1.png",
+                    "eyelash": "imake/static/modes/custom/eyelashes/eyelashes0-1.png",
+                    "eyelash1": "imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png"
                     // glitter megasira
                 }
             },
             "タレ目": {
                 "next_node_id": "face_shape",
                 "settings": {
-                    "eyeshadow": "imake/static/facepaints/custom/eyeshadow/2eyeshadow.png",
+                    "eyeshadow": "imake/static/modes/custom/eyeshadow/2eyeshadow.png",
                     // eyeshadow1-2
-                    "eyeliner": "imake/static/facepaints/custom/eyeliner/eyeliner0-1.png",
-                    "eyelash": "imake/static/facepaints/custom/eyelashes/eyelashes0-1.png",
-                    "eyelash1": "imake/static/facepaints/custom/u-eyelashes/u-eyelashes0-0.png"
+                    "eyeliner": "imake/static/modes/custom/eyeliner/eyeliner0-1.png",
+                    "eyelash": "imake/static/modes/custom/eyelashes/eyelashes0-1.png",
+                    "eyelash1": "imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png"
                 }
             },
             "丸目": {
                 "next_node_id": "face_shape",
                 "settings": {
-                    "eyeliner": "imake/static/facepaints/custom/eyeliner/eyeliner1-0.png",
-                    // "eyelash": "imake/static/facepaints/custom/eyelashes/eyelashes0-2.png",
-                    "eyelash1": "imake/static/facepaints/custom/u-eyelashes/u-eyelashes0-0.png"
+                    "eyeliner": "imake/static/modes/custom/eyeliner/eyeliner1-0.png",
+                    // "eyelash": "imake/static/modes/custom/eyelashes/eyelashes0-2.png",
+                    "eyelash1": "imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png"
                 }
             },
             "細目": {
                 "next_node_id": "face_shape",
                 "settings": {
-                    "eyeshadow": "imake/static/facepaints/custom/neyeshadow/1eyeshadow.png",
-                    "eyeliner": "imake/static/facepaints/custom/eyeliner/eyeliner1-0.png",
-                    // "eyelash": "imake/static/facepaints/custom/eyelashes/eyelashes0-2.png",
-                    "eyelash1": "imake/static/facepaints/custom/u-eyelashes/u-eyelashes0-1.png"
+                    "eyeshadow": "imake/static/modes/custom/neyeshadow/1eyeshadow.png",
+                    "eyeliner": "imake/static/modes/custom/eyeliner/eyeliner1-0.png",
+                    // "eyelash": "imake/static/modes/custom/eyelashes/eyelashes0-2.png",
+                    "eyelash1": "imake/static/modes/custom/u-eyelashes/u-eyelashes0-1.png"
                     // glitter
                 }
             }
@@ -445,15 +445,15 @@
             "丸顔": {
                 "next_node_id": "eye_distance",
                 "settings": {
-                    "eyebrow": "imake/static/facepaints/custom/eyebrow/eyebrow arch.png",
-                    "eyebags": "imake/static/facepaints/custom/eyebags/eyebags0.png"
+                    "eyebrow": "imake/static/modes/custom/eyebrow/eyebrow arch.png",
+                    "eyebags": "imake/static/modes/custom/eyebags/eyebags0.png"
                 }
             },
             "面長": {
                 "next_node_id": "eye_distance",
                 "settings": {
-                    "eyebrow": "imake/static/facepaints/custom/eyebrow/eyebrow straight.png",
-                    "eyeshadow-sub": "imake/static/facepaints/custom/eyeshadow/eyeshadow1-0.png"
+                    "eyebrow": "imake/static/modes/custom/eyebrow/eyebrow straight.png",
+                    "eyeshadow-sub": "imake/static/modes/custom/eyeshadow/eyeshadow1-0.png"
                 }
             }
         },
@@ -484,7 +484,7 @@
             "目が離れている": {
                 "next_node_id": null,
                 "settings": {
-                    "eyeliner": "imake/static/facepaints/custom/neyeliner/1eyeliner.png"
+                    "eyeliner": "imake/static/modes/custom/neyeliner/1eyeliner.png"
                 }
             }
         },
