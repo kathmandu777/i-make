@@ -1,26 +1,18 @@
 <template>
     <div>
         <div class="keypad">
-            <div
-                v-for="(hsv, index) in currentColorPalette"
-                :key="page * 9 + index"
-                :class="'key-' + keyClassNames[index]"
-                class="card"
+            <Choices
+                :choiceList="hsvPalette"
+                @update="confirm"
+                class="choices-page"
             >
-                <input
-                    type="radio"
-                    :id="page * 9 + index"
-                    :value="hsv"
-                    v-model="selectedHSV"
-                    v-on:change="confirm()"
-                    v-shortkey.once="[keys[index]]"
-                    @shortkey="confirm(hsv)"
-                />
-                <div
-                    class="color-sample"
-                    :style="{ backgroundColor: hsvToRgbCode(hsv) }"
-                ></div>
-            </div>
+                <template v-slot:default="{ choice }">
+                    <div
+                        class="color-sample"
+                        :style="{ backgroundColor: hsvToRgbCode(choice) }"
+                    ></div>
+                </template>
+            </Choices>
 
             <img
                 class="key-0 card"
@@ -31,50 +23,18 @@
                 width="400"
                 height="200"
             />
-            <img
-                v-if="canGoToPrevPage"
-                class="key-1 card"
-                v-shortkey.once="[1]"
-                @shortkey="setPage(page - 1)"
-                @click="setPage(page - 1)"
-                src="/dist/back.png"
-                width="200"
-                height="200"
-            />
-            <img
-                v-if="canGoToNextPage"
-                class="key-3 card"
-                v-shortkey.once="[3]"
-                @shortkey="setPage(page + 1)"
-                @click="setPage(page + 1)"
-                src="/dist/next.png"
-                width="200"
-                height="200"
-            />
         </div>
     </div>
 </template>
 
 <script>
+import Choices from './Choices.vue'
 export default {
     name: 'SkinColor',
     data: function () {
         return {
             hsvPalette: [],
             selectedHSV: null,
-            page: 0,
-            keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
-            keyClassNames: [
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                'numlock',
-                'slash',
-                'asterisk',
-            ],
         }
     },
     methods: {
@@ -85,12 +45,6 @@ export default {
             if (hsv) this.selectedHSV = hsv
             await window.eel.set_skin_color(this.selectedHSV)()
         },
-        setPage(page) {
-            if (page < 0) page = 0
-            else if (page > Math.floor((this.hsvPalette.length - 1) / 9))
-                page = Math.floor((this.hsvPalette.length - 1) / 9)
-            this.page = page
-        },
         async goToMenu() {
             await window.eel.stop()()
             this.$emit('update-component', 'Menu', { resetVideoSrc: true })
@@ -100,14 +54,12 @@ export default {
             var s = hsv.s / 100
             var v = hsv.v / 100
             if (s == 0) return [v * 255, v * 255, v * 255]
-
             var rgb
             var i = parseInt(h)
             var f = h - i
             var v1 = v * (1 - s)
             var v2 = v * (1 - s * f)
             var v3 = v * (1 - s * (1 - f))
-
             switch (i) {
                 case 0:
                 case 6:
@@ -140,20 +92,10 @@ export default {
             )
         },
     },
-    computed: {
-        currentColorPalette() {
-            return this.hsvPalette.slice(this.page * 9, this.page * 9 + 9)
-        },
-        canGoToPrevPage() {
-            return this.page > 0
-        },
-        canGoToNextPage() {
-            return this.page < Math.floor((this.hsvPalette.length - 1) / 9)
-        },
-    },
     mounted: function () {
         this.getHSVPalette()
     },
+    components: { Choices },
 }
 </script>
 
@@ -176,56 +118,13 @@ export default {
     grid-area: key-0;
 }
 
-.key-1 {
-    grid-area: key-1;
-}
-
-.key-2 {
-    grid-area: key-2;
-}
-
-.key-3 {
-    grid-area: key-3;
-}
-
-.key-4 {
-    grid-area: key-4;
-}
-
-.key-5 {
-    grid-area: key-5;
-}
-
-.key-6 {
-    grid-area: key-6;
-}
-
-.key-7 {
-    grid-area: key-7;
-}
-
-.key-8 {
-    grid-area: key-8;
-}
-
-.key-9 {
-    grid-area: key-9;
-}
-
 .key-dot {
     grid-area: key-dot;
 }
 
-.key-numlock {
-    grid-area: key-numlock;
-}
-
-.key-slash {
-    grid-area: key-slash;
-}
-
-.key-asterisk {
-    grid-area: key-asterisk;
+.choices-page {
+    grid-row: 2/6;
+    grid-column: 2/5;
 }
 
 .card {
