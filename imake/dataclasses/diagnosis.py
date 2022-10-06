@@ -18,6 +18,7 @@ class Question:
 
 @dataclass
 class Answer:
+    label: str
     next_node_id: str | None
     settings: dict[str, str | tuple[float, float, float]]
     count: int = 0

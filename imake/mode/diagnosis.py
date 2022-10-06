@@ -1,9 +1,10 @@
 import re
-from typing import Any
+from typing import Any, Final
+
+import yaml
 
 from ..dataclasses import HSV, FacePaint
 from ..dataclasses.diagnosis import Node
-from ..libs.jsonc import load_jsonc
 from ..mode.base import BaseModeEffect
 
 
@@ -13,20 +14,22 @@ class DiagnosisMode(BaseModeEffect):
     ICON_PATH: str = "imake/static/modes/diagnosis/icon.png"
     MENU_IMAGE_PATH: str = "imake/static/modes/diagnosis/menu.png"
 
-    DATA_PATH: str = "imake/static/modes/diagnosis/data.jsonc"
-    FIRST_NODE_ID: str = "first"
-    FIRST_CHILD_NODE_ID: str = "1"
+    DATA_PATH: Final = "imake/static/modes/diagnosis/data.yml"
+    FIRST_NODE_ID: Final = "first"
+    FIRST_CHILD_NODE_ID: Final = "1"
 
-    SET_ANSWER_SUCCESS_MSG = "Success."
-    SET_ANSWER_ERROR_MSG = "Invalid input."
-    DIAGNOSIS_FINISH_MSG = "診断終了"
+    SET_ANSWER_SUCCESS_MSG: Final = "Success."
+    SET_ANSWER_ERROR_MSG: Final = "Invalid input."
+    DIAGNOSIS_FINISH_MSG: Final = "診断終了"
 
-    SUB_HSV_DIFF = (0.0, 25.0, -10.0)
+    SUB_HSV_DIFF: Final = (0.0, 25.0, -10.0)
 
-    CALL_FUNC_ID: int = -1
+    CALL_FUNC_ID: Final = -1
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
-        self.data = load_jsonc(self.DATA_PATH)
+        with open(self.DATA_PATH, "r") as f:
+            self.data = yaml.safe_load(f)
+
         self.node = Node(**self.data[self.FIRST_NODE_ID])
         self.child_node_id = self.FIRST_CHILD_NODE_ID
         self.settings: dict[str, Any] = {}
@@ -74,7 +77,7 @@ class DiagnosisMode(BaseModeEffect):
                     self.settings[key].append(value)
 
             question_text = self.node.category or self.node.questions[self.FIRST_CHILD_NODE_ID].text
-            self.results[question_text] = max_answer_id
+            self.results[question_text] = self.node.answers[max_answer_id].label
 
             next_node_id = self.node.answers[max_answer_id].next_node_id
 

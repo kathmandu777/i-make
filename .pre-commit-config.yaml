@@ -49,6 +49,7 @@ repos:
           - id: mypy
             additional_dependencies:
                 - 'pydantic'
+                - 'types-PyYAML'
     - repo: https://github.com/myint/docformatter
       rev: v1.5.0
       hooks:
