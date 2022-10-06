@@ -195,6 +195,6 @@ export default {
     overflow: hidden;
     border-radius: 20px;
     border: none;
-    background-color: #3a86ff;
+    background-color: #66c5a9;
 }
 </style>
