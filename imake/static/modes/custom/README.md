@@ -1,5 +1,7 @@
 # Custom Mode
 
+## Directory Structure
+
 メイク画像は各パーツ(部分)ごとにディレクトリを切って格納
 
 ```sh
@@ -40,3 +42,7 @@
     ├── u-glitterS base.png
     └── u-glitterS.png
 ```
+
+## Naming Rules
+
+- ２枚重ねによって表現されるパーツは、色変更する画像を `hoge.png` として、色変更しない画像を `hoge-base.png` とする

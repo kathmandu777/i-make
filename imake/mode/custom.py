@@ -1,6 +1,6 @@
 import os
 from dataclasses import asdict
-from typing import Any
+from typing import Any, Final
 
 from ..dataclasses import FacePaint
 from ..mode.base import BaseModeEffect
@@ -12,12 +12,12 @@ class CustomMode(BaseModeEffect):
     ICON_PATH: str = "imake/static/modes/custom/icon.png"
     MENU_IMAGE_PATH: str = "imake/static/modes/custom/menu.png"
 
-    MAKEUP_IMAGES_DIR_PATH = "imake/static/modes/custom"
+    MAKEUP_IMAGES_DIR_PATH: str = "imake/static/modes/custom"
 
-    THUMBNAIL_IMAGE_NAME = "thumbnail.png"
-    THUMBNAIL_DIR_NAME = "thumbnails"
+    THUMBNAIL_IMAGE_NAME: Final = "thumbnail.png"
+    THUMBNAIL_DIR_NAME: Final = "thumbnails"
 
-    IGNORE_DIRS = ["skin", "README.md"]
+    IGNORE_DIRS: Final = ["skin", "README.md"]
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)

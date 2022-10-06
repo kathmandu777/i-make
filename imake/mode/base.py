@@ -1,6 +1,6 @@
 import os
 from dataclasses import asdict
-from typing import Any
+from typing import Any, Final
 
 import cv2
 import numpy as np
@@ -13,8 +13,8 @@ from ..libs.effect import Effect
 class BaseMode:
     """Base class for all modes."""
 
-    ICON_PATH: str = ""
-    MENU_IMAGE_PATH: str = ""
+    ICON_PATH: str
+    MENU_IMAGE_PATH: str
 
     @classmethod
     def icon_path_for_frontend(cls) -> str:
@@ -39,16 +39,16 @@ class BaseModeEffect(BaseMode, Effect):
     """Base class for all modes that use Effect."""
 
     # Path to the directory containing the images for the choices and thumbnails. Must be overridden.
-    MAKEUP_IMAGES_DIR_PATH: str = ""
-    THUMBNAILS_DIR_PATH: str = ""
+    MAKEUP_IMAGES_DIR_PATH: str
+    THUMBNAILS_DIR_PATH: str
 
-    SKIN_IMAGE_PATH: str = "imake/static/modes/custom/skin/skin.png"
+    SKIN_IMAGE_PATH: Final = "imake/static/modes/custom/skin/skin.png"
 
-    B255_HUE = 120
-    B255_SAT = 255
-    NO_CHANGE_VAL = 0
+    B255_HUE: Final = 120
+    B255_SAT: Final = 255
+    NO_CHANGE_VAL: Final = 0
 
-    BASE_IMAGE_SUFFIX = "-base.png"  # ２枚重ねによって作られるメイク画像の色変更をしない方の画像名のsuffix
+    BASE_IMAGE_SUFFIX: Final = "-base.png"  # ２枚重ねによって作られるメイク画像の色変更をしない方の画像名のsuffix
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
 
