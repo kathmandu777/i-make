@@ -57,7 +57,7 @@ class Effect:
             raise ValueError("Effect image size must be 1024x1024")
         self.effect_image = effect_image
 
-    def _create_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray) -> np.ndarray:
+    def create_effect(self, target_image: np.ndarray, target_landmarks: np.ndarray) -> np.ndarray:
         """Creates effect image that can be rendered into an image the size of
         the target image.
 

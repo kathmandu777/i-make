@@ -97,13 +97,13 @@ class DiagnosisMode(BaseModeEffect):
             if "color" in key:
                 continue
 
-            color: tuple[float, float, float] | None = self.settings.get(f'{key.replace("-sub","")}-color')
-            if color is not None:
+            if not (f'{key.replace("-sub","")}-color' in self.settings.keys()):
+                hsv = None
+            else:
+                color: tuple[float, float, float] = self.settings[(f'{key.replace("-sub","")}-color')]
                 if "-sub" in key:
                     color = tuple([x + y for x, y in zip(color, self.SUB_HSV_DIFF)])
                 hsv = HSV(h=color[0], s=color[1], v=color[2])
-            else:
-                hsv = None
 
             for value in values:
                 dir_path, filename = value.rsplit("/", 1)
