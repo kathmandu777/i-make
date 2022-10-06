@@ -272,9 +272,10 @@ class IMake:
             if image is None:
                 raise ValueError("failed to get image")
 
-            landmarks = self.face_mesh.get_landmarks(image)
-            if landmarks is None:
-                return "顔をカメラに向けてください", image
+            try:
+                landmarks = self.face_mesh.get_landmarks(image)
+            except Exception as e:
+                return e.args[0], image
 
             effect = EyeDiagnosis().render_eye_edge(landmarks, image, do_overlay=False)
             try:
