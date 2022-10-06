@@ -34,7 +34,7 @@
                             :key="index"
                         >
                             <button
-                                v-shortkey.once="[index + 1]"
+                                v-shortkey.once="[keys[index]]"
                                 @shortkey="setAnswer(index)"
                                 @click="setAnswer(index)"
                                 class="css-button-arrow--sky"
@@ -67,6 +67,7 @@ export default {
             choices: [],
             config: {},
             diagnosisResult: null,
+            keys: ['/', 8, 5, 2], // 選択肢が4つ以下前提
         }
     },
     methods: {
