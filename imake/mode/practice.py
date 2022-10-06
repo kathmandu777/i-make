@@ -6,8 +6,8 @@ from ..mode.base import BaseModeEffect
 class PracticeMode(BaseModeEffect):
     """Practice makeup mode."""
 
-    CHOICE_IMAGES_DIR_PATH = "imake/static/facepaints/practice"
-    THUMBNAIL_IMAGES_DIR_PATH = "imake/static/facepaints/practice/thumbnails"
+    MAKEUP_IMAGES_DIR_PATH = "imake/static/facepaints/practice"
+    THUMBNAILS_DIR_PATH = "imake/static/facepaints/practice/thumbnails"
 
     ICON_PATH: str = "imake/static/facepaints/practice/icon.png"
     MENU_IMAGE_PATH: str = "imake/static/facepaints/practice/menu.png"

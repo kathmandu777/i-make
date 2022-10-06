@@ -15,14 +15,13 @@ class BaseMode:
 
     ICON_PATH: str = ""
     MENU_IMAGE_PATH: str = ""
-    DESCRIPTION: str = ""
 
     @classmethod
     def icon_path_for_frontend(cls) -> str:
         """Return icon path for frontend.
 
         Returns:
-            _type_: icon path
+            str: icon path
         """
         return "../" + cls.ICON_PATH.replace("imake/static/", "")
 
@@ -31,7 +30,7 @@ class BaseMode:
         """Return menu image path for frontend.
 
         Returns:
-            _type_: menu image path
+            str: menu image path
         """
         return "../" + cls.MENU_IMAGE_PATH.replace("imake/static/", "")
 
@@ -39,9 +38,9 @@ class BaseMode:
 class BaseModeEffect(BaseMode, Effect):
     """Base class for all modes that use Effect."""
 
-    # Path to the directory containing the images for the choices. Must be overridden.
-    CHOICE_IMAGES_DIR_PATH: str = ""
-    THUMBNAIL_IMAGES_DIR_PATH: str = ""
+    # Path to the directory containing the images for the choices and thumbnails. Must be overridden.
+    MAKEUP_IMAGES_DIR_PATH: str = ""
+    THUMBNAILS_DIR_PATH: str = ""
 
     SKIN_IMAGE_PATH: str = "imake/static/facepaints/custom/skin/skin.png"
 
@@ -49,10 +48,20 @@ class BaseModeEffect(BaseMode, Effect):
     B255_SAT = 255
     NO_CHANGE_VAL = 0
 
-    BASE_IMAGE_SUFFIX = "-base.png"
+    BASE_IMAGE_SUFFIX = "-base.png"  # ２枚重ねによって作られるメイク画像の色変更をしない方の画像名のsuffix
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
+
         super().__init__(*args, **kwargs)
+
+    @classmethod
+    def get_class_vars(cls) -> dict[str, Any]:
+        """Get the class variables.
+
+        Returns:
+            dict[str, Any]: class variables.
+        """
+        return {key: value for key, value in vars(cls).items() if not key.startswith("__")}
 
     def set_effect_image_by_facepaints(self, facepaints: list[FacePaint]) -> None:
         """Set effect image from path.
@@ -60,31 +69,34 @@ class BaseModeEffect(BaseMode, Effect):
         Args:
             facepaints (_type_): list of FacePaint
         """
-        self.facepaints = facepaints
-        self.set_effect_image(self._overlay_effect_images())
+        self.set_effect_image(self._overlay_effect_images(facepaints))
 
-    def _overlay_effect_images(self) -> np.ndarray:
+    def _overlay_effect_images(self, facepaints: list[FacePaint]) -> np.ndarray:
         """Overlay effect images on skin image.
 
+        Args:
+            facepaints (_type_): list of FacePaint
         Returns:
-            _type_: effect image for EffectCreator
+            np.ndarray: effect image for EffectCreator
         """
         if self.skin_image is None:
             raise ValueError("skin_image is None")
 
         effect_image = self.skin_image
-        for facepaint in self.facepaints:
+        for facepaint in facepaints:
             image = cv2.imread(facepaint.image_path, cv2.IMREAD_UNCHANGED)
             if image is None:
-                raise ValueError(f"Failed to read image: {facepaint.image_path}")
+                raise Exception(f"Failed to read image: {facepaint.image_path}")
             if not (image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT and image.shape[1] == Effect.EFFECT_IMAGE_WIDTH):
                 raise ValueError("Effect image size must be 1024x1024")
 
-            base_image_path = facepaint.image_path.replace(".png", self.BASE_IMAGE_SUFFIX)
+            base_image_path = facepaint.image_path.replace(
+                ".png", self.BASE_IMAGE_SUFFIX
+            )  # ２枚重ねによって作られるメイク画像の色変更をしない方の画像名
             if os.path.exists(base_image_path):
                 base_image = cv2.imread(base_image_path, cv2.IMREAD_UNCHANGED)
                 if base_image is None:
-                    raise ValueError(f"Failed to read image: {base_image_path}")
+                    raise Exception(f"Failed to read image: {base_image_path}")
                 if not (
                     base_image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT
                     and base_image.shape[1] == Effect.EFFECT_IMAGE_WIDTH
@@ -120,7 +132,7 @@ class BaseModeEffect(BaseMode, Effect):
         """
         base_skin_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
         if base_skin_image is None:
-            raise ValueError(f"Failed to read image: {self.SKIN_IMAGE_PATH}")
+            raise Exception(f"Failed to read image: {self.SKIN_IMAGE_PATH}")
         if not (
             base_skin_image.shape[0] == Effect.EFFECT_IMAGE_HEIGHT
             and base_skin_image.shape[1] == Effect.EFFECT_IMAGE_WIDTH
@@ -143,7 +155,7 @@ class BaseModeEffect(BaseMode, Effect):
         hue = hsv.h / 2
         sat = hsv.s / 100 * 255
         val = hsv.v / 100 * 255
-        image_wo_alpha, mask = self._convert_bgra_to_bgr(image, True)
+        image_wo_alpha, mask = self._convert_bgra_to_bgr(image)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
         image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == self.B255_HUE, hue, image_hsv[:, :, 0])
@@ -162,19 +174,16 @@ class BaseModeEffect(BaseMode, Effect):
         else:
             return image_bgr
 
-    def _convert_bgra_to_bgr(self, image: np.ndarray, return_mask: bool) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
+    def _convert_bgra_to_bgr(self, image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Convert RGBA image to RGB image.
 
         Args:
-            image (_type_): RGBA image
-            return_mask (_type_): アルファチャンネルの配列をreutrnするかどうか
+            image (np.ndarray): RGBA image
         Returns:
-            _type_: BGR imageもしくは BGRとA
+            _type_: BGRとA
         """
         mask = image[:, :, 3]
-        if return_mask:
-            return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8), mask
-        return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
+        return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8), mask
 
     @classmethod
     def get_choice_facepaints(cls) -> list[dict]:
@@ -183,15 +192,15 @@ class BaseModeEffect(BaseMode, Effect):
         Returns:
             list[FacePaint]: メイクのリスト
         """
-        icon_file = cls.ICON_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
-        menu_image_file = cls.MENU_IMAGE_PATH.replace(cls.CHOICE_IMAGES_DIR_PATH, "").replace("/", "")
+        icon_file = cls.ICON_PATH.replace(cls.MAKEUP_IMAGES_DIR_PATH, "").replace("/", "")
+        menu_image_file = cls.MENU_IMAGE_PATH.replace(cls.MAKEUP_IMAGES_DIR_PATH, "").replace("/", "")
         facepaints = [
             FacePaint(
                 filename=file,
-                image_dir_path=cls.CHOICE_IMAGES_DIR_PATH,
-                thumbnail_dir_path=cls.THUMBNAIL_IMAGES_DIR_PATH,
+                image_dir_path=cls.MAKEUP_IMAGES_DIR_PATH,
+                thumbnail_dir_path=cls.THUMBNAILS_DIR_PATH,
             )
-            for file in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
+            for file in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
             if file.endswith(".png")
             and file != menu_image_file
             and file != icon_file
@@ -200,17 +209,9 @@ class BaseModeEffect(BaseMode, Effect):
         return [
             {
                 **asdict(facepaint),
+                # FIXME: facepaintのpropertyもasdictに含めたい
                 "thumbnail_path_for_frontend": facepaint.thumbnail_path_for_frontend,
-                "image_path": facepaint.image_path,
+                "image_path": facepaint.image_path,  # FIXME: ditto
             }
             for facepaint in facepaints
         ]
-
-    @classmethod
-    def get_class_vars(cls) -> dict[str, Any]:
-        """Get the class variables.
-
-        Returns:
-            dict[str, Any]: class variables.
-        """
-        return {key: value for key, value in vars(cls).items() if not key.startswith("__")}

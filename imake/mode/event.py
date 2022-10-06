@@ -6,8 +6,8 @@ from ..mode.base import BaseModeEffect
 class EventMode(BaseModeEffect):
     """Event makeup mode."""
 
-    CHOICE_IMAGES_DIR_PATH = "imake/static/facepaints/event"
-    THUMBNAIL_IMAGES_DIR_PATH = "imake/static/facepaints/event/thumbnails"
+    MAKEUP_IMAGES_DIR_PATH = "imake/static/facepaints/event"
+    THUMBNAILS_DIR_PATH = "imake/static/facepaints/event/thumbnails"
 
     ICON_PATH: str = "imake/static/facepaints/event/icon.png"
     MENU_IMAGE_PATH: str = "imake/static/facepaints/event/menu.png"
