@@ -11,6 +11,7 @@ numpy = "^1.23.2"
 mediapipe = "^0.8.10"
 Eel = "^0.14.0"
 pydantic = "^1.10.2"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
