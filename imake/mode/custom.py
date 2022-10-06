@@ -9,7 +9,7 @@ from ..mode.base import BaseModeEffect
 class CustomMode(BaseModeEffect):
     """Custom makeup mode."""
 
-    CHOICE_IMAGES_DIR_PATH = "imake/static/facepaints/custom"
+    MAKEUP_IMAGES_DIR_PATH = "imake/static/facepaints/custom"
     ICON_PATH: str = "imake/static/facepaints/custom/icon.png"
     MENU_IMAGE_PATH: str = "imake/static/facepaints/custom/menu.png"
 
@@ -34,11 +34,11 @@ class CustomMode(BaseModeEffect):
         facepaints = [
             FacePaint(
                 filename=file,
-                image_dir_path=os.path.join(cls.CHOICE_IMAGES_DIR_PATH, part_kind),
-                thumbnail_dir_path=os.path.join(cls.CHOICE_IMAGES_DIR_PATH, part_kind, cls.THUMBNAIL_DIR_NAME),
+                image_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind),
+                thumbnail_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind, cls.THUMBNAIL_DIR_NAME),
                 part_kind=part_kind,
             )
-            for file in os.listdir(os.path.join(cls.CHOICE_IMAGES_DIR_PATH, part_kind))
+            for file in os.listdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
             if file.endswith(".png") and not file == cls.THUMBNAIL_IMAGE_NAME and not (cls.BASE_IMAGE_SUFFIX in file)
         ]
         return [
@@ -61,10 +61,10 @@ class CustomMode(BaseModeEffect):
             dict(
                 part_kind=dirname,
                 thumbnail_path_for_frontend="../"
-                + os.path.join(cls.CHOICE_IMAGES_DIR_PATH, dirname, cls.THUMBNAIL_IMAGE_NAME).replace(
+                + os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, dirname, cls.THUMBNAIL_IMAGE_NAME).replace(
                     "imake/static/", ""
                 ),
             )
-            for dirname in os.listdir(cls.CHOICE_IMAGES_DIR_PATH)
+            for dirname in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
             if not dirname.endswith(".png") and not dirname.startswith(".") and dirname not in cls.IGNORE_DIRS
         ]
