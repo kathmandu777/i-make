@@ -12,10 +12,9 @@
         />
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
-                <!-- <label class="circle-number">{{index+1}} </label> -->
                 <img
                     :src="mode.menu_image_path"
-                    v-shortkey.once="[index + 1]"
+                    v-shortkey.once="[keys[index]]"
                     @shortkey="setMode(mode)"
                     @click="setMode(mode)"
                     role="button"
@@ -32,6 +31,7 @@ export default {
     data: function () {
         return {
             modes: [],
+            keys: ['/', 8, 5, 2, 0], // 5モード前提
         }
     },
     methods: {
@@ -96,18 +96,6 @@ export default {
     align-items: center;
     margin: 10px;
 }
-
-/* .circle-number {
-    display: block;
-    width: 100px;
-    height: 100px;
-    margin: auto 20px;
-    font-size: 80px;
-    background-color: #aadfec;
-    border-radius: 50%;
-    text-align: center;
-    box-sizing: border-box;
-} */
 
 .mode-button {
     width: calc(100% - 120px);
