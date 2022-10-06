@@ -68,7 +68,9 @@ export default {
         //     this.selectedPartKind=null;
         // },
         async confirm() {
-            await window.eel.set_effect_image(this.selectedFacepaints)()
+            await window.eel.set_effect_image_by_facepaints(
+                this.selectedFacepaints
+            )()
             await window.eel.start()
         },
     },

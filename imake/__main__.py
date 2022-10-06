@@ -19,7 +19,6 @@ class IMake:
 
     def __init__(self, camera_id: int = 0):
         self.face_mesh = FaceMesh(refine_landmarks=True)
-        self.camera_id = camera_id
         self.cap = cv2.VideoCapture(camera_id)
 
         self.skin_hsv = HSV(h=14, s=36, v=100)
@@ -44,8 +43,8 @@ class IMake:
             for mode in Mode
         ]
 
-    def set_effect_image(self, facepaints: list[dict] | dict) -> None:
-        """Set effect image from path.
+    def set_effect_image_by_facepaints(self, facepaints: list[dict] | dict) -> None:
+        """Set effect image by facepaints.
 
         Args:
             facepaints (_type_): facepaint
@@ -135,7 +134,7 @@ class IMake:
 
     def stop(self) -> None:
         self._kill_back_process()
-        eel.setVideoSrc("/dist/guide.png")
+        eel.setVideoSrc("/dist/guide.png")  # FIXME
 
     def _get_image(self) -> np.ndarray:
         """Get image.
@@ -269,8 +268,6 @@ class IMake:
         question = self.mode.node.questions[self.mode.child_node_id]
         if question.function == "is_longer_distance_between_eye_than_eye_size":  # FIXME: hard coding
             image = self._get_image()
-            if image is None:
-                raise ValueError("failed to get image")
 
             try:
                 landmarks = self.face_mesh.get_landmarks(image)
