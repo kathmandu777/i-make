@@ -17,9 +17,10 @@ from .mode import BaseModeEffectType, CustomMode, DiagnosisMode, Mode
 class IMake:
     EEL_SLEEP_TIME: Final = 0.00000001
 
-    def __init__(self, camera_id: int = 0):
+    def __init__(self, camera_id: int = 0, scale: float = 1.0) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
+        self.scale = scale
 
         self.skin_hsv = HSV(h=14, s=36, v=100)
         self.back_process = None
@@ -111,7 +112,7 @@ class IMake:
 
         effect_w_alpha = self.mode.create_effect(image, landmarks)  # type: ignore
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
-        cropped = self._crop_center_x(effect)
+        cropped = self._crop_and_zoom(effect, self.scale)
         return cv2.flip(cropped, 1) if mirror else cropped
 
     def start(self) -> None:
@@ -159,6 +160,20 @@ class IMake:
         mask = image[:, :, 3]
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
 
+    def _crop_and_zoom(self, image: np.ndarray, zoom: float = 1.0) -> np.ndarray:
+        """Crop and zoom.
+
+        Args:
+            image (_type_): image
+            zoom (float, optional): zoom
+
+        Returns:
+            _type_: cropped and zoomed image
+        """
+        cropped_image = self._crop_center_x(image)
+        zoomed_image = cv2.resize(cropped_image, None, fx=zoom, fy=zoom)
+        return self._trim_center(zoomed_image, cropped_image.shape[1], cropped_image.shape[0])
+
     def _crop_center_x(self, image: np.ndarray) -> np.ndarray:
         """Crop center x.
 
@@ -169,6 +184,14 @@ class IMake:
             _type_: image
         """
         return image[:, image.shape[1] // 4 : image.shape[1] * 3 // 4, :]
+
+    def _trim_center(self, img: np.ndarray, width: int, height: int) -> np.ndarray:
+        h, w = img.shape[:2]
+        top = int((h / 2) - (height / 2))
+        bottom = top + height
+        left = int((w / 2) - (width / 2))
+        right = left + width
+        return img[top:bottom, left:right]
 
     def get_config(self) -> dict[str, Any]:
         """Get config.
@@ -244,7 +267,7 @@ class IMake:
             eel.sleep(self.EEL_SLEEP_TIME)
             index_and_choice, effect = self._get_choice_and_effect_diagnosis_func()
 
-            cropped = self._crop_center_x(effect)
+            cropped = self._crop_and_zoom(effect, self.scale)
             _, imencode_image = cv2.imencode(".jpg", cv2.flip(cropped, 1))
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
@@ -316,9 +339,10 @@ class IMake:
 def main() -> None:
     parser = argparse.ArgumentParser(description="iMake!")
     parser.add_argument("--camera_id", type=int, default=0, help="camera id")
+    parser.add_argument("--scale", type=float, default=1.0, help="scale")
     args = parser.parse_args()
 
-    imake = IMake(camera_id=args.camera_id)
+    imake = IMake(camera_id=args.camera_id, scale=args.scale)
 
     eel.init("imake/static")
     for attr in dir(imake):
