@@ -5,12 +5,12 @@
                 <h2 class="mode">診断モード</h2>
 
                 <h3 class="question">{{ question }}</h3>
-                <h3 v-if="!choices" class="result">{{ result }}</h3>
-                <div v-if="!!diagnosisResult" class="diagnosis-results">
+                <h3 v-if="!choices" class="response">{{ response }}</h3>
+                <div v-if="!!results" class="results">
                     <p
-                        v-for="(value, key) in diagnosisResult"
+                        v-for="(value, key) in results"
                         :key="key"
-                        class="diagnosis-result"
+                        class="result"
                     >
                         {{ key }}: {{ value }}
                     </p>
@@ -19,7 +19,7 @@
                     <div class="container">
                         <div v-if="!choices" class="choice">
                             <button
-                                class="css-button-arrow--sky"
+                                class="css-button-arrow"
                                 v-shortkey.once="['enter']"
                                 @shortkey="setAnswer(config.CALL_FUNC_ID)"
                                 @click="setAnswer(config.CALL_FUNC_ID)"
@@ -37,7 +37,7 @@
                                 v-shortkey.once="[keys[index]]"
                                 @shortkey="setAnswer(index)"
                                 @click="setAnswer(index)"
-                                class="css-button-arrow--sky"
+                                class="css-button-arrow"
                             >
                                 {{ choice }}
                             </button>
@@ -63,10 +63,10 @@ export default {
     data: function () {
         return {
             question: '',
-            result: '',
+            response: '',
             choices: [],
             config: {},
-            diagnosisResult: null,
+            results: null,
             keys: ['/', 8, 5, 2], // 選択肢が4つ以下前提
         }
     },
@@ -81,12 +81,12 @@ export default {
         async setAnswer(index) {
             const res = await window.eel.set_answer(index)()
             const msg = res[0]
-            const diagnosisResult = res[1]
+            const results = res[1]
             if (msg == this.config.SET_ANSWER_ERROR_MSG) alert(res)
             else if (msg == this.config.DIAGNOSIS_FINISH_MSG) {
                 this.question = '診断終了'
                 this.choices = []
-                this.diagnosisResult = diagnosisResult
+                this.results = results
                 await window.eel.set_effect_image_by_settings()()
                 await window.eel.start()
             } else this.getQuestionAndChoices()
@@ -94,16 +94,16 @@ export default {
         async getConfig() {
             this.config = await window.eel.get_config()()
         },
-        setResult(value) {
-            this.result = value
+        setResponse(value) {
+            this.response = value
         },
         async goToMenu() {
             await window.eel.stop()()
-            this.$emit('update-component', 'Menu', { resetVideoSrc: true })
+            this.$emit('update-component', 'Menu')
         },
     },
     mounted: function () {
-        window.eel.expose(this.setResult, 'setResult')
+        window.eel.expose(this.setResponse, 'setResponse')
         this.getConfig()
         this.getQuestionAndChoices()
     },
@@ -143,7 +143,7 @@ export default {
     text-align: center;
 }
 
-.result {
+.response {
     font-size: 55px;
     margin: 10px 40px;
     padding: 0;
@@ -175,13 +175,13 @@ export default {
     justify-content: space-around;
 }
 
-.diagnosis-result {
+.result {
     font-size: 40px;
     margin: 0;
     padding: 0;
 }
 
-.css-button-arrow--sky {
+.css-button-arrow {
     width: calc(100% - 60px);
     color: #fff;
     padding: 15px 30px;

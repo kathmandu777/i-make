@@ -1,5 +1,5 @@
 <template>
-    <img id="video" width="960" height="1080" :src="videoSrc" />
+    <img width="960" height="1080" :src="videoSrc" />
 </template>
 
 <script>

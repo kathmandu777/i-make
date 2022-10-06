@@ -273,7 +273,7 @@ class IMake:
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
 
             response = index_and_choice if isinstance(index_and_choice, str) else index_and_choice[1].text
-            eel.setResult(response)
+            eel.setResponse(response)
 
     def _get_choice_and_effect_diagnosis_func(self) -> tuple[tuple[int, Choice] | str, np.ndarray]:
         """Get choice image diagnosis func.
