@@ -60,7 +60,7 @@ export default {
         },
         async goToMenu() {
             await window.eel.stop()()
-            this.$emit('update-component', 'Menu', { resetVideoSrc: true })
+            this.$emit('update-component', 'Menu')
         },
         setPart(partKind) {
             if (partKind) this.selectedPartKind = partKind

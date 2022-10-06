@@ -51,7 +51,7 @@ export default {
             selectedChoice: null,
             page: 0,
 
-            //UI
+            // UI constants
             keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
             keyClassNames: [
                 '4',

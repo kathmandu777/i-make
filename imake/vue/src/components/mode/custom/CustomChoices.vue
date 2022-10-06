@@ -65,7 +65,7 @@ export default {
         },
         async goToMenu() {
             await window.eel.stop()()
-            this.$emit('update-component', 'Menu', { resetVideoSrc: true })
+            this.$emit('update-component', 'Menu')
         },
         hsvToRgbCode(hsv) {
             var h = hsv.h / 60
