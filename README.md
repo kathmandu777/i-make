@@ -44,7 +44,7 @@ commitする前に実行するコマンドを定義するツールです。`.pre
 
 ## Directory Structure
 
-### i-make
+### imake
 
 iMake! に必要なファイルやモジュールが入っているメインのソースコードです。
 このコードの実行に必要となるライブラリの情報は、`pyproject.toml` の [tool.poetry.dependencies] タグに記載しています。

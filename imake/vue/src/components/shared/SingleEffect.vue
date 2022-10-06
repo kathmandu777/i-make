@@ -92,7 +92,9 @@ export default {
         },
         async confirm(facepaints) {
             if (facepaints) this.selectedFacepaint = facepaints
-            await window.eel.set_effect_image(this.selectedFacepaint)()
+            await window.eel.set_effect_image_by_facepaints(
+                this.selectedFacepaint
+            )()
             await window.eel.start()
         },
         setPage(page) {
