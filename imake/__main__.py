@@ -94,21 +94,23 @@ class IMake:
         ]
         return [asdict(hsv) for hsv in palette]
 
-    def _process(self, mirror: bool = True) -> np.ndarray | None:
+    def _process(self, mirror: bool = True) -> np.ndarray:
         """Process.
 
         Returns:
             _type_: effect(BGR)
         """
-        image = self._get_image()
-        if image is None:
-            return None
+        try:
+            image = self._get_image()
+        except Exception as e:
+            raise e
 
-        landmarks = self.face_mesh.get_landmarks(image)
-        if landmarks is None:
-            return None
+        try:
+            landmarks = self.face_mesh.get_landmarks(image)
+        except Exception as e:
+            raise e
 
-        effect_w_alpha = self.mode.create_effect(image, landmarks)
+        effect_w_alpha = self.mode.create_effect(image, landmarks)  # type: ignore
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
         cropped = self._crop_center_x(effect)
         return cv2.flip(cropped, 1) if mirror else cropped
@@ -121,8 +123,10 @@ class IMake:
     def _start(self) -> None:
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
-            effect = self._process()
-            if effect is None:
+            try:
+                effect = self._process()
+            except Exception as e:
+                print(e)
                 continue
 
             _, imencode_image = cv2.imencode(".jpg", effect)
@@ -133,7 +137,7 @@ class IMake:
         self._kill_back_process()
         eel.setVideoSrc("/dist/guide.png")
 
-    def _get_image(self) -> np.ndarray | None:
+    def _get_image(self) -> np.ndarray:
         """Get image.
 
         Returns:
@@ -141,8 +145,7 @@ class IMake:
         """
         ret, image = self.cap.read()
         if not ret:
-            print("failed to get image")
-            return None
+            raise Exception("Failed to get image")
         return image
 
     def _convert_rgba_to_rgb(self, image: np.ndarray) -> np.ndarray:
@@ -195,7 +198,7 @@ class IMake:
             _type_: question and choices
         """
         assert isinstance(self.mode, DiagnosisMode)
-        return self.mode.get_question_and_choices()
+        return self.mode.get_question_and_choices()  # type: ignore
 
     def set_answer(self, answer: int) -> tuple[str, dict[str, str] | None]:
         """Set answer.

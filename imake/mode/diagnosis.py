@@ -102,7 +102,7 @@ class DiagnosisMode(BaseModeEffect):
             else:
                 color: tuple[float, float, float] = self.settings[(f'{key.replace("-sub","")}-color')]
                 if "-sub" in key:
-                    color = tuple([x + y for x, y in zip(color, self.SUB_HSV_DIFF)])
+                    color = tuple([x + y for x, y in zip(color, self.SUB_HSV_DIFF)])  # type: ignore # FIXME
                 hsv = HSV(h=color[0], s=color[1], v=color[2])
 
             for value in values:
