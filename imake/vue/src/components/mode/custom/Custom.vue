@@ -38,6 +38,13 @@
             >
                 Parts
             </button>
+
+            <img
+                class="key-2 card"
+                :src="kwargs.modeIconPath"
+                width="200"
+                height="200"
+            />
         </div>
     </div>
 </template>
@@ -47,6 +54,7 @@ import Choices from '@/components/shared/Choices.vue'
 import CustomChoices from './CustomChoices.vue'
 export default {
     name: 'CustomMode',
+    props: ['kwargs'],
     data: function () {
         return {
             partKinds: [],
