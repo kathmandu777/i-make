@@ -1,4 +1,3 @@
-# TODO: あまり美しくないラッパーなので、改善したい
 # https://github.com/google/mediapipe/blob/master/mediapipe/python/solutions/face_mesh.py
 
 from typing import Final
@@ -28,11 +27,11 @@ class FaceMesh:
         )
         self.face_mesh_results = None
 
-    def get_landmarks(self, image: np.ndarray) -> np.ndarray | None:
+    def get_landmarks(self, image: np.ndarray) -> np.ndarray:
         """Get landmarks.
 
         Args:
-            image (_type_): image(BGR)
+            image (np.ndarray): image(BGR)
 
         Returns:
             _type_: landmarks
@@ -41,7 +40,7 @@ class FaceMesh:
         self.face_mesh_results = self.face_mesh.process(image)
 
         if not self.face_mesh_results.multi_face_landmarks:  # type: ignore
-            return None
+            raise Exception("No face detected.")
 
         landmarks = []
         for landmark in self.face_mesh_results.multi_face_landmarks[0].landmark:  # type: ignore
