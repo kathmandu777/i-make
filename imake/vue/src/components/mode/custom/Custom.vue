@@ -29,9 +29,15 @@
                 height="200"
             />
 
-            <!-- <button v-if="!!selectedPartKind" class="key-dot card" v-shortkey.once="['.']" @shortkey="goToParts()"
-                @click="goToParts">Parts</button> -->
-            <!-- TODO: 戻るボタン -->
+            <button
+                v-if="!!selectedPartKind"
+                class="key-dot card"
+                v-shortkey.once="['.']"
+                @shortkey="goToParts()"
+                @click="goToParts"
+            >
+                Parts
+            </button>
         </div>
     </div>
 </template>
@@ -64,9 +70,9 @@ export default {
             this.selectedPartKind = null
             this.confirm()
         },
-        // goToParts() {
-        //     this.selectedPartKind=null;
-        // },
+        goToParts() {
+            this.selectedPartKind = null
+        },
         async confirm() {
             await window.eel.set_effect_image_by_facepaints(
                 this.selectedFacepaints

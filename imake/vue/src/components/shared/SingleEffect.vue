@@ -1,27 +1,19 @@
 <template>
     <div>
         <div class="keypad">
-            <div
-                v-for="(facepaint, index) in pageFacepaints"
-                :key="page * 9 + index"
-                :class="'key-' + keyClassNames[index]"
-                class="card"
+            <Choices
+                :choiceList="facepaints"
+                @update="confirm"
+                class="choices-page"
             >
-                <input
-                    type="radio"
-                    :id="page * 9 + index"
-                    :value="facepaint"
-                    v-model="selectedFacepaint"
-                    v-on:change="confirm()"
-                    v-shortkey.once="[keys[index]]"
-                    @shortkey="confirm(facepaint)"
-                />
-                <img
-                    :src="facepaint.thumbnail_path_for_frontend"
-                    width="195"
-                    height="195"
-                />
-            </div>
+                <template v-slot:default="{ choice }">
+                    <img
+                        :src="choice.thumbnail_path_for_frontend"
+                        width="195"
+                        height="195"
+                    />
+                </template>
+            </Choices>
 
             <img
                 class="key-0 card"
@@ -30,26 +22,6 @@
                 @click="goToMenu"
                 src="/dist/home.png"
                 width="400"
-                height="200"
-            />
-            <img
-                v-if="canGoToPrevPage"
-                class="key-1 card"
-                v-shortkey.once="[1]"
-                @shortkey="setPage(page - 1)"
-                @click="setPage(page - 1)"
-                src="/dist/back.png"
-                width="200"
-                height="200"
-            />
-            <img
-                v-if="canGoToNextPage"
-                class="key-3 card"
-                v-shortkey.once="[3]"
-                @shortkey="setPage(page + 1)"
-                @click="setPage(page + 1)"
-                src="/dist/next.png"
-                width="200"
                 height="200"
             />
 
@@ -64,6 +36,7 @@
 </template>
 
 <script>
+import Choices from './Choices.vue'
 export default {
     name: 'SingleEffect',
     props: ['modeIconPath'],
@@ -71,19 +44,6 @@ export default {
         return {
             facepaints: [],
             selectedFacepaint: [],
-            page: 0,
-            keys: [4, 5, 6, 7, 8, 9, 'numlock', '/', '*'],
-            keyClassNames: [
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                'numlock',
-                'slash',
-                'asterisk',
-            ],
         }
     },
     methods: {
@@ -97,31 +57,15 @@ export default {
             )()
             await window.eel.start()
         },
-        setPage(page) {
-            if (page < 0) page = 0
-            else if (page > Math.floor((this.facepaints.length - 1) / 9))
-                page = Math.floor((this.facepaints.length - 1) / 9)
-            this.page = page
-        },
         async goToMenu() {
             await window.eel.stop()()
             this.$emit('update-component', 'Menu', { resetVideoSrc: true })
         },
     },
-    computed: {
-        pageFacepaints() {
-            return this.facepaints.slice(this.page * 9, this.page * 9 + 9)
-        },
-        canGoToPrevPage() {
-            return this.page > 0
-        },
-        canGoToNextPage() {
-            return this.page < Math.floor((this.facepaints.length - 1) / 9)
-        },
-    },
     mounted: function () {
         this.getChoiceFacepaints()
     },
+    components: { Choices },
 }
 </script>
 
@@ -144,56 +88,17 @@ export default {
     grid-area: key-0;
 }
 
-.key-1 {
-    grid-area: key-1;
-}
-
 .key-2 {
     grid-area: key-2;
-}
-
-.key-3 {
-    grid-area: key-3;
-}
-
-.key-4 {
-    grid-area: key-4;
-}
-
-.key-5 {
-    grid-area: key-5;
-}
-
-.key-6 {
-    grid-area: key-6;
-}
-
-.key-7 {
-    grid-area: key-7;
-}
-
-.key-8 {
-    grid-area: key-8;
-}
-
-.key-9 {
-    grid-area: key-9;
 }
 
 .key-dot {
     grid-area: key-dot;
 }
 
-.key-numlock {
-    grid-area: key-numlock;
-}
-
-.key-slash {
-    grid-area: key-slash;
-}
-
-.key-asterisk {
-    grid-area: key-asterisk;
+.choices-page {
+    grid-row: 2/6;
+    grid-column: 2/5;
 }
 
 .card {
