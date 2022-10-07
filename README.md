@@ -6,6 +6,8 @@
 
 iMake!は、プロジェクターを用いた、どんな人でもメイクを気軽に楽しめる仮想メイクシステムです。 iMake!では、プロジェクターから顔に映し出された画像を、鏡を通して見ることで、より理想的なメイクを体感できます。
 
+<img src="./res/images/iMake-easy-facepaint.png" width="40%">
+
 ## Requirement
 
 ### OS
@@ -85,6 +87,10 @@ python -m imake
 ```bash
 ./build.sh
 ```
+
+## Docs
+
+- [技術構成](docs/TECK_STACK.md)
 
 ## Author
 
