@@ -1,5 +1,7 @@
 # iMake! －３次元仮想メイクで全人類の化粧技術向上－
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1fa815e7af3440279f661acf1f3b0d1c)](https://app.codacy.com/gh/kathmandu777/i-make?utm_source=github.com&utm_medium=referral&utm_content=kathmandu777/i-make&utm_campaign=Badge_Grade_Settings)
+
 第33回全国高専プログラミングコンテスト【自由部門】に向けて開発しているプロジェクトです。
 
 ## Overview
