@@ -467,7 +467,7 @@ six = ">=1.5"
 name = "PyYAML"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -593,7 +593,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a33ad268bc16fd06d3063672d911714383e3c4b31bfb2835174acc2e1e2a1c90"
+content-hash = "912d5e601fad3b9603181375b1293b1e4eea2b9c7e8e651feff2a9488f8cc646"
 
 [metadata.files]
 absl-py = [

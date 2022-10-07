@@ -1,4 +1,6 @@
-cd i-make/vue
+#!/bin/bash
+
+cd imake/vue
 npm run build
 cd ../..
-python -m i-make
+python -m imake

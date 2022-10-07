@@ -1,0 +1,11 @@
+{
+    "root": true,
+    "env": {
+        "browser": true
+    },
+    "extends": ["plugin:vue/vue3-recommended", "eslint:recommended"],
+    "rules": {
+        // 1単語のcomponent名を許容する
+        "vue/multi-word-component-names": 0
+    }
+}

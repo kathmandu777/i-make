@@ -1,0 +1,411 @@
+'1':
+    category: ベース色
+    answers:
+        blue_base:
+            label: ブルベ
+            next_node_id: blue_summer_winter
+            settings: {}
+        yellow_base:
+            label: イエベ
+            next_node_id: yellow_spring_autumn
+            settings: {}
+    questions:
+        '1':
+            text: 手のひらの色
+            choices:
+                - text: 黄みピンク～オレンジっぽい
+                  answer_id: blue_base
+                  next_node_id: 2
+                - text: 青みピンク~赤紫っぽい
+                  answer_id: yellow_base
+                  next_node_id: 2
+        '2':
+            text: 手首の血管の色
+            choices:
+                - text: 緑系
+                  answer_id: blue_base
+                  next_node_id: 3
+                - text: 青系、赤紫系
+                  answer_id: yellow_base
+                  next_node_id: 3
+        '3':
+            text: 瞳の色
+            choices:
+                - text: 黄みっぽい茶、こげ茶
+                  answer_id: blue_base
+                  next_node_id: 4
+                - text: 黒、グレー、赤っぽい茶色
+                  answer_id: yellow_base
+                  next_node_id: 4
+        '4':
+            text: 似合うリップの色
+            choices:
+                - text: ベージュ、コーラル、ピンク、オレンジ系
+                  answer_id: blue_base
+                  next_node_id: 5
+                - text: ピンク、ローズピンク、赤系
+                  answer_id: yellow_base
+                  next_node_id: 5
+        '5':
+            text: 地毛の色
+            choices:
+                - text: 黒寄りブラウン、黄色っぽいブラウンに近い
+                  answer_id: blue_base
+                  next_node_id: 6
+                - text: 黒、グレー、赤っぽいブラウン
+                  answer_id: yellow_base
+                  next_node_id: 6
+        '6':
+            text: 指をのせて綺麗な色
+            choices:
+                - text: 金色
+                  answer_id: blue_base
+                  next_node_id: 7
+                - text: 銀色
+                  answer_id: yellow_base
+                  next_node_id: 7
+        '7':
+            text: 日焼けした時
+            choices:
+                - text: 小麦色になる
+                  answer_id: blue_base
+                  next_node_id:
+                - text: 赤褐色になる
+                  answer_id: yellow_base
+                  next_node_id:
+blue_summer_winter:
+    category: 季節色
+    answers:
+        blue_base_summer:
+            label: ブルベ夏
+            next_node_id: eye_shape
+            settings:
+                eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
+                eyeshadow-color:
+                    - 14
+                    - 21
+                    - 89
+                glitter: imake/static/modes/custom/glitter/glitterS.png
+                glitter-color:
+                    - 14
+                    - 21
+                    - 89
+                eyelash-color:
+                    - 240
+                    - 51
+                    - 23
+                eyeliner-color:
+                    - 240
+                    - 51
+                    - 23
+                eyebrow-color:
+                    - 240
+                    - 51
+                    - 23
+        blue_base_winter:
+            label: ブルベ冬
+            next_node_id: eye_shape
+            settings:
+                eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
+                eyeshadow-color:
+                    - 138
+                    - 44
+                    - 32
+                glitter: imake/static/modes/custom/glitter/glitterS.png
+                glitter-color:
+                    - 138
+                    - 44
+                    - 32
+                eyelash-color:
+                    - 240
+                    - 51
+                    - 23
+                eyeliner-color:
+                    - 240
+                    - 51
+                    - 23
+                eyebrow-color:
+                    - 240
+                    - 51
+                    - 23
+    questions:
+        '1':
+            text: 肌の色
+            choices:
+                - text: 薄く繊細で透明感
+                  answer_id: blue_base_summer
+                  next_node_id: 2
+                - text: やや厚みがあってハリがある
+                  answer_id: blue_base_winter
+                  next_node_id: 2
+        '2':
+            text: 地毛の色
+            choices:
+                - text: 赤みブラウンやグレー寄りのブラック
+                  answer_id: blue_base_summer
+                  next_node_id: 3
+                - text: ブラック系
+                  answer_id: blue_base_winter
+                  next_node_id: 3
+        '3':
+            text: 毛質
+            choices:
+                - text: やわらか
+                  answer_id: blue_base_summer
+                  next_node_id: 4
+                - text: ハリ・コシあり
+                  answer_id: blue_base_winter
+                  next_node_id: 4
+        '4':
+            text: 瞳の色
+            choices:
+                - text: 赤みブラウンやグレー寄りのブラック
+                  answer_id: blue_base_summer
+                  next_node_id: 5
+                - text: ブラック系
+                  answer_id: blue_base_winter
+                  next_node_id: 5
+        '5':
+            text: 白目と黒目のコントラスト
+            choices:
+                - text: 穏やか
+                  answer_id: blue_base_summer
+                  next_node_id: 6
+                - text: 強い
+                  answer_id: blue_base_winter
+                  next_node_id: 6
+        '6':
+            text: 唇
+            choices:
+                - text: 明るめのピンク色
+                  answer_id: blue_base_summer
+                  next_node_id: 7
+                - text: 深みのある赤色や青ざめたような色
+                  answer_id: blue_base_winter
+                  next_node_id: 7
+        '7':
+            text: 似合うアクセサリー
+            choices:
+                - text: ソフトマットなシルバー系
+                  answer_id: blue_base_summer
+                  next_node_id:
+                - text: 光沢感があるシルバー系
+                  answer_id: blue_base_winter
+                  next_node_id:
+yellow_spring_autumn:
+    category: 季節色
+    answers:
+        yellow_base_spring:
+            label: イエベ春
+            next_node_id: eye_shape
+            settings:
+                eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
+                eyeshadow-color:
+                    - 15
+                    - 45
+                    - 82
+                glitter: imake/static/modes/custom/glitter/glitterS.png
+                glitter-color:
+                    - 15
+                    - 45
+                    - 82
+                eyelash-color:
+                    - 25
+                    - 73
+                    - 28
+                eyeliner-color:
+                    - 25
+                    - 73
+                    - 28
+                eyebrow-color:
+                    - 25
+                    - 73
+                    - 28
+        yellow_base_autumn:
+            label: イエベ秋
+            next_node_id: eye_shape
+            settings:
+                eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
+                eyeshadow-color:
+                    - 33
+                    - 74
+                    - 76
+                glitter: imake/static/modes/custom/glitter/glitterS.png
+                glitter-color:
+                    - 33
+                    - 74
+                    - 76
+                eyelash-color:
+                    - 25
+                    - 73
+                    - 28
+                eyeliner-color:
+                    - 25
+                    - 73
+                    - 28
+                eyebrow-color:
+                    - 25
+                    - 73
+                    - 28
+    questions:
+        '1':
+            text: 肌の色
+            choices:
+                - text: 明るくツヤがある
+                  answer_id: yellow_base_spring
+                  next_node_id: 2
+                - text: やや暗いトーンのマットな質
+                  answer_id: yellow_base_autumn
+                  next_node_id: 2
+        '2':
+            text: 地毛の色
+            choices:
+                - text: ライトブラウン系
+                  answer_id: yellow_base_spring
+                  next_node_id: 3
+                - text: ダークブラウン～ブラック系
+                  answer_id: yellow_base_autumn
+                  next_node_id: 3
+        '3':
+            text: 毛質
+            choices:
+                - text: 細くやわらか
+                  answer_id: yellow_base_spring
+                  next_node_id: 4
+                - text: ハリ・コシあり
+                  answer_id: yellow_base_autumn
+                  next_node_id: 4
+        '4':
+            text: 瞳の色
+            choices:
+                - text: 明るいブラウン
+                  answer_id: yellow_base_spring
+                  next_node_id: 5
+                - text: ダークブラウン～ブラック系
+                  answer_id: yellow_base_autumn
+                  next_node_id: 5
+        '5':
+            text: 白目と黒目のコントラスト
+            choices:
+                - text: はっきり
+                  answer_id: yellow_base_spring
+                  next_node_id: 6
+                - text: 穏やか
+                  answer_id: yellow_base_autumn
+                  next_node_id: 6
+        '6':
+            text: 唇
+            choices:
+                - text: 血色感のあるピーチ色
+                  answer_id: yellow_base_spring
+                  next_node_id: 7
+                - text: くすみがかったベージュ系やオレンジ色
+                  answer_id: yellow_base_autumn
+                  next_node_id: 7
+        '7':
+            text: 似合うアクセサリー
+            choices:
+                - text: 光沢感のある華やかなゴールド系
+                  answer_id: yellow_base_spring
+                  next_node_id:
+                - text: マットな質感やアンティーク調のゴールド系
+                  answer_id: yellow_base_autumn
+                  next_node_id:
+eye_shape:
+    category: null
+    answers:
+        slanted_eye:
+            label: つり目
+            next_node_id: face_shape
+            settings:
+                eyeshadow: imake/static/modes/custom/eyeshadow/3eyeshadow.png
+                eyeliner: imake/static/modes/custom/eyeliner/eyeliner1-1.png
+                eyelash: imake/static/modes/custom/eyelashes/eyelashes0-1.png
+                eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png
+        drooping_eye:
+            label: タレ目
+            next_node_id: face_shape
+            settings:
+                eyeshadow: imake/static/modes/custom/eyeshadow/2eyeshadow.png
+                eyeliner: imake/static/modes/custom/eyeliner/eyeliner0-1.png
+                eyelash: imake/static/modes/custom/eyelashes/eyelashes0-1.png
+                eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png
+        round_eye:
+            label: 丸目
+            next_node_id: face_shape
+            settings:
+                eyeliner: imake/static/modes/custom/eyeliner/eyeliner1-0.png
+                eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png
+        narrow_eye:
+            label: 細目
+            next_node_id: face_shape
+            settings:
+                eyeshadow: imake/static/modes/custom/neyeshadow/1eyeshadow.png
+                eyeliner: imake/static/modes/custom/eyeliner/eyeliner1-0.png
+                eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-1.png
+    questions:
+        '1':
+            text: 目の形は？
+            choices:
+                - text: 丸い
+                  answer_id: round_eye
+                  next_node_id:
+                - text: 細い
+                  answer_id: narrow_eye
+                  next_node_id:
+                - text: つり目
+                  answer_id: slanted_eye
+                  next_node_id:
+                - text: タレ目
+                  answer_id: drooping_eye
+                  next_node_id:
+face_shape:
+    category:
+    answers:
+        round_face:
+            label: 丸顔
+            next_node_id: eye_distance
+            settings:
+                eyebrow: imake/static/modes/custom/eyebrow/eyebrow arch.png
+                eyebags: imake/static/modes/custom/eyebags/eyebags0.png
+        long_face:
+            label: 長顔
+            next_node_id: eye_distance
+            settings:
+                eyebrow: imake/static/modes/custom/eyebrow/eyebrow straight.png
+                eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow1-0.png
+    questions:
+        '1':
+            text: 顔の形は？
+            choices:
+                - text: 丸い
+                  answer_id: round_face
+                  next_node_id:
+                - text: 長い
+                  answer_id: long_face
+                  next_node_id:
+eye_distance:
+    category:
+    answers:
+        close_eye:
+            label: 目が近い
+            next_node_id:
+            settings: {}
+        far_eye:
+            label: 離れ目
+            next_node_id:
+            settings:
+                eyeliner: imake/static/modes/custom/neyeliner/1eyeliner.png
+    questions:
+        '1':
+            text: 目の間隔は？
+            function: is_longer_distance_between_eye_than_eye_size
+            choices:
+                - text: 近い
+                  answer_id: close_eye
+                  next_node_id:
+                  result: 'False'
+                - text: 離れている
+                  answer_id: far_eye
+                  next_node_id:
+                  result: 'True'
