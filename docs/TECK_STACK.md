@@ -6,7 +6,7 @@
 
 ### メイク画像処理
 
-<img src="../res/images/tech_stack.png" width="800">
+<img src="../res/images/tech_stack.png" width="100%">
 
 カメラに寄ってキャプチャした画像を、mediapipeのfacemeshに渡して、顔のランドマークを取得します。その後、ランドマークを元にドロネーの三角形を用いてメイクの位置を計算し、メイク画像を合成します。
 
