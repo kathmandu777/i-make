@@ -88,6 +88,7 @@ export default {
     grid-area: select-mode;
     display: flex;
     flex-direction: column;
+    margin-top: 40px;
 }
 
 .mode {
@@ -98,8 +99,8 @@ export default {
 }
 
 .mode-button {
-    width: calc(100% - 120px);
+    width: 100%;
     height: auto;
-    margin: 0 60px;
+    margin: 0;
 }
 </style>

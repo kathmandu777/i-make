@@ -10,7 +10,7 @@ class CustomMode(BaseModeEffect):
     """Custom makeup mode."""
 
     ICON_PATH: str = "imake/static/modes/custom/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/modes/custom/menu.png"
+    MENU_IMAGE_PATH: str = "imake/static/modes/custom/menu.jpg"
 
     MAKEUP_IMAGES_DIR_PATH: str = "imake/static/modes/custom"
 
