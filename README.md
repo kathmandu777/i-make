@@ -1,5 +1,10 @@
 # iMake! －３次元仮想メイクで全人類の化粧技術向上－
 
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/63156756bbae4ddcaac0b4acd470dff7)](https://www.codacy.com/gh/kathmandu777/i-make/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kathmandu777/i-make&amp;utm_campaign=Badge_Grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e6f0c753dab572038b64/maintainability)](https://codeclimate.com/github/kathmandu777/i-make/maintainability)
+
 第33回全国高専プログラミングコンテスト【自由部門】に向けて開発しているプロジェクトです。
 
 ## Overview
