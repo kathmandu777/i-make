@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import SingleEffect from '@/components/shared/SingleEffect.vue'
+import SingleEffect from '@/components/templates/SingleEffect.vue'
 
 export default {
     name: 'Event',

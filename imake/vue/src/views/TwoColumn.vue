@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import Video from '@/components/shared/Video.vue'
-import Menu from '@/components/shared/Menu.vue'
-import SkinColor from '@/components/shared/SkinColor.vue'
+import Video from '@/components/modules/Video.vue'
+import Menu from '@/components/modules/Menu.vue'
+import SkinColor from '@/components/modules/SkinColor.vue'
 import Event from '@/components/mode/Event.vue'
 import Easy from '@/components/mode/Easy.vue'
 import Custom from '@/components/mode/custom/Custom.vue'
@@ -27,7 +27,7 @@ import Practice from '@/components/mode/Practice.vue'
 import Diagnosis from '@/components/mode/Diagnosis.vue'
 
 export default {
-    name: 'Settings',
+    name: 'TwoColumn',
     data: function () {
         return {
             rightComponent: Menu,

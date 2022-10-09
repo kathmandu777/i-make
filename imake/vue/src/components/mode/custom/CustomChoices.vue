@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import Choices from '@/components/shared/Choices.vue'
+import Choices from '@/components/templates/Choices.vue'
 export default {
     name: 'CustomChoices',
     props: ['partKind'],
