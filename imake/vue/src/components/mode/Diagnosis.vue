@@ -59,7 +59,7 @@
 
 <script>
 export default {
-    name: 'Choice',
+    name: 'Diagnosis',
     data: function () {
         return {
             question: '',

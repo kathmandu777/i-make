@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Choices from './Choices.vue'
+import Choices from '@/components/templates/Choices.vue'
 export default {
     name: 'SkinColor',
     data: function () {
