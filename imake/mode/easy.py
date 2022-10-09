@@ -10,7 +10,7 @@ class EasyMode(BaseModeEffect):
     THUMBNAILS_DIR_PATH = "imake/static/modes/easy/thumbnails"
 
     ICON_PATH: str = "imake/static/modes/easy/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/modes/easy/menu.jpg"
+    MENU_IMAGE_PATH: str = "imake/static/modes/easy/menu.png"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)
