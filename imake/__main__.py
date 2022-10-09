@@ -1,5 +1,6 @@
 import argparse
 import base64
+import time
 from dataclasses import asdict
 from typing import Any, Final
 
@@ -123,12 +124,22 @@ class IMake:
     def _start(self) -> None:
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
+            start_time = time.time()
             try:
                 effect = self._process()
             except Exception as e:
                 print(e)
                 continue
 
+            cv2.putText(
+                effect,
+                "FPS: {:.2f}".format(1.0 / (time.time() - start_time)),
+                (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                (0, 255, 0),
+                thickness=2,
+            )
             _, imencode_image = cv2.imencode(".jpg", effect)
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
