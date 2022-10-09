@@ -10,7 +10,7 @@ class PracticeMode(BaseModeEffect):
     THUMBNAILS_DIR_PATH = "imake/static/modes/practice/thumbnails"
 
     ICON_PATH: str = "imake/static/modes/practice/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/modes/practice/menu.jpg"
+    MENU_IMAGE_PATH: str = "imake/static/modes/practice/menu.png"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)

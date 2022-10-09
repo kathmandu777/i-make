@@ -12,7 +12,7 @@ class DiagnosisMode(BaseModeEffect):
     """Diagnosis makeup mode."""
 
     ICON_PATH: str = "imake/static/modes/diagnosis/icon.png"
-    MENU_IMAGE_PATH: str = "imake/static/modes/diagnosis/menu.jpg"
+    MENU_IMAGE_PATH: str = "imake/static/modes/diagnosis/menu.png"
 
     DATA_PATH: Final = "imake/static/modes/diagnosis/data.yml"
     FIRST_NODE_ID: Final = "1"
