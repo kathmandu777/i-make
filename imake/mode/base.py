@@ -201,7 +201,7 @@ class BaseModeEffect(BaseMode, Effect):
                 thumbnail_dir_path=cls.THUMBNAILS_DIR_PATH,
             )
             for file in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
-            if file.endswith(".png")
+            if (file.endswith(".png") or file.endswith(".PNG"))
             and file != menu_image_file
             and file != icon_file
             and not (cls.BASE_IMAGE_SUFFIX in file)
