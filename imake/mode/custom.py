@@ -40,7 +40,9 @@ class CustomMode(BaseModeEffect):
                 part_kind=part_kind,
             )
             for file in os.listdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
-            if file.endswith(".png") and not file == cls.THUMBNAIL_IMAGE_NAME and not (cls.BASE_IMAGE_SUFFIX in file)
+            if (file.endswith(".png") or file.endswith(".PNG"))
+            and not file == cls.THUMBNAIL_IMAGE_NAME
+            and not (cls.BASE_IMAGE_SUFFIX in file)
         ]
         return [
             {
