@@ -21,6 +21,7 @@ class Answer:
     label: str
     next_node_id: str | None
     settings: dict[str, str | tuple[float, float, float]]
+    text: str = ""
     count: int = 0
 
 

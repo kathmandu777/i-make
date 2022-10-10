@@ -78,6 +78,7 @@ blue_summer_winter:
     answers:
         blue_base_summer:
             label: ブルベ夏
+            text: ブルベ夏の君には、ミントグリーンなどパステルカラーや泡目のビタミンカラーがおすすめ。
             next_node_id: eye_shape
             settings:
                 eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
@@ -104,6 +105,7 @@ blue_summer_winter:
                     - 23
         blue_base_winter:
             label: ブルベ冬
+            text: ブルベ冬の君には、ロイヤルブルーなどビビットからーや明暗がはっきりした色がおすすめ。
             next_node_id: eye_shape
             settings:
                 eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
@@ -197,6 +199,7 @@ yellow_spring_autumn:
     answers:
         yellow_base_spring:
             label: イエベ春
+            text: イエベ春の君には、サーモンピンクなど明るい華やかな色がおすすめ。
             next_node_id: eye_shape
             settings:
                 eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
@@ -223,6 +226,7 @@ yellow_spring_autumn:
                     - 28
         yellow_base_autumn:
             label: イエベ秋
+            text: イエベ秋の君には、パンプキンなどくすんだ深みのある色がおすすめ。
             next_node_id: eye_shape
             settings:
                 eyeshadow-sub: imake/static/modes/custom/eyeshadow/eyeshadow0-0.png
@@ -316,6 +320,7 @@ eye_shape:
     answers:
         slanted_eye:
             label: つり目
+            test: アイラインはたれ目気味に引くと効果的。
             next_node_id: face_shape
             settings:
                 eyeshadow: imake/static/modes/custom/eyeshadow/3eyeshadow.png
@@ -324,6 +329,7 @@ eye_shape:
                 eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png
         drooping_eye:
             label: タレ目
+            test: アイラインは跳ね上げ気味に引くと効果的​。
             next_node_id: face_shape
             settings:
                 eyeshadow: imake/static/modes/custom/eyeshadow/2eyeshadow.png
@@ -332,12 +338,14 @@ eye_shape:
                 eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png
         round_eye:
             label: 丸目
+            text: アイラインは自然に少し長く引くと効果的。
             next_node_id: face_shape
             settings:
                 eyeliner: imake/static/modes/custom/eyeliner/eyeliner1-0.png
                 eyelash"1": imake/static/modes/custom/u-eyelashes/u-eyelashes0-0.png
         narrow_eye:
             label: 細目
+            text: ラメなどで縦幅を強調すると効果的。
             next_node_id: face_shape
             settings:
                 eyeshadow: imake/static/modes/custom/neyeshadow/1eyeshadow.png
@@ -364,12 +372,14 @@ face_shape:
     answers:
         round_face:
             label: 丸顔
+            text: 並行眉が似合いやすい。
             next_node_id: eye_distance
             settings:
                 eyebrow: imake/static/modes/custom/eyebrow/eyebrow arch.png
                 eyebags: imake/static/modes/custom/eyebags/eyebags0.png
         long_face:
             label: 長顔
+            text: アーチ型の眉が似合いやすい。
             next_node_id: eye_distance
             settings:
                 eyebrow: imake/static/modes/custom/eyebrow/eyebrow straight.png

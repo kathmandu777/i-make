@@ -32,7 +32,7 @@ class DiagnosisMode(BaseModeEffect):
         self.node = Node(**self.data[self.FIRST_NODE_ID])
         self.child_node_id = self.FIRST_NODE_ID
         self.settings: dict[str, Any] = {}
-        self.results: dict[str, Any] = {}
+        self.result_text: str = ""
         super().__init__(*args, **kwargs)
 
     def get_question_and_choices(self) -> tuple[str, list[str] | None]:
@@ -48,14 +48,14 @@ class DiagnosisMode(BaseModeEffect):
             choices = [choice.text for choice in question.choices]
         return question.text, choices
 
-    def set_answer(self, input_data: int) -> tuple[str, dict[str, str] | None]:
+    def set_answer(self, input_data: int) -> tuple[str, str | None]:
         """Set answer.
 
         Args:
             input_data (int): Input data (choices 0 index).
 
         Returns:
-            _type_: Message and results.
+            _type_: Message and result_text.
         """
         if not (0 <= input_data < len(self.node.questions[self.child_node_id].choices)):
             return self.SET_ANSWER_ERROR_MSG, None
@@ -76,13 +76,13 @@ class DiagnosisMode(BaseModeEffect):
                     if value not in self.settings[key]:
                         self.settings[key].append(value)
 
-            category_or_question = self.node.category or self.node.questions[self.FIRST_NODE_ID].text
-            self.results[category_or_question] = self.node.answers[max_answer_id].label
+            if self.node.answers[max_answer_id].text:
+                self.result_text += self.node.answers[max_answer_id].text + "\n"
 
             next_node_id = self.node.answers[max_answer_id].next_node_id
 
             if next_node_id is None:  # 診断終了
-                return self.DIAGNOSIS_FINISH_MSG, self.results
+                return self.DIAGNOSIS_FINISH_MSG, self.result_text
 
             # 次のカテゴリの質問へ
             self.node = Node(**self.data[str(next_node_id)])

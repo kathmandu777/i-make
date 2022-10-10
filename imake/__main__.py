@@ -222,7 +222,7 @@ class IMake:
         assert isinstance(self.mode, DiagnosisMode)
         return self.mode.get_question_and_choices()  # type: ignore
 
-    def set_answer(self, answer: int) -> tuple[str, dict[str, str] | None]:
+    def set_answer(self, answer: int) -> tuple[str, str | None] | str:
         """Set answer.
 
         Args:
