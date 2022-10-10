@@ -299,7 +299,7 @@ class IMake:
 
             effect = EyeDiagnosis().render_eye_edge(landmarks, image, do_overlay=False)
             try:
-                result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks)
+                result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks, 1.3)
             except Exception as e:
                 return e.args[0], effect
             choice = next((i, choice) for i, choice in enumerate(question.choices) if choice.result == str(result))
