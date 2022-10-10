@@ -55,7 +55,7 @@ export default {
             await window.eel.set_effect_image_by_facepaints(
                 this.selectedFacepaint
             )()
-            await window.eel.start()
+            await window.eel.start_rendering()
         },
         async goToMenu() {
             await window.eel.stop()()

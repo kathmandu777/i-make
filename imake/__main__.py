@@ -26,14 +26,7 @@ class IMake:
         self.skin_hsv = HSV(h=14, s=36, v=100)
         self.back_process = None
 
-    def set_mode(self, mode_name: str, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
-        """Set mode.
-
-        Args:
-            mode_name (_type_): mode name
-        """
-        self.mode: BaseModeEffectType = Mode[mode_name].value(**kwargs)  # type: ignore
-
+    # Mode
     def get_mode_choices(self) -> list[dict[str, str]]:
         """Get mode choices."""
         return [
@@ -44,6 +37,24 @@ class IMake:
             }
             for mode in Mode
         ]
+
+    def set_mode(self, mode_name: str, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
+        """Set mode.
+
+        Args:
+            mode_name (_type_): mode name
+        """
+        self.mode: BaseModeEffectType = Mode[mode_name].value(**kwargs)  # type: ignore
+
+    def get_choice_facepaints(self) -> list[dict]:
+        """Get choice facepaints.
+
+        Returns:
+            _type_: choice facepaints
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        return self.mode.get_choice_facepaints()
 
     def set_effect_image_by_facepaints(self, facepaints: list[dict] | dict) -> None:
         """Set effect image by facepaints.
@@ -59,16 +70,7 @@ class IMake:
         self.mode.set_skin_color(self.skin_hsv)
         self.mode.set_effect_image_by_facepaints([FacePaint(**facepaint) for facepaint in facepaints])
 
-    def get_choice_facepaints(self) -> list[dict]:
-        """Get choice facepaints.
-
-        Returns:
-            _type_: choice facepaints
-        """
-        if self.mode is None:
-            raise ValueError("mode is not set")
-        return self.mode.get_choice_facepaints()
-
+    # System
     def set_skin_color(self, hsv: dict) -> None:
         """Set skin color.
 
@@ -95,38 +97,32 @@ class IMake:
         ]
         return [asdict(hsv) for hsv in palette]
 
-    def _process(self, mirror: bool = True) -> np.ndarray:
-        """Process.
+    def get_config(self) -> dict[str, Any]:
+        """Get config.
 
         Returns:
-            _type_: effect(BGR)
+            _type_: config
         """
-        try:
-            image = self._get_image()
-        except Exception as e:
-            raise e
+        if self.mode is None:
+            raise ValueError("mode is not set")
+        return self.mode.get_class_vars()
 
-        try:
-            landmarks = self.face_mesh.get_landmarks(image)
-        except Exception as e:
-            raise e
+    def close(self) -> None:
+        self.cap.release()
+        self.face_mesh.close()
 
-        effect_w_alpha = self.mode.create_effect(image, landmarks)  # type: ignore
-        effect = self._convert_rgba_to_rgb(effect_w_alpha)
-        cropped = self._crop_and_zoom(effect, self.scale)
-        return cv2.flip(cropped, 1) if mirror else cropped
-
-    def start(self) -> None:
-        """Start."""
+    # Rendering
+    def start_rendering(self) -> None:
+        """Start rendering."""
         self._kill_back_process()
-        self.back_process = eel.spawn(self._start)
+        self.back_process = eel.spawn(self._start_rendering)
 
-    def _start(self) -> None:
+    def _start_rendering(self) -> None:
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
             start_time = time.time()
             try:
-                effect = self._process()
+                effect = self._create_effect()
             except Exception as e:
                 print(e)
                 continue
@@ -148,6 +144,11 @@ class IMake:
         self._kill_back_process()
         eel.setVideoSrc("/dist/guide.png")  # FIXME
 
+    def _kill_back_process(self) -> None:
+        """Kill back process."""
+        if self.back_process is not None:
+            self.back_process.kill()
+
     def _get_image(self) -> np.ndarray:
         """Get image.
 
@@ -158,6 +159,27 @@ class IMake:
         if not ret:
             raise Exception("Failed to get image")
         return image
+
+    def _create_effect(self, mirror: bool = True) -> np.ndarray:
+        """Create effect.
+
+        Returns:
+            _type_: effect(BGR)
+        """
+        try:
+            image = self._get_image()
+        except Exception as e:
+            raise e
+
+        try:
+            landmarks = self.face_mesh.get_landmarks(image)
+        except Exception as e:
+            raise e
+
+        effect_w_alpha = self.mode.create_effect(image, landmarks)  # type: ignore
+        effect = self._convert_rgba_to_rgb(effect_w_alpha)
+        formatted = self._format_effect(effect, self.scale)
+        return cv2.flip(formatted, 1) if mirror else formatted
 
     def _convert_rgba_to_rgb(self, image: np.ndarray) -> np.ndarray:
         """Convert RGBA image to RGB image.
@@ -171,8 +193,8 @@ class IMake:
         mask = image[:, :, 3]
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
 
-    def _crop_and_zoom(self, image: np.ndarray, zoom: float = 1.0) -> np.ndarray:
-        """Crop and zoom.
+    def _format_effect(self, image: np.ndarray, zoom: float = 1.0) -> np.ndarray:
+        """Format for Video.vue.
 
         Args:
             image (_type_): image
@@ -203,25 +225,6 @@ class IMake:
         left = int((w / 2) - (width / 2))
         right = left + width
         return img[top:bottom, left:right]
-
-    def get_config(self) -> dict[str, Any]:
-        """Get config.
-
-        Returns:
-            _type_: config
-        """
-        if self.mode is None:
-            raise ValueError("mode is not set")
-        return self.mode.get_class_vars()
-
-    def _kill_back_process(self) -> None:
-        """Kill back process."""
-        if self.back_process is not None:
-            self.back_process.kill()
-
-    def close(self) -> None:
-        self.cap.release()
-        self.face_mesh.close()
 
     # Diagnosis
     def get_question_and_choices(self) -> tuple[str, list[str] | None]:
@@ -278,8 +281,8 @@ class IMake:
             eel.sleep(self.EEL_SLEEP_TIME)
             index_and_choice, effect = self._get_choice_and_effect_diagnosis_func()
 
-            cropped = self._crop_and_zoom(effect, self.scale)
-            _, imencode_image = cv2.imencode(".jpg", cv2.flip(cropped, 1))
+            formatted = self._format_effect(effect, self.scale)
+            _, imencode_image = cv2.imencode(".jpg", cv2.flip(formatted, 1))
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
 

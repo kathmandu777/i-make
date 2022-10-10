@@ -89,7 +89,7 @@ export default {
             await window.eel.set_effect_image_by_facepaints(
                 this.selectedFacepaints
             )()
-            await window.eel.start()
+            await window.eel.start_rendering()
         },
     },
     mounted: function () {
