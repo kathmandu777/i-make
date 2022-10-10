@@ -3,6 +3,7 @@ from dataclasses import asdict
 from typing import Any, Final
 
 from ..dataclasses import FacePaint
+from ..libs.list import get_index
 from ..mode.base import BaseModeEffect
 
 
@@ -17,7 +18,7 @@ class CustomMode(BaseModeEffect):
     THUMBNAIL_IMAGE_NAME: Final = "thumbnail.png"
     THUMBNAIL_DIR_NAME: Final = "thumbnails"
 
-    IGNORE_DIRS: Final = ["skin", "README.md"]
+    IGNORE_DIRS: Final = ["skin"]
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
         super().__init__(*args, **kwargs)
@@ -32,6 +33,15 @@ class CustomMode(BaseModeEffect):
         if not (part_kind in [x["part_kind"] for x in cls.get_part_kinds()]):
             raise ValueError(f"part_kind must be in {[x['part_kind'] for x in cls.get_part_kinds()]}, but {part_kind}")
 
+        order = cls.get_order(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
+
+        choice_files = [
+            file
+            for file in os.listdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
+            if (file.endswith(".png") or file.endswith(".PNG"))
+            and not file == cls.THUMBNAIL_IMAGE_NAME
+            and not (cls.BASE_IMAGE_SUFFIX in file)
+        ]
         facepaints = [
             FacePaint(
                 filename=file,
@@ -39,10 +49,7 @@ class CustomMode(BaseModeEffect):
                 thumbnail_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind, cls.THUMBNAIL_DIR_NAME),
                 part_kind=part_kind,
             )
-            for file in os.listdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
-            if (file.endswith(".png") or file.endswith(".PNG"))
-            and not file == cls.THUMBNAIL_IMAGE_NAME
-            and not (cls.BASE_IMAGE_SUFFIX in file)
+            for file in sorted(choice_files, key=lambda x: get_index(order, x, cls.DEFAULT_ORDER))
         ]
         return [
             {
@@ -60,14 +67,22 @@ class CustomMode(BaseModeEffect):
         Returns:
             list[str]: パーツの種類のリスト
         """
+        order = cls.get_order(cls.MAKEUP_IMAGES_DIR_PATH)
+
+        part_choices = [
+            dirname
+            for dirname in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
+            if not dirname.startswith(".")
+            and dirname not in cls.IGNORE_DIRS
+            and os.path.isdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, dirname))
+        ]
         return [
             dict(
-                part_kind=dirname,
+                part_kind=part,
                 thumbnail_path_for_frontend="../"
-                + os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, dirname, cls.THUMBNAIL_IMAGE_NAME).replace(
+                + os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part, cls.THUMBNAIL_IMAGE_NAME).replace(
                     "imake/static/", ""
                 ),
             )
-            for dirname in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
-            if not dirname.endswith(".png") and not dirname.startswith(".") and dirname not in cls.IGNORE_DIRS
+            for part in sorted(part_choices, key=lambda x: get_index(order, x, cls.DEFAULT_ORDER))
         ]

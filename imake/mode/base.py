@@ -4,10 +4,12 @@ from typing import Any, Final
 
 import cv2
 import numpy as np
+import yaml
 from PIL import Image
 
 from ..dataclasses import HSV, FacePaint
 from ..libs.effect import Effect
+from ..libs.list import get_index
 
 
 class BaseMode:
@@ -49,6 +51,10 @@ class BaseModeEffect(BaseMode, Effect):
     NO_CHANGE_VAL: Final = 0
 
     BASE_IMAGE_SUFFIX: Final = "-base.png"  # ２枚重ねによって作られるメイク画像の色変更をしない方の画像名のsuffix
+
+    DEFAULT_ORDER: Final = 100
+
+    ORDER_FILE_NAME: Final = "order.yml"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
 
@@ -194,17 +200,27 @@ class BaseModeEffect(BaseMode, Effect):
         """
         icon_file = cls.ICON_PATH.replace(cls.MAKEUP_IMAGES_DIR_PATH, "").replace("/", "")
         menu_image_file = cls.MENU_IMAGE_PATH.replace(cls.MAKEUP_IMAGES_DIR_PATH, "").replace("/", "")
+
+        order = cls.get_order(cls.MAKEUP_IMAGES_DIR_PATH)
+
+        choice_files = [
+            file
+            for file in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
+            if (file.endswith(".png") or file.endswith(".PNG"))
+            and file != menu_image_file
+            and file != icon_file
+            and not (cls.BASE_IMAGE_SUFFIX in file)
+        ]
         facepaints = [
             FacePaint(
                 filename=file,
                 image_dir_path=cls.MAKEUP_IMAGES_DIR_PATH,
                 thumbnail_dir_path=cls.THUMBNAILS_DIR_PATH,
             )
-            for file in os.listdir(cls.MAKEUP_IMAGES_DIR_PATH)
-            if (file.endswith(".png") or file.endswith(".PNG"))
-            and file != menu_image_file
-            and file != icon_file
-            and not (cls.BASE_IMAGE_SUFFIX in file)
+            for file in sorted(
+                choice_files,
+                key=lambda x: get_index(order, x, cls.DEFAULT_ORDER),
+            )
         ]
         return [
             {
@@ -215,3 +231,20 @@ class BaseModeEffect(BaseMode, Effect):
             }
             for facepaint in facepaints
         ]
+
+    @classmethod
+    def get_order(cls, dir_path: str) -> list[str]:
+        """Get order of files in the directory.
+
+        Args:
+            dir_path (str): order.yamlのあるディレクトリ
+        Returns:
+            dict[str, dict[str, int]]: order
+        """
+        order_yaml_path = os.path.join(dir_path, cls.ORDER_FILE_NAME)
+        if not os.path.exists(order_yaml_path):
+            return []
+
+        with open(order_yaml_path, "r") as f:
+            order = yaml.safe_load(f)
+        return order["order"]
