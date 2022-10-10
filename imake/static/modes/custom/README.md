@@ -46,3 +46,13 @@
 ## Naming Rules
 
 - ２枚重ねによって表現されるパーツは、色変更する画像を `hoge.png` として、色変更しない画像を `hoge-base.png` とする
+
+## Order
+
+order.ymlには、パーツを表示する際の順番を記述する。（表記のないものは、表記のあるものの以降に順不同で表示される。）
+
+```yaml
+order:
+    - double
+    - eyebrow
+```
