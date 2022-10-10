@@ -108,12 +108,14 @@ class EyeDiagnosis:
         right_eye_leftmost: Tuple[float, float, float] = landmarks[self.RIGHT_EYE_LEFTMOST_IDX]
         return right_eye_leftmost[0] - left_eye_rightmost[0]
 
-    def is_longer_distance_between_eye_than_eye_size(self, landmarks: np.ndarray) -> bool:
+    def is_longer_distance_between_eye_than_eye_size(
+        self, landmarks: np.ndarray, eye_size_factor: float = 1.0
+    ) -> bool:
         """目のサイズより目の間の距離が長いかどうかを判定する.
 
         Args:
             landmarks (_type_): 顔のランドマーク
-
+            eye_size_factor (float, optional): 目のサイズの倍率. Defaults to 1.0.
         Returns:
             bool | None: 目のサイズより目の間の距離が長いかどうか (Noneの場合は正面を向いていない)
         """
@@ -123,4 +125,4 @@ class EyeDiagnosis:
         if not (1.0 - self.PROPER_RATIO_THRESHOLD < eye_ratio < 1.0 + self.PROPER_RATIO_THRESHOLD):
             raise Exception("正面を向いていません")
         distance_between_eye = self.calculate_distance_between_eye(landmarks)
-        return distance_between_eye > (left_eye_size + right_eye_size) / 2
+        return distance_between_eye > ((left_eye_size + right_eye_size) / 2) * eye_size_factor
