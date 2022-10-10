@@ -2,7 +2,11 @@
     <div>
         <div class="keypad">
             <div v-if="!selectedPartKind" class="choices-page">
-                <Choices :choiceList="partKinds" @update="setPart">
+                <Choices
+                    :choiceList="partKinds"
+                    @update="setPart"
+                    :timeSleep="150"
+                >
                     <template v-slot:default="{ choice }">
                         <img
                             :src="choice.thumbnail_path_for_frontend"

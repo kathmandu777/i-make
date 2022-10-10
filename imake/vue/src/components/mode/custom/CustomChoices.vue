@@ -2,18 +2,26 @@
     <div>
         <div class="choices">
             <div v-if="!selectedFacepaint" class="choices-page">
-                <Choices :choiceList="facepaints" @update="setFacepaint">
+                <Choices
+                    :choiceList="facepaints"
+                    @update="setFacepaint"
+                    :timeSleep="150"
+                >
                     <template v-slot:default="{ choice }">
                         <img
                             :src="choice.thumbnail_path_for_frontend"
-                            width="200"
-                            height="200"
+                            width="195"
+                            height="195"
                         />
                     </template>
                 </Choices>
             </div>
             <div v-else-if="!selectedColor" class="choices-page">
-                <Choices :choiceList="hsvPalette" @update="setHSV">
+                <Choices
+                    :choiceList="hsvPalette"
+                    @update="setHSV"
+                    :timeSleep="150"
+                >
                     <template v-slot:default="{ choice }">
                         <div
                             class="color-sample"
