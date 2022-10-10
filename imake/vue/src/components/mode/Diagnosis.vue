@@ -66,7 +66,7 @@ export default {
     },
     methods: {
         async getQuestionAndChoices() {
-            const res = awi window.eel.get_question_and_choices()()
+            const res = await window.eel.get_question_and_choices()()
             this.question = res[0]
             this.choices = res[1]
 
