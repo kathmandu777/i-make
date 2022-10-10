@@ -6,14 +6,8 @@
 
                 <h3 class="question">{{ question }}</h3>
                 <h3 v-if="!choices" class="response">{{ response }}</h3>
-                <div v-if="!!results" class="results">
-                    <p
-                        v-for="(value, key) in results"
-                        :key="key"
-                        class="result"
-                    >
-                        {{ key }}: {{ value }}
-                    </p>
+                <div v-if="!!result_text" class="result">
+                    <p>{{ result_text }}</p>
                 </div>
                 <div>
                     <div class="container">
@@ -66,7 +60,7 @@ export default {
             response: '',
             choices: [],
             config: {},
-            results: null,
+            result_text: null,
             keys: ['/', 8, 5, 2], // 選択肢が4つ以下前提
         }
     },
@@ -81,12 +75,12 @@ export default {
         async setAnswer(index) {
             const res = await window.eel.set_answer(index)()
             const msg = res[0]
-            const results = res[1]
+            const result_text = res[1]
             if (msg == this.config.SET_ANSWER_ERROR_MSG) alert(res)
             else if (msg == this.config.DIAGNOSIS_FINISH_MSG) {
                 this.question = '診断終了'
                 this.choices = []
-                this.results = results
+                this.result_text = result_text
                 await window.eel.set_effect_image_by_settings()()
                 await window.eel.start()
             } else this.getQuestionAndChoices()
@@ -163,22 +157,11 @@ export default {
     gap: 10px;
 }
 
-.diagnosis-results {
-    width: 100%;
-    height: auto;
-    padding: 0;
-    margin: 30px 80px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: space-around;
-}
-
 .result {
-    font-size: 40px;
-    margin: 0;
+    font-size: 50px;
+    margin: 10px 40px;
     padding: 0;
+    white-space: pre-line;
 }
 
 .css-button-arrow {
