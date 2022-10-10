@@ -45,7 +45,16 @@
 <script>
 export default {
     name: 'Choices',
-    props: ['choiceList'],
+    props: {
+        choiceList: {
+            type: Array,
+            required: true,
+        },
+        timeSleep: {
+            type: Number,
+            default: 0,
+        },
+    },
     data: function () {
         return {
             selectedChoice: null,
@@ -73,10 +82,12 @@ export default {
                 page = Math.floor((this.choiceList.length - 1) / 9)
             this.page = page
         },
-        confirm(choice) {
+        async confirm(choice) {
             this.selectedChoice = choice
+            await this.sleep(this.timeSleep)
             this.$emit('update', choice)
         },
+        sleep: (time) => new Promise((resolve) => setTimeout(resolve, time)),
     },
     computed: {
         pageChoiceList() {
