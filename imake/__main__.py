@@ -174,11 +174,17 @@ class IMake:
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
             start_time = time.time()
+
             try:
-                effect = self._create_effect()
+                image = self._get_image()
+            except Exception as e:
+                raise e
+
+            try:
+                effect = self._create_effect(image)
             except Exception as e:
                 print(e)
-                continue
+                effect = image
 
             cv2.putText(
                 effect,
@@ -213,17 +219,12 @@ class IMake:
             raise Exception("Failed to get image")
         return image
 
-    def _create_effect(self, mirror: bool = True) -> np.ndarray:
+    def _create_effect(self, image: np.ndarray, mirror: bool = True) -> np.ndarray:
         """Create effect.
 
         Returns:
             _type_: effect(BGR)
         """
-        try:
-            image = self._get_image()
-        except Exception as e:
-            raise e
-
         try:
             bounding_box = self.face_detection.get_bounding_box(image)
         except Exception as e:
