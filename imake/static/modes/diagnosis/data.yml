@@ -14,64 +14,64 @@
             text: 手のひらの色
             choices:
                 - text: 黄みピンク～オレンジっぽい
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id: 2
                 - text: 青みピンク~赤紫っぽい
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id: 2
         '2':
             text: 手首の血管の色
             choices:
                 - text: 緑系
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id: 3
                 - text: 青系、赤紫系
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id: 3
         '3':
             text: 瞳の色
             choices:
                 - text: 黄みっぽい茶、こげ茶
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id: 4
                 - text: 黒、グレー、赤っぽい茶色
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id: 4
         '4':
             text: 似合うリップの色
             choices:
                 - text: ベージュ、コーラル、ピンク、オレンジ系
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id: 5
                 - text: ピンク、ローズピンク、赤系
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id: 5
         '5':
             text: 地毛の色
             choices:
                 - text: 黒寄りブラウン、黄色っぽいブラウンに近い
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id: 6
                 - text: 黒、グレー、赤っぽいブラウン
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id: 6
         '6':
             text: 指をのせて綺麗な色
             choices:
                 - text: 金色
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id: 7
                 - text: 銀色
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id: 7
         '7':
             text: 日焼けした時
             choices:
                 - text: 小麦色になる
-                  answer_id: blue_base
+                  answer_id: yellow_base
                   next_node_id:
                 - text: 赤褐色になる
-                  answer_id: yellow_base
+                  answer_id: blue_base
                   next_node_id:
 blue_summer_winter:
     category: 季節色
