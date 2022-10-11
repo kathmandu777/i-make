@@ -2,14 +2,24 @@
     <div class="half-HD">
         <h2 class="title">iMake!</h2>
         <img
-            class="settings"
-            v-on:click="goToSettings()"
+            class="skin-color"
+            v-on:click="goToSkinColor()"
             v-shortkey.once="['*']"
-            @shortkey="goToSettings()"
+            @shortkey="goToSkinColor()"
             src="/dist/setting.png"
-            width="180"
-            height="180"
+            width="160"
+            height="160"
         />
+        <img
+            class="config"
+            v-on:click="goToConfig()"
+            v-shortkey.once="['backspace']"
+            @shortkey="goToConfig()"
+            src="/dist/config.png"
+            width="160"
+            height="160"
+        />
+
         <div class="mode-list">
             <div v-for="(mode, index) in modes" :key="index" class="mode">
                 <img
@@ -49,8 +59,11 @@ export default {
         async getModes() {
             this.modes = await window.eel.get_mode_choices()()
         },
-        goToSettings() {
+        goToSkinColor() {
             this.$emit('update-component', 'SkinColor')
+        },
+        goToConfig() {
+            this.$emit('update-component', 'Config')
         },
     },
     created: function () {
@@ -62,11 +75,11 @@ export default {
 <style scoped>
 .half-HD {
     display: grid;
-    grid-template-columns: 780px 180px;
-    grid-template-rows: 180px 900px;
+    grid-template-columns: 640px 160px 160px;
+    grid-template-rows: 160px 920px;
     grid-template-areas:
-        'title settings'
-        'select-mode select-mode';
+        'title skin-color config'
+        'select-mode select-mode select-mode';
 }
 
 .title {
@@ -77,9 +90,14 @@ export default {
     padding: 0;
 }
 
-.settings {
-    grid-area: settings;
-    font-size: 20px;
+.skin-color {
+    grid-area: skin-color;
+    margin: 0;
+    padding: 0;
+}
+
+.config {
+    grid-area: config;
     margin: 0;
     padding: 0;
 }
