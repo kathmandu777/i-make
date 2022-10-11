@@ -73,15 +73,15 @@ export default {
             if (!this.choices) await window.eel.start_diagnosis_func()()
         },
         async setAnswer(index) {
-            const res = await window.eel.set_anwr(index)()
+            const res = await window.eel.set_answer(index)()
             const msg = res[0]
             const result_text = res[1]
             if (msg == this.config.SET_ANSWER_ERROR_MSG) alert(res)
-            else if (msg == this.ofig.DIAGNOSIS_FINISH_MSG) {
+            else if (msg == this.config.DIAGNOSIS_FINISH_MSG) {
                 this.question = '診断終了'
                 this.choices = []
                 this.result_text = result_text
-                await window.eel.e_effect_image_by_settings()()
+                await window.eel.set_effect_image_by_settings()()
                 await window.eel.start_rendering()
             } else this.getQuestionAndChoices()
         },
