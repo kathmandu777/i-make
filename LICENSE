@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-The major design pattern of this plugin was abstracted from https://github.com/luxonis/depthai-experiments/tree/master/gen2-facemesh, which is subject to the same license.
+The effect drawing code of this system was abstracted from https://github.com/luxonis/depthai-experiments/tree/master/gen2-facemesh, which is subject to the same license.
 Here is the original copyright notice for https://github.com/luxonis/depthai-experiments:
 
 MIT License
