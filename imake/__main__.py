@@ -455,7 +455,7 @@ def main() -> None:
     parser.add_argument("--scale", type=float, default=2.0, help="scale")
     parser.add_argument("--effect_width", type=int, default=400, help="effect width")
     parser.add_argument(
-        "-margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"
+        "--margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"
     )
     args = parser.parse_args()
 
