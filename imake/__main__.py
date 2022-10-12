@@ -7,21 +7,43 @@ from typing import Any, Final
 import cv2
 import eel
 import numpy as np
+from PIL import Image
 
 from .dataclasses import HSV, FacePaint
 from .dataclasses.diagnosis import Choice
 from .libs.diagnosis import EyeDiagnosis
+from .libs.face_detection import FaceDetection
 from .libs.facemesh import FaceMesh
-from .mode import BaseModeEffectType, CustomMode, DiagnosisMode, Mode
+from .mode import BaseModeEffectType, ConfigMode, CustomMode, DiagnosisMode, Mode
 
 
 class IMake:
     EEL_SLEEP_TIME: Final = 0.00000001
 
-    def __init__(self, camera_id: int = 0, scale: float = 1.0) -> None:
+    RENDER_IMAGE_WIDTH: Final = 960
+    RENDER_IMAGE_HEIGHT: Final = 1080
+
+    def __init__(
+        self,
+        camera_id: int,
+        scale: float,
+        effect_width: int,
+        face_bounding_box_margin: int,
+    ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
+        self.face_detection = FaceDetection()
         self.cap = cv2.VideoCapture(camera_id)
+
         self.scale = scale
+        self.x_offset = -int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) // 4)
+        self.y_offset = 0
+
+        if effect_width > self.RENDER_IMAGE_WIDTH:
+            raise ValueError(
+                f"effect_width({effect_width}) must be less than RENDER_IMAGE_WIDTH({self.RENDER_IMAGE_WIDTH})"
+            )
+        self.EFFECT_WIDTH: Final = effect_width
+        self.FACE_BOUNDING_BOX_MARGIN: Final = face_bounding_box_margin
 
         self.skin_hsv = HSV(h=14, s=36, v=100)
         self.back_process = None
@@ -82,6 +104,37 @@ class IMake:
         """
         self.skin_hsv = HSV(**hsv)
 
+    def update_scale(self, diff: float) -> None:
+        """Update scale.
+
+        Args:
+            scale (_type_): diff
+        """
+        self.scale += diff
+
+    def update_x_offset(self, diff: int) -> None:
+        """Update x offset.
+
+        Args:
+            diff (_type_): diff
+        """
+        self.x_offset += diff
+
+    def update_y_offset(self, diff: int) -> None:
+        """Update y offset.
+
+        Args:
+            diff (_type_): diff
+        """
+        self.y_offset += diff
+
+    def start_config(self) -> None:
+        self._kill_back_process()
+        self.mode = ConfigMode()
+        image = cv2.imread(self.mode.ADJUSTMENT_IMAGE_PATH, -1)
+        self.mode.set_effect_image(image)
+        self.back_process = eel.spawn(self._start_rendering())
+
     def get_hsv_palette(self) -> list[dict]:
         """Get color palette.
 
@@ -121,11 +174,17 @@ class IMake:
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
             start_time = time.time()
+
             try:
-                effect = self._create_effect()
+                image = self._get_image()
+            except Exception as e:
+                raise e
+
+            try:
+                effect = self._create_effect(image)
             except Exception as e:
                 print(e)
-                continue
+                effect = image
 
             cv2.putText(
                 effect,
@@ -160,26 +219,49 @@ class IMake:
             raise Exception("Failed to get image")
         return image
 
-    def _create_effect(self, mirror: bool = True) -> np.ndarray:
+    def _create_effect(self, image: np.ndarray, mirror: bool = True) -> np.ndarray:
         """Create effect.
 
         Returns:
             _type_: effect(BGR)
         """
         try:
-            image = self._get_image()
+            bounding_box = self.face_detection.get_bounding_box(image)
         except Exception as e:
             raise e
+
+        left = max(0, int(bounding_box.xmin * image.shape[1]) - self.FACE_BOUNDING_BOX_MARGIN)
+        right = min(
+            int(bounding_box.width * image.shape[1]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + left, image.shape[1]
+        )
+        top = max(0, int(bounding_box.ymin * image.shape[0]) - self.FACE_BOUNDING_BOX_MARGIN)
+        bottom = min(
+            int(bounding_box.height * image.shape[0]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0]
+        )
+        face = image[top:bottom, left:right]
+        face_effect_width = cv2.resize(
+            face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
+        )
 
         try:
-            landmarks = self.face_mesh.get_landmarks(image)
+            landmarks = self.face_mesh.get_landmarks(face_effect_width)
         except Exception as e:
             raise e
 
-        effect_w_alpha = self.mode.create_effect(image, landmarks)  # type: ignore
+        effect_w_alpha = self.mode.create_effect(face_effect_width, landmarks)  # type: ignore
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
-        formatted = self._format_effect(effect, self.scale)
-        return cv2.flip(formatted, 1) if mirror else formatted
+        effect_render_shape = cv2.copyMakeBorder(
+            effect,
+            max((self.RENDER_IMAGE_HEIGHT - effect.shape[0]) // 2, 0),
+            max((self.RENDER_IMAGE_HEIGHT - effect.shape[0]) // 2, 0),
+            max((self.RENDER_IMAGE_WIDTH - effect.shape[1]) // 2, 0),
+            max((self.RENDER_IMAGE_WIDTH - effect.shape[1]) // 2, 0),
+            cv2.BORDER_CONSTANT,
+            value=(0, 0, 0),
+        )
+        scaled = self._scale_image(effect_render_shape, self.scale * (right - left) / image.shape[1])
+        translated = self._translate_image(scaled, left + self.x_offset, top + self.y_offset)
+        return translated if not mirror else cv2.flip(translated, 1)
 
     def _convert_rgba_to_rgb(self, image: np.ndarray) -> np.ndarray:
         """Convert RGBA image to RGB image.
@@ -193,38 +275,55 @@ class IMake:
         mask = image[:, :, 3]
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
 
-    def _format_effect(self, image: np.ndarray, zoom: float = 1.0) -> np.ndarray:
-        """Format for Video.vue.
-
-        Args:
-            image (_type_): image
-            zoom (float, optional): zoom
-
-        Returns:
-            _type_: cropped and zoomed image
-        """
-        cropped_image = self._crop_center_x(image)
-        zoomed_image = cv2.resize(cropped_image, None, fx=zoom, fy=zoom)
-        return self._trim_center(zoomed_image, cropped_image.shape[1], cropped_image.shape[0])
-
-    def _crop_center_x(self, image: np.ndarray) -> np.ndarray:
-        """Crop center x.
+    def _scale_image(self, image: np.ndarray, scale: float) -> np.ndarray:
+        """The image size is scaled up or down without changing the image size.
+        (The areas with no image data are filled in black when the image is
+        scaled down.)
 
         Args:
             image (_type_): image
 
         Returns:
-            _type_: image
+            _type_: scaled image
         """
-        return image[:, image.shape[1] // 4 : image.shape[1] * 3 // 4, :]
+        resized = cv2.resize(
+            image,
+            dsize=None,
+            fx=scale,
+            fy=scale,
+            interpolation=cv2.INTER_CUBIC,
+        )
+        resized_height, resized_width = resized.shape[:2]
+        if resized_height > image.shape[0] or resized_width > image.shape[1]:  # 中心を基準に切り取る
+            return resized[
+                (resized_height - image.shape[0]) // 2 : (resized_height - image.shape[0]) // 2 + image.shape[0],
+                (resized_width - image.shape[1]) // 2 : (resized_width - image.shape[1]) // 2 + image.shape[1],
+            ]
+        else:  # 元の画像サイズと同じにする(黒埋め)
+            return cv2.copyMakeBorder(
+                resized,
+                (image.shape[0] - resized_height) // 2,
+                (image.shape[0] - resized_height) // 2,
+                (image.shape[1] - resized_width) // 2,
+                (image.shape[1] - resized_width) // 2,
+                cv2.BORDER_CONSTANT,
+                value=(0, 0, 0),
+            )
 
-    def _trim_center(self, img: np.ndarray, width: int, height: int) -> np.ndarray:
-        h, w = img.shape[:2]
-        top = int((h / 2) - (height / 2))
-        bottom = top + height
-        left = int((w / 2) - (width / 2))
-        right = left + width
-        return img[top:bottom, left:right]
+    def _translate_image(self, image: np.ndarray, dx: int, dy: int) -> np.ndarray:
+        """dx, dyだけ動かしたimageを描画する.
+
+        Args:
+            image (_type_): image
+            dx (int): x offset
+            dy (int): y offset
+
+        Returns:
+            _type_: offset image
+        """
+        offset_image = Image.fromarray(np.zeros((960, 1080, 3), np.uint8))
+        offset_image.paste(Image.fromarray(image), (dx, dy))
+        return np.array(offset_image).astype(np.uint8)
 
     # Diagnosis
     def get_question_and_choices(self) -> tuple[str, list[str] | None]:
@@ -353,10 +452,19 @@ class IMake:
 def main() -> None:
     parser = argparse.ArgumentParser(description="iMake!")
     parser.add_argument("--camera_id", type=int, default=0, help="camera id")
-    parser.add_argument("--scale", type=float, default=1.0, help="scale")
+    parser.add_argument("--scale", type=float, default=2.0, help="scale")
+    parser.add_argument("--effect_width", type=int, default=400, help="effect width")
+    parser.add_argument(
+        "-margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"
+    )
     args = parser.parse_args()
 
-    imake = IMake(camera_id=args.camera_id, scale=args.scale)
+    imake = IMake(
+        camera_id=args.camera_id,
+        scale=args.scale,
+        effect_width=args.effect_width,
+        face_bounding_box_margin=args.face_bounding_box_margin,
+    )
 
     eel.init("imake/static")
     for attr in dir(imake):

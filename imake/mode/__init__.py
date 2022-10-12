@@ -2,6 +2,7 @@ from enum import Enum, auto
 from typing import TypeVar
 
 from .base import BaseModeEffect
+from .config import ConfigMode
 from .custom import CustomMode
 from .diagnosis import DiagnosisMode
 from .easy import EasyMode

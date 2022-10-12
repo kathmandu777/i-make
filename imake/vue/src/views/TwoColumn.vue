@@ -25,6 +25,7 @@ import Custom from '@/components/mode/custom/Custom.vue'
 import CustomChoices from '@/components/mode/custom/CustomChoices.vue'
 import Practice from '@/components/mode/Practice.vue'
 import Diagnosis from '@/components/mode/Diagnosis.vue'
+import Config from '@/components/modules/Config.vue'
 
 export default {
     name: 'TwoColumn',
@@ -50,6 +51,7 @@ export default {
         Easy,
         Practice,
         Diagnosis,
+        Config,
     },
 }
 </script>
