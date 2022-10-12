@@ -25,10 +25,10 @@ class IMake:
 
     def __init__(
         self,
-        camera_id: int = 0,
-        scale: float = 1.0,
-        effect_width: int = 400,
-        face_bounding_box_margin: int = 100,
+        camera_id: int,
+        scale: float,
+        effect_width: int,
+        face_bounding_box_margin: int,
     ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
         self.face_detection = FaceDetection()
@@ -131,7 +131,7 @@ class IMake:
     def start_config(self) -> None:
         self._kill_back_process()
         self.mode = ConfigMode()
-        image = cv2.imread("imake/static/modes/event/kabuki.png", -1)  # FIXME: hard coding
+        image = cv2.imread(self.mode.ADJUSTMENT_IMAGE_PATH, -1)
         self.mode.set_effect_image(image)
         self.back_process = eel.spawn(self._start_rendering())
 
@@ -239,25 +239,27 @@ class IMake:
             int(bounding_box.height * image.shape[0]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0]
         )
         face = image[top:bottom, left:right]
-        face = cv2.resize(face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1])))
-        face = cv2.copyMakeBorder(
-            face,
-            max((self.RENDER_IMAGE_HEIGHT - face.shape[0]) // 2, 0),
-            max((self.RENDER_IMAGE_HEIGHT - face.shape[0]) // 2, 0),
-            max((self.RENDER_IMAGE_WIDTH - face.shape[1]) // 2, 0),
-            max((self.RENDER_IMAGE_WIDTH - face.shape[1]) // 2, 0),
-            cv2.BORDER_CONSTANT,
-            value=(0, 0, 0),
+        face_effect_width = cv2.resize(
+            face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
         )
 
         try:
-            landmarks = self.face_mesh.get_landmarks(face)
+            landmarks = self.face_mesh.get_landmarks(face_effect_width)
         except Exception as e:
             raise e
 
-        effect_w_alpha = self.mode.create_effect(face, landmarks)  # type: ignore
+        effect_w_alpha = self.mode.create_effect(face_effect_width, landmarks)  # type: ignore
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
-        scaled = self._scale_image(effect, self.scale)
+        effect_render_shape = cv2.copyMakeBorder(
+            effect,
+            max((self.RENDER_IMAGE_HEIGHT - effect.shape[0]) // 2, 0),
+            max((self.RENDER_IMAGE_HEIGHT - effect.shape[0]) // 2, 0),
+            max((self.RENDER_IMAGE_WIDTH - effect.shape[1]) // 2, 0),
+            max((self.RENDER_IMAGE_WIDTH - effect.shape[1]) // 2, 0),
+            cv2.BORDER_CONSTANT,
+            value=(0, 0, 0),
+        )
+        scaled = self._scale_image(effect_render_shape, self.scale * (right - left) / image.shape[1])
         translated = self._translate_image(scaled, left + self.x_offset, top + self.y_offset)
         return translated if not mirror else cv2.flip(translated, 1)
 
@@ -291,19 +293,19 @@ class IMake:
             fy=scale,
             interpolation=cv2.INTER_CUBIC,
         )
-        height, width = resized.shape[:2]
-        if height > image.shape[0] or width > image.shape[1]:  # 中心を基準に切り取る
+        resized_height, resized_width = resized.shape[:2]
+        if resized_height > image.shape[0] or resized_width > image.shape[1]:  # 中心を基準に切り取る
             return resized[
-                (height - image.shape[0]) // 2 : (height + image.shape[0]) // 2,
-                (width - image.shape[1]) // 2 : (width + image.shape[1]) // 2,
+                (resized_height - image.shape[0]) // 2 : (resized_height - image.shape[0]) // 2 + image.shape[0],
+                (resized_width - image.shape[1]) // 2 : (resized_width - image.shape[1]) // 2 + image.shape[1],
             ]
         else:  # 元の画像サイズと同じにする(黒埋め)
             return cv2.copyMakeBorder(
                 resized,
-                (image.shape[0] - height) // 2,
-                (image.shape[0] - height) // 2,
-                (image.shape[1] - width) // 2,
-                (image.shape[1] - width) // 2,
+                (image.shape[0] - resized_height) // 2,
+                (image.shape[0] - resized_height) // 2,
+                (image.shape[1] - resized_width) // 2,
+                (image.shape[1] - resized_width) // 2,
                 cv2.BORDER_CONSTANT,
                 value=(0, 0, 0),
             )
@@ -450,7 +452,7 @@ class IMake:
 def main() -> None:
     parser = argparse.ArgumentParser(description="iMake!")
     parser.add_argument("--camera_id", type=int, default=0, help="camera id")
-    parser.add_argument("--scale", type=float, default=1.0, help="scale")
+    parser.add_argument("--scale", type=float, default=2.0, help="scale")
     parser.add_argument("--effect_width", type=int, default=400, help="effect width")
     parser.add_argument(
         "-margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"

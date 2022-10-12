@@ -15,7 +15,7 @@
             v-on:click="goToConfig()"
             v-shortkey.once="['backspace']"
             @shortkey="goToConfig()"
-            src="/dist/config.png"
+            src="/dist/spanner.png"
             width="160"
             height="160"
         />
