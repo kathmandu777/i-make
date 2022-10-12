@@ -133,7 +133,7 @@ class IMake:
         self.mode = ConfigMode()
         image = cv2.imread(self.mode.ADJUSTMENT_IMAGE_PATH, -1)
         self.mode.set_effect_image(image)
-        self.back_process = eel.spawn(self._start_rendering())
+        self.back_process = eel.spawn(self._start_rendering)
 
     def get_hsv_palette(self) -> list[dict]:
         """Get color palette.
