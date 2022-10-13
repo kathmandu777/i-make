@@ -29,10 +29,12 @@ class IMake:
         scale: float,
         effect_width: int,
         face_bounding_box_margin: int,
+        debug: bool,
     ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
         self.face_mesh2 = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
+        self.debug = debug
 
         self.scale = scale
         self.x_offset = -int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) // 4)
@@ -184,8 +186,10 @@ class IMake:
                 effect = self._create_effect(image, self.mode.create_effect)
             except Exception as e:
                 print(e)
-                # effect = image
-                continue
+                if self.debug:
+                    effect = image
+                else:
+                    continue
 
             cv2.putText(
                 effect,
@@ -486,6 +490,7 @@ def main() -> None:
     parser.add_argument(
         "-margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"
     )
+    parser.add_argument("--debug", action="store_true", help="debug mode if this flag is set (default: False)")
     args = parser.parse_args()
 
     imake = IMake(
@@ -493,6 +498,7 @@ def main() -> None:
         scale=args.scale,
         effect_width=args.effect_width,
         face_bounding_box_margin=args.face_bounding_box_margin,
+        debug=args.debug,
     )
 
     eel.init("imake/static")
