@@ -6,13 +6,13 @@ from typing import Any, Callable, Final
 
 import cv2
 import eel
+import mediapipe as mp
 import numpy as np
 from PIL import Image
 
 from .dataclasses import HSV, FacePaint
 from .dataclasses.diagnosis import Choice
 from .libs.diagnosis import EyeDiagnosis
-from .libs.face_detection import FaceDetection
 from .libs.facemesh import FaceMesh
 from .mode import BaseModeEffectType, ConfigMode, CustomMode, DiagnosisMode, Mode
 
@@ -31,7 +31,7 @@ class IMake:
         face_bounding_box_margin: int,
     ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
-        self.face_detection = FaceDetection()
+        self.face_mesh2 = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
 
         self.scale = scale
@@ -184,7 +184,8 @@ class IMake:
                 effect = self._create_effect(image, self.mode.create_effect)
             except Exception as e:
                 print(e)
-                effect = image
+                # effect = image
+                continue
 
             cv2.putText(
                 effect,
@@ -226,25 +227,32 @@ class IMake:
             _type_: effect(BGR)
         """
         try:
-            bounding_box = self.face_detection.get_bounding_box(image)
+            original_landmarks = self.face_mesh.get_landmarks(image, return_original_style=True)
         except Exception as e:
             raise e
 
-        left = max(0, int(bounding_box.xmin * image.shape[1]) - self.FACE_BOUNDING_BOX_MARGIN)
-        right = min(
-            int(bounding_box.width * image.shape[1]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + left, image.shape[1]
+        contour_image = np.zeros(image.shape, dtype=np.uint8)
+        mp.solutions.drawing_utils.draw_landmarks(
+            image=contour_image,
+            landmark_list=original_landmarks,
+            connections=mp.solutions.face_mesh.FACEMESH_FACE_OVAL,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=mp.solutions.drawing_utils.DrawingSpec(color=(255, 255, 255), thickness=3),
         )
-        top = max(0, int(bounding_box.ymin * image.shape[0]) - self.FACE_BOUNDING_BOX_MARGIN)
-        bottom = min(
-            int(bounding_box.height * image.shape[0]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0]
-        )
+        contours, _ = cv2.findContours(contour_image[:, :, 2], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        x, y, w, h = cv2.boundingRect(contours[0])
+
+        left = max(0, x - self.FACE_BOUNDING_BOX_MARGIN)
+        right = min(w + self.FACE_BOUNDING_BOX_MARGIN * 2 + left, image.shape[1])
+        top = max(0, y - self.FACE_BOUNDING_BOX_MARGIN)
+        bottom = min(h + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0])
         face = image[top:bottom, left:right]
         face_effect_width = cv2.resize(
             face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
         )
 
         try:
-            landmarks = self.face_mesh.get_landmarks(face_effect_width)
+            landmarks = self.face_mesh2.get_landmarks(face_effect_width)
         except Exception as e:
             raise e
 

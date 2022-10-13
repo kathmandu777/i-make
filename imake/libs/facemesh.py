@@ -27,11 +27,12 @@ class FaceMesh:
         )
         self.face_mesh_results = None
 
-    def get_landmarks(self, image: np.ndarray) -> np.ndarray:
+    def get_landmarks(self, image: np.ndarray, return_original_style: bool = False) -> np.ndarray:
         """Get landmarks.
 
         Args:
             image (np.ndarray): image(BGR)
+            return_original_style (bool, optional): return original style. Defaults to False.
 
         Returns:
             _type_: landmarks
@@ -41,6 +42,9 @@ class FaceMesh:
 
         if not self.face_mesh_results.multi_face_landmarks:  # type: ignore
             raise Exception("No face detected.")
+
+        if return_original_style:
+            return self.face_mesh_results.multi_face_landmarks[0]
 
         landmarks = []
         for landmark in self.face_mesh_results.multi_face_landmarks[0].landmark:  # type: ignore
