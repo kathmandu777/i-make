@@ -13,13 +13,14 @@ class EyeDiagnosis:
     def __init__(self, threshold: float = 0.2):
         self.PROPER_RATIO_THRESHOLD: Final = threshold
 
+    @classmethod
     def render_eye_edge(
-        self,
-        landmarks: np.ndarray,
+        cls,
         image: np.ndarray,
-        radius: int = 1,
+        landmarks: np.ndarray,
+        radius: int = 2,
         color: Tuple[int, int, int] = (0, 0, 255),
-        do_overlay: bool = True,
+        do_overlay: bool = False,
     ) -> np.ndarray:
         """左右の目の端に点を描画する.
 
@@ -28,7 +29,7 @@ class EyeDiagnosis:
             image (_type_): 描画する画像
             radius (int, optional): 半径. Defaults to 1.
             color (tuple, optional): 点の色. Defaults to (0, 0, 255).
-            do_overlay (bool, optional): imageに重ねるかどうか. Defaults to True.
+            do_overlay (bool, optional): imageに重ねるかどうか. Defaults to False.
 
         Returns:
             _type_: 描画した画像
@@ -37,10 +38,10 @@ class EyeDiagnosis:
             image = np.zeros((image.shape[0], image.shape[1], 4), dtype=np.uint8)
 
         for idx in (
-            self.LEFT_EYE_LEFTMOST_IDX,
-            self.LEFT_EYE_RIGHTMOST_IDX,
-            self.RIGHT_EYE_LEFTMOST_IDX,
-            self.RIGHT_EYE_RIGHTMOST_IDX,
+            cls.LEFT_EYE_LEFTMOST_IDX,
+            cls.LEFT_EYE_RIGHTMOST_IDX,
+            cls.RIGHT_EYE_LEFTMOST_IDX,
+            cls.RIGHT_EYE_RIGHTMOST_IDX,
         ):
             cv2.circle(image, (int(landmarks[idx][0]), int(landmarks[idx][1])), radius, color, -1)
         return image

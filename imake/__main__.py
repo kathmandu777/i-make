@@ -2,7 +2,7 @@ import argparse
 import base64
 import time
 from dataclasses import asdict
-from typing import Any, Final
+from typing import Any, Callable, Final
 
 import cv2
 import eel
@@ -181,7 +181,7 @@ class IMake:
                 raise e
 
             try:
-                effect = self._create_effect(image)
+                effect = self._create_effect(image, self.mode.create_effect)
             except Exception as e:
                 print(e)
                 effect = image
@@ -219,7 +219,7 @@ class IMake:
             raise Exception("Failed to get image")
         return image
 
-    def _create_effect(self, image: np.ndarray, mirror: bool = True) -> np.ndarray:
+    def _create_effect(self, image: np.ndarray, effect_func: Callable, mirror: bool = True) -> np.ndarray:
         """Create effect.
 
         Returns:
@@ -248,7 +248,7 @@ class IMake:
         except Exception as e:
             raise e
 
-        effect_w_alpha = self.mode.create_effect(face_effect_width, landmarks)  # type: ignore
+        effect_w_alpha = effect_func(face_effect_width, landmarks)  # type: ignore
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
         effect_render_shape = cv2.copyMakeBorder(
             effect,
@@ -272,6 +272,8 @@ class IMake:
         Returns:
             _type_: RGB image
         """
+        if image.shape[2] == 3:
+            return image
         mask = image[:, :, 3]
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
 
@@ -349,7 +351,7 @@ class IMake:
 
         assert isinstance(self.mode, DiagnosisMode)
         if answer == self.mode.CALL_FUNC_ID:
-            index_and_choice, _ = self._get_choice_and_effect_diagnosis_func()
+            index_and_choice = self._get_choice_diagnosis_func()
             if isinstance(index_and_choice, str):
                 return self.mode.SET_ANSWER_ERROR_MSG
             answer = index_and_choice[0]
@@ -378,23 +380,43 @@ class IMake:
 
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
-            index_and_choice, effect = self._get_choice_and_effect_diagnosis_func()
+            start_time = time.time()
+            index_and_choice = self._get_choice_diagnosis_func()
 
-            formatted = self._format_effect(effect, self.scale)
-            _, imencode_image = cv2.imencode(".jpg", cv2.flip(formatted, 1))
+            try:
+                image = self._get_image()
+            except Exception as e:
+                raise e
+
+            try:
+                effect = self._create_effect(image, EyeDiagnosis().render_eye_edge)
+            except Exception as e:
+                print(e)
+                effect = image
+
+            cv2.putText(
+                effect,
+                "FPS: {:.2f}".format(1.0 / (time.time() - start_time)),
+                (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                (0, 255, 0),
+                thickness=2,
+            )
+            _, imencode_image = cv2.imencode(".jpg", effect)
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
 
             response = index_and_choice if isinstance(index_and_choice, str) else index_and_choice[1].text
             eel.setResponse(response)
 
-    def _get_choice_and_effect_diagnosis_func(self) -> tuple[tuple[int, Choice] | str, np.ndarray]:
+    def _get_choice_diagnosis_func(self) -> tuple[int, Choice] | str:
         """Get choice image diagnosis func.
 
         Args:
             input_data (_type_): input data
         Returns:
-            _type_: choice, effect
+            _type_: choice
         """
         if self.mode is None:
             raise ValueError("mode is not set")
@@ -408,15 +430,14 @@ class IMake:
             try:
                 landmarks = self.face_mesh.get_landmarks(image)
             except Exception as e:
-                return e.args[0], image
+                return e.args[0]
 
-            effect = EyeDiagnosis().render_eye_edge(landmarks, image, do_overlay=False)
             try:
                 result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks, 1.3)
             except Exception as e:
-                return e.args[0], effect
+                return e.args[0]
             choice = next((i, choice) for i, choice in enumerate(question.choices) if choice.result == str(result))
-            return choice, effect
+            return choice
         else:
             raise ValueError("invalid function")
 
