@@ -2,17 +2,17 @@ import argparse
 import base64
 import time
 from dataclasses import asdict
-from typing import Any, Final
+from typing import Any, Callable, Final
 
 import cv2
 import eel
+import mediapipe as mp
 import numpy as np
 from PIL import Image
 
 from .dataclasses import HSV, FacePaint
 from .dataclasses.diagnosis import Choice
 from .libs.diagnosis import EyeDiagnosis
-from .libs.face_detection import FaceDetection
 from .libs.facemesh import FaceMesh
 from .mode import BaseModeEffectType, ConfigMode, CustomMode, DiagnosisMode, Mode
 
@@ -29,10 +29,12 @@ class IMake:
         scale: float,
         effect_width: int,
         face_bounding_box_margin: int,
+        debug: bool,
     ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
-        self.face_detection = FaceDetection()
+        self.face_mesh2 = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
+        self.debug = debug
 
         self.scale = scale
         self.x_offset = -int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) // 4)
@@ -133,7 +135,7 @@ class IMake:
         self.mode = ConfigMode()
         image = cv2.imread(self.mode.ADJUSTMENT_IMAGE_PATH, -1)
         self.mode.set_effect_image(image)
-        self.back_process = eel.spawn(self._start_rendering())
+        self.back_process = eel.spawn(self._start_rendering)
 
     def get_hsv_palette(self) -> list[dict]:
         """Get color palette.
@@ -181,10 +183,13 @@ class IMake:
                 raise e
 
             try:
-                effect = self._create_effect(image)
+                effect = self._create_effect(image, self.mode.create_effect)
             except Exception as e:
                 print(e)
-                effect = image
+                if self.debug:
+                    effect = image
+                else:
+                    continue
 
             cv2.putText(
                 effect,
@@ -219,36 +224,43 @@ class IMake:
             raise Exception("Failed to get image")
         return image
 
-    def _create_effect(self, image: np.ndarray, mirror: bool = True) -> np.ndarray:
+    def _create_effect(self, image: np.ndarray, effect_func: Callable, mirror: bool = True) -> np.ndarray:
         """Create effect.
 
         Returns:
             _type_: effect(BGR)
         """
         try:
-            bounding_box = self.face_detection.get_bounding_box(image)
+            original_landmarks = self.face_mesh.get_landmarks(image, return_original_style=True)
         except Exception as e:
             raise e
 
-        left = max(0, int(bounding_box.xmin * image.shape[1]) - self.FACE_BOUNDING_BOX_MARGIN)
-        right = min(
-            int(bounding_box.width * image.shape[1]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + left, image.shape[1]
+        contour_image = np.zeros(image.shape, dtype=np.uint8)
+        mp.solutions.drawing_utils.draw_landmarks(
+            image=contour_image,
+            landmark_list=original_landmarks,
+            connections=mp.solutions.face_mesh.FACEMESH_FACE_OVAL,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=mp.solutions.drawing_utils.DrawingSpec(color=(255, 255, 255), thickness=3),
         )
-        top = max(0, int(bounding_box.ymin * image.shape[0]) - self.FACE_BOUNDING_BOX_MARGIN)
-        bottom = min(
-            int(bounding_box.height * image.shape[0]) + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0]
-        )
+        contours, _ = cv2.findContours(contour_image[:, :, 2], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        x, y, w, h = cv2.boundingRect(contours[0])
+
+        left = max(0, x - self.FACE_BOUNDING_BOX_MARGIN)
+        right = min(w + self.FACE_BOUNDING_BOX_MARGIN * 2 + left, image.shape[1])
+        top = max(0, y - self.FACE_BOUNDING_BOX_MARGIN)
+        bottom = min(h + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0])
         face = image[top:bottom, left:right]
         face_effect_width = cv2.resize(
             face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
         )
 
         try:
-            landmarks = self.face_mesh.get_landmarks(face_effect_width)
+            landmarks = self.face_mesh2.get_landmarks(face_effect_width)
         except Exception as e:
             raise e
 
-        effect_w_alpha = self.mode.create_effect(face_effect_width, landmarks)  # type: ignore
+        effect_w_alpha = effect_func(face_effect_width, landmarks)  # type: ignore
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
         effect_render_shape = cv2.copyMakeBorder(
             effect,
@@ -272,6 +284,8 @@ class IMake:
         Returns:
             _type_: RGB image
         """
+        if image.shape[2] == 3:
+            return image
         mask = image[:, :, 3]
         return (image[:, :, :3] * np.dstack([mask / 255] * 3)).astype(np.uint8)
 
@@ -349,7 +363,7 @@ class IMake:
 
         assert isinstance(self.mode, DiagnosisMode)
         if answer == self.mode.CALL_FUNC_ID:
-            index_and_choice, _ = self._get_choice_and_effect_diagnosis_func()
+            index_and_choice = self._get_choice_diagnosis_func()
             if isinstance(index_and_choice, str):
                 return self.mode.SET_ANSWER_ERROR_MSG
             answer = index_and_choice[0]
@@ -378,23 +392,43 @@ class IMake:
 
         while True:
             eel.sleep(self.EEL_SLEEP_TIME)
-            index_and_choice, effect = self._get_choice_and_effect_diagnosis_func()
+            start_time = time.time()
+            index_and_choice = self._get_choice_diagnosis_func()
 
-            formatted = self._format_effect(effect, self.scale)
-            _, imencode_image = cv2.imencode(".jpg", cv2.flip(formatted, 1))
+            try:
+                image = self._get_image()
+            except Exception as e:
+                raise e
+
+            try:
+                effect = self._create_effect(image, EyeDiagnosis().render_eye_edge)
+            except Exception as e:
+                print(e)
+                effect = image
+
+            cv2.putText(
+                effect,
+                "FPS: {:.2f}".format(1.0 / (time.time() - start_time)),
+                (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                (0, 255, 0),
+                thickness=2,
+            )
+            _, imencode_image = cv2.imencode(".jpg", effect)
             base64_image = base64.b64encode(imencode_image)
             eel.setVideoSrc("data:image/jpg;base64," + base64_image.decode("ascii"))
 
             response = index_and_choice if isinstance(index_and_choice, str) else index_and_choice[1].text
             eel.setResponse(response)
 
-    def _get_choice_and_effect_diagnosis_func(self) -> tuple[tuple[int, Choice] | str, np.ndarray]:
+    def _get_choice_diagnosis_func(self) -> tuple[int, Choice] | str:
         """Get choice image diagnosis func.
 
         Args:
             input_data (_type_): input data
         Returns:
-            _type_: choice, effect
+            _type_: choice
         """
         if self.mode is None:
             raise ValueError("mode is not set")
@@ -408,15 +442,14 @@ class IMake:
             try:
                 landmarks = self.face_mesh.get_landmarks(image)
             except Exception as e:
-                return e.args[0], image
+                return e.args[0]
 
-            effect = EyeDiagnosis().render_eye_edge(landmarks, image, do_overlay=False)
             try:
                 result = EyeDiagnosis().is_longer_distance_between_eye_than_eye_size(landmarks, 1.3)
             except Exception as e:
-                return e.args[0], effect
+                return e.args[0]
             choice = next((i, choice) for i, choice in enumerate(question.choices) if choice.result == str(result))
-            return choice, effect
+            return choice
         else:
             raise ValueError("invalid function")
 
@@ -457,6 +490,7 @@ def main() -> None:
     parser.add_argument(
         "-margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"
     )
+    parser.add_argument("--debug", action="store_true", help="debug mode if this flag is set (default: False)")
     args = parser.parse_args()
 
     imake = IMake(
@@ -464,6 +498,7 @@ def main() -> None:
         scale=args.scale,
         effect_width=args.effect_width,
         face_bounding_box_margin=args.face_bounding_box_margin,
+        debug=args.debug,
     )
 
     eel.init("imake/static")
