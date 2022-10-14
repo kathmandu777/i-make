@@ -4,6 +4,7 @@ from typing import Any, Final
 
 from ..dataclasses import FacePaint
 from ..libs.list import get_index
+from ..libs.palette import COLOR_PALETTE, DARK_PALETTE
 from ..mode.base import BaseModeEffect
 
 
@@ -24,20 +25,20 @@ class CustomMode(BaseModeEffect):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def get_choice_facepaints_by_part(cls, part_kind: str) -> list[dict]:
+    def get_choice_facepaints_by_part_name(cls, part_name: str) -> list[dict]:
         """選択肢のメイクを取得する.
 
         Returns:
-            list[FacePaint]: メイクのリスト
+            list[dict]: メイクのリスト
         """
-        if not (part_kind in [x["part_kind"] for x in cls.get_part_kinds()]):
-            raise ValueError(f"part_kind must be in {[x['part_kind'] for x in cls.get_part_kinds()]}, but {part_kind}")
+        if not (part_name in [x["name"] for x in cls.get_parts()]):
+            raise ValueError(f"part_name must be in {[x['name'] for x in cls.get_parts()]}, but {part_name}")
 
-        order = cls.get_order(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
+        order = cls.get_order(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name))
 
         choice_files = [
             file
-            for file in os.listdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind))
+            for file in os.listdir(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name))
             if (file.endswith(".png") or file.endswith(".PNG"))
             and not file == cls.THUMBNAIL_IMAGE_NAME
             and not (cls.BASE_IMAGE_SUFFIX in file)
@@ -45,9 +46,9 @@ class CustomMode(BaseModeEffect):
         facepaints = [
             FacePaint(
                 filename=file,
-                image_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind),
-                thumbnail_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_kind, cls.THUMBNAIL_DIR_NAME),
-                part_kind=part_kind,
+                image_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name),
+                thumbnail_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name, cls.THUMBNAIL_DIR_NAME),
+                part_name=part_name,
             )
             for file in sorted(choice_files, key=lambda x: get_index(order, x, cls.DEFAULT_ORDER))
         ]
@@ -61,7 +62,28 @@ class CustomMode(BaseModeEffect):
         ]
 
     @classmethod
-    def get_part_kinds(cls) -> list[dict]:
+    def get_palette_by_part_name(cls, part_name: str) -> list[dict]:
+        """
+
+        Args:
+            part (str): 顔のパーツ名
+
+        Returns:
+            _type_: HSVのリスト
+        """
+        if not (part_name in [x["name"] for x in cls.get_parts()]):
+            raise ValueError(f"part_name must be in {[x['name'] for x in cls.get_parts()]}, but {part_name}")
+
+        palette_name = cls.get_palette_name(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name))
+        palette = []
+        if palette_name == "color":
+            palette = COLOR_PALETTE
+        elif palette_name == "dark":
+            palette = DARK_PALETTE
+        return [asdict(hsv) for hsv in palette]
+
+    @classmethod
+    def get_parts(cls) -> list[dict]:
         """パーツの種類を取得する.
 
         Returns:
@@ -78,7 +100,7 @@ class CustomMode(BaseModeEffect):
         ]
         return [
             dict(
-                part_kind=part,
+                name=part,
                 thumbnail_path_for_frontend="../"
                 + os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part, cls.THUMBNAIL_IMAGE_NAME).replace(
                     "imake/static/", ""
