@@ -54,7 +54,7 @@ class BaseModeEffect(BaseMode, Effect):
 
     DEFAULT_ORDER: Final = 100
 
-    ORDER_FILE_NAME: Final = "order.yml"
+    CONFIG_FILE_NAME: Final = "config.yml"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
 
@@ -237,14 +237,31 @@ class BaseModeEffect(BaseMode, Effect):
         """Get order of files in the directory.
 
         Args:
-            dir_path (str): order.yamlのあるディレクトリ
+            dir_path (str): config.yamlのあるディレクトリ
         Returns:
             dict[str, dict[str, int]]: order
         """
-        order_yaml_path = os.path.join(dir_path, cls.ORDER_FILE_NAME)
-        if not os.path.exists(order_yaml_path):
+        config_yaml_path = os.path.join(dir_path, cls.CONFIG_FILE_NAME)
+        if not os.path.exists(config_yaml_path):
             return []
 
-        with open(order_yaml_path, "r") as f:
-            order = yaml.safe_load(f)
-        return order["order"]
+        with open(config_yaml_path, "r") as f:
+            config = yaml.safe_load(f)
+        return config.get("order", [])
+
+    @classmethod
+    def get_palette_name(cls, dir_path: str) -> str:
+        """Get palette name of the directory.
+
+        Args:
+            dir_path (str): config.yamlのあるディレクトリ
+        Returns:
+            str: palette name
+        """
+        config_yaml_path = os.path.join(dir_path, cls.CONFIG_FILE_NAME)
+        if not os.path.exists(config_yaml_path):
+            return ""
+
+        with open(config_yaml_path, "r") as f:
+            config = yaml.safe_load(f)
+        return config.get("palette", {}).get("name", "")

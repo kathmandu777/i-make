@@ -39,7 +39,7 @@ export default {
     },
     methods: {
         async getHSVPalette() {
-            this.hsvPalette = await window.eel.get_hsv_palette()()
+            this.hsvPalette = await window.eel.get_skin_palette()()
         },
         async confirm(hsv) {
             if (hsv) this.selectedHSV = hsv

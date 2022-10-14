@@ -16,7 +16,7 @@ class FacePaint:
     hsv: HSV | None = None
 
     # custom
-    part_kind: str | None = None
+    part_name: str | None = None
 
     @property
     def image_path(self) -> str:

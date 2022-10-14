@@ -14,6 +14,7 @@ from .dataclasses import HSV, FacePaint
 from .dataclasses.diagnosis import Choice
 from .libs.diagnosis import EyeDiagnosis
 from .libs.facemesh import FaceMesh
+from .libs.palette import SKIN_PALETTE
 from .mode import BaseModeEffectType, ConfigMode, CustomMode, DiagnosisMode, Mode
 
 
@@ -137,20 +138,13 @@ class IMake:
         self.mode.set_effect_image(image)
         self.back_process = eel.spawn(self._start_rendering)
 
-    def get_hsv_palette(self) -> list[dict]:
-        """Get color palette.
+    def get_skin_palette(self) -> list[dict]:
+        """Get color palette for skin.
 
         Returns:
-            _type_: color palette
+            _type_: HSV list
         """
-        palette = [
-            HSV(h=14, s=36, v=100),
-            HSV(h=27, s=36, v=100),
-            HSV(h=41, s=74, v=55),
-            HSV(h=40, s=51, v=86),
-            HSV(h=15, s=45, v=82),
-        ]
-        return [asdict(hsv) for hsv in palette]
+        return [asdict(hsv) for hsv in SKIN_PALETTE]
 
     def get_config(self) -> dict[str, Any]:
         """Get config.
@@ -454,7 +448,7 @@ class IMake:
             raise ValueError("invalid function")
 
     # Custom
-    def get_part_kinds(self) -> list[dict]:
+    def get_parts(self) -> list[dict]:
         """Get part kinds.
 
         Returns:
@@ -464,9 +458,9 @@ class IMake:
             raise ValueError("mode is not set")
 
         assert isinstance(self.mode, CustomMode)
-        return self.mode.get_part_kinds()
+        return self.mode.get_parts()
 
-    def get_choice_facepaints_by_part(self, part: str) -> list[dict]:
+    def get_choice_facepaints_by_part_name(self, part_name: str) -> list[dict]:
         """Get choice facepaints by part.
 
         Args:
@@ -479,7 +473,19 @@ class IMake:
             raise ValueError("mode is not set")
 
         assert isinstance(self.mode, CustomMode)
-        return self.mode.get_choice_facepaints_by_part(part)
+        return self.mode.get_choice_facepaints_by_part_name(part_name)
+
+    def get_palette_by_part_name(self, part_name: str) -> list[dict]:
+        """Get color palette by part.
+
+        Returns:
+            _type_: color palette
+        """
+        if self.mode is None:
+            raise ValueError("mode is not set")
+
+        assert isinstance(self.mode, CustomMode)
+        return self.mode.get_palette_by_part_name(part_name)
 
 
 def main() -> None:

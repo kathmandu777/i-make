@@ -1,12 +1,8 @@
 <template>
     <div>
         <div class="keypad">
-            <div v-if="!selectedPartKind" class="choices-page">
-                <Choices
-                    :choiceList="partKinds"
-                    @update="setPart"
-                    :timeSleep="150"
-                >
+            <div v-if="!selectedPart" class="choices-page">
+                <Choices :choiceList="parts" @update="setPart" :timeSleep="150">
                     <template v-slot:default="{ choice }">
                         <img
                             :src="choice.thumbnail_path_for_frontend"
@@ -18,7 +14,7 @@
             </div>
             <div v-else class="choices-page">
                 <CustomChoices
-                    :partKind="selectedPartKind"
+                    :partName="selectedPart.name"
                     @update="pushFacepaints"
                 ></CustomChoices>
             </div>
@@ -34,7 +30,7 @@
             />
 
             <button
-                v-if="!!selectedPartKind"
+                v-if="!!selectedPart"
                 class="key-dot card"
                 v-shortkey.once="['.']"
                 @shortkey="goToParts()"
@@ -61,29 +57,29 @@ export default {
     props: ['kwargs'],
     data: function () {
         return {
-            partKinds: [],
-            selectedPartKind: null,
+            parts: [],
+            selectedPart: null,
             selectedFacepaints: [],
         }
     },
     methods: {
-        async getPartKinds() {
-            this.partKinds = await window.eel.get_part_kinds()()
+        async getParts() {
+            this.parts = await window.eel.get_parts()()
         },
         async goToMenu() {
             await window.eel.stop()()
             this.$emit('update-component', 'Menu')
         },
         setPart(partKind) {
-            if (partKind) this.selectedPartKind = partKind
+            if (partKind) this.selectedPart = partKind
         },
         pushFacepaints(facepaint) {
             if (facepaint) this.selectedFacepaints.push(facepaint)
-            this.selectedPartKind = null
+            this.selectedPart = null
             this.confirm()
         },
         goToParts() {
-            this.selectedPartKind = null
+            this.selectedPart = null
         },
         async confirm() {
             await window.eel.set_effect_image_by_facepaints(
@@ -93,7 +89,7 @@ export default {
         },
     },
     mounted: function () {
-        this.getPartKinds()
+        this.getParts()
     },
     components: { Choices, CustomChoices },
 }

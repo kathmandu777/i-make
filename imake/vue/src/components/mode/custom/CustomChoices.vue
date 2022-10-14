@@ -18,7 +18,7 @@
             </div>
             <div v-else-if="!selectedColor" class="choices-page">
                 <Choices
-                    :choiceList="hsvPalette"
+                    :choiceList="palette"
                     @update="setHSV"
                     :timeSleep="150"
                 >
@@ -38,11 +38,11 @@
 import Choices from '@/components/templates/Choices.vue'
 export default {
     name: 'CustomChoices',
-    props: ['partKind'],
+    props: ['partName'],
     data: function () {
         return {
             facepaints: [],
-            hsvPalette: [],
+            palette: [],
             selectedFacepaint: null,
             selectedColor: null,
             page: 0,
@@ -50,12 +50,15 @@ export default {
     },
     methods: {
         async getChoiceFacepaints() {
-            this.facepaints = await window.eel.get_choice_facepaints_by_part(
-                this.partKind.part_kind
-            )()
+            this.facepaints =
+                await window.eel.get_choice_facepaints_by_part_name(
+                    this.partName
+                )()
         },
-        async getHsvPalette() {
-            this.hsvPalette = await window.eel.get_hsv_palette()()
+        async getPalette() {
+            this.palette = await window.eel.get_palette_by_part_name(
+                this.partName
+            )()
         },
         setFacepaint(facepaint) {
             if (facepaint) this.selectedFacepaint = facepaint
@@ -66,7 +69,10 @@ export default {
             this.setFacepaintHSV()
         },
         setFacepaintHSV() {
-            if (this.selectedFacepaint && this.selectedColor) {
+            if (
+                this.selectedFacepaint &&
+                (this.selectedColor || this.palette.length === 0)
+            ) {
                 this.selectedFacepaint.hsv = this.selectedColor
                 this.$emit('update', this.selectedFacepaint)
             }
@@ -125,7 +131,7 @@ export default {
     },
     mounted: function () {
         this.getChoiceFacepaints()
-        this.getHsvPalette()
+        this.getPalette()
     },
     components: { Choices },
 }
