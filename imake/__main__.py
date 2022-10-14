@@ -403,8 +403,11 @@ class IMake:
             try:
                 effect = self._create_effect(image, EyeDiagnosis().render_eye_edge)
             except Exception as e:
-                print(e)
-                effect = image
+                index_and_choice = e.args[0]
+                if self.debug:
+                    effect = image
+                else:
+                    effect = image  # FIXME
 
             cv2.putText(
                 effect,
