@@ -50,6 +50,7 @@ repos:
             additional_dependencies:
                 - 'pydantic'
                 - 'types-PyYAML'
+            args: ['--no-warn-return-any']
     - repo: https://github.com/myint/docformatter
       rev: v1.5.0
       hooks:
