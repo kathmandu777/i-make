@@ -4,7 +4,7 @@ from typing import Any, Final
 
 from ..dataclasses import FacePaint
 from ..libs.list import get_index
-from ..libs.palette import COLOR_PALETTE, DARK_PALETTE
+from ..libs.palette import PALETTE
 from ..mode.base import BaseModeEffect
 
 
@@ -63,10 +63,10 @@ class CustomMode(BaseModeEffect):
 
     @classmethod
     def get_palette_by_part_name(cls, part_name: str) -> list[dict]:
-        """
+        """Get color palette by part name.
 
         Args:
-            part (str): 顔のパーツ名
+            part_name (str): 顔のパーツ名
 
         Returns:
             _type_: HSVのリスト
@@ -75,12 +75,7 @@ class CustomMode(BaseModeEffect):
             raise ValueError(f"part_name must be in {[x['name'] for x in cls.get_parts()]}, but {part_name}")
 
         palette_name = cls.get_palette_name(os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name))
-        palette = []
-        if palette_name == "color":
-            palette = COLOR_PALETTE
-        elif palette_name == "dark":
-            palette = DARK_PALETTE
-        return [asdict(hsv) for hsv in palette]
+        return [asdict(hsv) for hsv in PALETTE.get(palette_name, [])]
 
     @classmethod
     def get_parts(cls) -> list[dict]:

@@ -2,7 +2,7 @@
     <div>
         <div class="keypad">
             <Choices
-                :choiceList="hsvPalette"
+                :choiceList="palette"
                 @update="confirm"
                 class="choices-page"
             >
@@ -33,13 +33,13 @@ export default {
     name: 'SkinColor',
     data: function () {
         return {
-            hsvPalette: [],
+            palette: [],
             selectedHSV: null,
         }
     },
     methods: {
-        async getHSVPalette() {
-            this.hsvPalette = await window.eel.get_skin_palette()()
+        async getPalette() {
+            this.palette = await window.eel.get_skin_palette()()
         },
         async confirm(hsv) {
             if (hsv) this.selectedHSV = hsv
@@ -48,6 +48,9 @@ export default {
         async goToMenu() {
             await window.eel.stop()()
             this.$emit('update-component', 'Menu')
+        },
+        async startSkinColor() {
+            await window.eel.start_skin_color()
         },
         hsvToRgbCode(hsv) {
             var h = hsv.h / 60
@@ -93,7 +96,8 @@ export default {
         },
     },
     mounted: function () {
-        this.getHSVPalette()
+        this.getPalette()
+        this.startSkinColor()
     },
     components: { Choices },
 }

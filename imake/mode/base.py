@@ -57,8 +57,7 @@ class BaseModeEffect(BaseMode, Effect):
     CONFIG_FILE_NAME: Final = "config.yml"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
-
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore
 
     @classmethod
     def get_class_vars(cls) -> dict[str, Any]:
@@ -130,11 +129,12 @@ class BaseModeEffect(BaseMode, Effect):
         image = Image.alpha_composite(back_pil, front_pil)
         return np.array(image).astype(np.uint8)
 
-    def set_skin_color(self, hsv: HSV) -> None:
+    def set_skin_color(self, hsv: HSV, set_as_effect_image: bool = False) -> None:
         """指定したHSVにスキンカラーをセットする.
 
         Args:
             hsv (HSV): HSV
+            set_as_effect_image (bool, optional): スキンカラーをセットした画像をエフェクト画像としてセットするかどうか. Defaults to False.
         """
         base_skin_image = cv2.imread(self.SKIN_IMAGE_PATH, cv2.IMREAD_UNCHANGED)
         if base_skin_image is None:
@@ -146,6 +146,8 @@ class BaseModeEffect(BaseMode, Effect):
             raise ValueError("Skin image size must be 1024x1024")
 
         self.skin_image = self._convert_image_color(base_skin_image, hsv, True)
+        if set_as_effect_image:
+            self.set_effect_image(self.skin_image)
 
     def _convert_image_color(self, image: np.ndarray, hsv: HSV, include_alpha_ch: bool) -> np.ndarray:
         """アルファチャンネル付きのRGB=(0,0,255)の画像の色を、指定したHSV数値の色に変更する.
