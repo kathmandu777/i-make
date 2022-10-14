@@ -42,3 +42,9 @@ DARK_PALETTE = [
     HSV(h=60, s=100, v=100),
     HSV(h=200, s=100, v=100),
 ]
+
+PALETTE = {
+    "skin": SKIN_PALETTE,
+    "color": COLOR_PALETTE,
+    "dark": DARK_PALETTE,
+}

@@ -44,7 +44,7 @@ class FaceMesh:
             raise Exception("No face detected.")
 
         if return_original_style:
-            return self.face_mesh_results.multi_face_landmarks[0]
+            return self.face_mesh_results.multi_face_landmarks[0]  # type: ignore
 
         landmarks = []
         for landmark in self.face_mesh_results.multi_face_landmarks[0].landmark:  # type: ignore

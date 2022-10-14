@@ -57,8 +57,7 @@ class BaseModeEffect(BaseMode, Effect):
     CONFIG_FILE_NAME: Final = "config.yml"
 
     def __init__(self, *args: tuple[Any], **kwargs: dict[Any, Any]) -> None:
-
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore
 
     @classmethod
     def get_class_vars(cls) -> dict[str, Any]:

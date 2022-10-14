@@ -14,7 +14,7 @@ from .dataclasses import HSV, FacePaint
 from .dataclasses.diagnosis import Choice
 from .libs.diagnosis import EyeDiagnosis
 from .libs.facemesh import FaceMesh
-from .libs.palette import SKIN_PALETTE
+from .libs.palette import PALETTE
 from .mode import BaseModeEffectType, ConfigMode, CustomMode, DiagnosisMode, Mode
 
 
@@ -144,7 +144,7 @@ class IMake:
         Returns:
             _type_: HSV list
         """
-        return [asdict(hsv) for hsv in SKIN_PALETTE]
+        return [asdict(hsv) for hsv in PALETTE["skin"]]
 
     def get_config(self) -> dict[str, Any]:
         """Get config.
@@ -177,7 +177,7 @@ class IMake:
                 raise e
 
             try:
-                effect = self._create_effect(image, self.mode.create_effect)
+                effect = self._create_effect(image, self.mode.create_effect)  # type: ignore
             except Exception as e:
                 print(e)
                 if self.debug:
@@ -254,7 +254,7 @@ class IMake:
         except Exception as e:
             raise e
 
-        effect_w_alpha = effect_func(face_effect_width, landmarks)  # type: ignore
+        effect_w_alpha = effect_func(face_effect_width, landmarks)
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
         effect_render_shape = cv2.copyMakeBorder(
             effect,
@@ -452,10 +452,10 @@ class IMake:
 
     # Custom
     def get_parts(self) -> list[dict]:
-        """Get part kinds.
+        """Get parts.
 
         Returns:
-            _type_: part kinds
+            _type_: parts
         """
         if self.mode is None:
             raise ValueError("mode is not set")
@@ -464,10 +464,10 @@ class IMake:
         return self.mode.get_parts()
 
     def get_choice_facepaints_by_part_name(self, part_name: str) -> list[dict]:
-        """Get choice facepaints by part.
+        """Get choice facepaints by part name.
 
         Args:
-            part (_type_): part
+            part_name (_type_): part name
 
         Returns:
             _type_: choice facepaints
@@ -479,8 +479,10 @@ class IMake:
         return self.mode.get_choice_facepaints_by_part_name(part_name)
 
     def get_palette_by_part_name(self, part_name: str) -> list[dict]:
-        """Get color palette by part.
+        """Get color palette by part name.
 
+        Args:
+            part_name (_type_): part name
         Returns:
             _type_: color palette
         """
