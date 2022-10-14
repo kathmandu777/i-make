@@ -18,7 +18,7 @@ class EyeDiagnosis:
         cls,
         image: np.ndarray,
         landmarks: np.ndarray,
-        radius: int = 2,
+        radius: int = 5,
         color: Tuple[int, int, int] = (0, 0, 255),
         do_overlay: bool = False,
     ) -> np.ndarray:
@@ -35,7 +35,7 @@ class EyeDiagnosis:
             _type_: 描画した画像
         """
         if not do_overlay:
-            image = np.zeros((image.shape[0], image.shape[1], 4), dtype=np.uint8)
+            image = np.zeros(image.shape, dtype=np.uint8)
 
         for idx in (
             cls.LEFT_EYE_LEFTMOST_IDX,
