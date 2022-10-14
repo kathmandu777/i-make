@@ -24,11 +24,22 @@ class FacePaint:
 
     @property
     def thumbnail_path(self) -> str | None:
-        return (
-            os.path.join(self.thumbnail_dir_path, self.filename)
-            if self.thumbnail_dir_path and os.path.isfile(os.path.join(self.thumbnail_dir_path, self.filename))
-            else None
-        )
+        if self.thumbnail_dir_path is None:
+            return None
+        if os.path.isfile(
+            os.path.join(self.thumbnail_dir_path, self.filename).replace(".png", "").replace(".PNG", "") + ".png"
+        ):
+            return (
+                os.path.join(self.thumbnail_dir_path, self.filename).replace(".png", "").replace(".PNG", "") + ".png"
+            )
+        elif os.path.isfile(
+            os.path.join(self.thumbnail_dir_path, self.filename).replace(".png", "").replace(".PNG", "") + ".PNG"
+        ):
+            return (
+                os.path.join(self.thumbnail_dir_path, self.filename).replace(".png", "").replace(".PNG", "") + ".PNG"
+            )
+        else:
+            return None
 
     @property
     def image_path_for_frontend(self) -> str:
