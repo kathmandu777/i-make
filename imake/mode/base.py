@@ -49,6 +49,7 @@ class BaseModeEffect(BaseMode, Effect):
     B255_HUE: Final = 120
     B255_SAT: Final = 255
     NO_CHANGE_VAL: Final = 0
+    BUFF: Final = 30
 
     BASE_IMAGE_SUFFIX: Final = "-base.png"  # ２枚重ねによって作られるメイク画像の色変更をしない方の画像名のsuffix
 
@@ -166,8 +167,14 @@ class BaseModeEffect(BaseMode, Effect):
         image_wo_alpha, mask = self._convert_bgra_to_bgr(image)
         image_hsv = cv2.cvtColor(image_wo_alpha, cv2.COLOR_BGR2HSV)
 
-        image_hsv[:, :, 0] = np.where(image_hsv[:, :, 0] == self.B255_HUE, hue, image_hsv[:, :, 0])
-        image_hsv[:, :, 1] = np.where(image_hsv[:, :, 1] == self.B255_SAT, sat, image_hsv[:, :, 1])
+        image_hue = image_hsv[:, :, 0]
+        image_sat = image_hsv[:, :, 1]
+        image_hsv[:, :, 0] = np.where(
+            (image_hue > self.B255_HUE - self.BUFF) & (image_hue < self.B255_HUE + self.BUFF), hue, image_hsv[:, :, 0]
+        )
+        image_hsv[:, :, 1] = np.where(
+            (image_sat > self.B255_SAT - self.BUFF) & (image_sat < self.B255_SAT + self.BUFF), sat, image_hsv[:, :, 1]
+        )
         image_hsv[:, :, 2] = np.where(
             image_hsv[:, :, 2] != self.NO_CHANGE_VAL, (val * (image_hsv[:, :, 2] / 255)), image_hsv[:, :, 2]
         )
