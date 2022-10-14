@@ -48,7 +48,7 @@ class IMake:
         self.EFFECT_WIDTH: Final = effect_width
         self.FACE_BOUNDING_BOX_MARGIN: Final = face_bounding_box_margin
 
-        self.skin_hsv = HSV(h=14, s=36, v=100)
+        self.skin_hsv = PALETTE["skin"][0]
         self.back_process = None
 
     # Mode
@@ -106,6 +106,8 @@ class IMake:
            include_alpha_ch (bool, optional): setする画像にアルファチャンネルを含むか否か
         """
         self.skin_hsv = HSV(**hsv)
+        if self.mode is not None:
+            self.mode.set_skin_color(self.skin_hsv, set_as_effect_image=True)
 
     def update_scale(self, diff: float) -> None:
         """Update scale.
@@ -130,6 +132,14 @@ class IMake:
             diff (_type_): diff
         """
         self.y_offset += diff
+
+    def start_skin_color(self) -> None:
+        self._kill_back_process()
+        self.mode = ConfigMode()  # FIXME ??
+        image = cv2.imread(self.mode.SKIN_IMAGE_PATH, -1)
+        self.mode.set_effect_image(image)
+        self.set_skin_color(asdict(self.skin_hsv))
+        self.back_process = eel.spawn(self._start_rendering)
 
     def start_config(self) -> None:
         self._kill_back_process()
