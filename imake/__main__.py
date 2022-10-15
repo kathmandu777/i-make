@@ -28,22 +28,32 @@ class IMake:
         camera_id: int,
         scale: float,
         effect_width: int,
-        face_bounding_box_margin_height: int,
-        face_bounding_box_margin_width: int,
+        face_bounding_box_margin_left: int,
+        face_bounding_box_margin_right: int,
+        face_bounding_box_margin_top: int,
+        face_bounding_box_margin_bottom: int,
         debug: bool,
     ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
         self.face_mesh2 = FaceMesh(refine_landmarks=True)
         self.cap = cv2.VideoCapture(camera_id)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        print(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        print(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.debug = debug
 
         self.scale = scale
         self.x_offset = 0
         self.y_offset = 0
+        self.focusing_coefficient = 1.0
 
         self.EFFECT_WIDTH: Final = effect_width
-        self.FACE_BOUNDING_BOX_MARGIN_HEIGHT: Final = face_bounding_box_margin_height
-        self.FACE_BOUNDING_BOX_MARGIN_WIDTH: Final = face_bounding_box_margin_width
+
+        self.FACE_BOUNDING_BOX_MARGIN_LEFT: Final = face_bounding_box_margin_left
+        self.FACE_BOUNDING_BOX_MARGIN_RIGHT: Final = face_bounding_box_margin_right
+        self.FACE_BOUNDING_BOX_MARGIN_TOP: Final = face_bounding_box_margin_top
+        self.FACE_BOUNDING_BOX_MARGIN_BOTTOM: Final = face_bounding_box_margin_bottom
 
         self.skin_hsv = PALETTE["skin"][0]
         self.back_process = None
@@ -130,6 +140,14 @@ class IMake:
         """
         self.y_offset += diff
 
+    def update_focusing_coefficient(self, diff: float) -> None:
+        """Update focusing coefficient.
+
+        Args:
+            diff (_type_): diff
+        """
+        self.focusing_coefficient += diff
+
     def start_skin_color(self) -> None:
         self._kill_back_process()
         self.mode = ConfigMode()  # FIXME ??
@@ -186,7 +204,7 @@ class IMake:
             try:
                 effect = self._create_effect(image, self.mode.create_effect)  # type: ignore
             except Exception as e:
-                print(e)
+                print(e, time.time())
                 if self.debug:
                     effect = image
                 else:
@@ -236,11 +254,18 @@ class IMake:
         except Exception as e:
             raise e
 
-        left = max(int(np.amin(original_landmarks[:, 0])) - self.FACE_BOUNDING_BOX_MARGIN_WIDTH, 0)
-        right = min(int(np.amax(original_landmarks[:, 0])) + self.FACE_BOUNDING_BOX_MARGIN_WIDTH * 2, image.shape[1])
-        top = max(int(np.amin(original_landmarks[:, 1])) - self.FACE_BOUNDING_BOX_MARGIN_HEIGHT, 0)
-        bottom = min(int(np.amax(original_landmarks[:, 1])) + self.FACE_BOUNDING_BOX_MARGIN_HEIGHT * 2, image.shape[0])
-        face = image[top:bottom, left:right]
+        face_left = int(np.amin(original_landmarks[:, 0]))
+        face_right = int(np.amax(original_landmarks[:, 0]))
+        face_width = face_right - face_left
+        face_top = int(np.amin(original_landmarks[:, 1]))
+        face_bottom = int(np.amax(original_landmarks[:, 1]))
+        # face_left_margin = max(face_left - self.FACE_BOUNDING_BOX_MARGIN_LEFT, 0)
+        # face_right_margin = min(face_right + self.FACE_BOUNDING_BOX_MARGIN_RIGHT, image.shape[1])
+        # face_top_margin = max(face_top - self.FACE_BOUNDING_BOX_MARGIN_TOP, 0)
+        # face_bottom_margin = min(face_bottom + self.FACE_BOUNDING_BOX_MARGIN_BOTTOM, image.shape[0])
+
+        # face = image[face_top_margin:face_bottom_margin, face_left_margin:face_right_margin]
+        face = image[face_top:face_bottom, face_left:face_right]
         face_effect_width = cv2.resize(
             face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
         )
@@ -248,21 +273,20 @@ class IMake:
         try:
             landmarks = self.face_mesh2.get_landmarks(face_effect_width)
         except Exception as e:
+            print("second")
             raise e
 
         effect_w_alpha = effect_func(face_effect_width, landmarks)
         effect = self._convert_rgba_to_rgb(effect_w_alpha)
-        effect_render_shape = cv2.copyMakeBorder(
+        scaled = self._scale_image(
             effect,
-            max((self.RENDER_IMAGE_HEIGHT - effect.shape[0]) // 2, 0),
-            max((self.RENDER_IMAGE_HEIGHT - effect.shape[0]) // 2, 0),
-            max((self.RENDER_IMAGE_WIDTH - effect.shape[1]) // 2, 0),
-            max((self.RENDER_IMAGE_WIDTH - effect.shape[1]) // 2, 0),
-            cv2.BORDER_CONSTANT,
-            value=(0, 0, 0),
+            self.scale * face_width / image.shape[1],
         )
-        scaled = self._scale_image(effect_render_shape, self.scale * (right - left) / image.shape[1])
-        translated = self._translate_image(scaled, left + self.x_offset, top + self.y_offset)
+        translated = self._translate_image(
+            scaled,
+            int(face_left * self.focusing_coefficient + self.x_offset),
+            int(face_top * self.focusing_coefficient + self.y_offset),
+        )
         return translated if not mirror else cv2.flip(translated, 1)
 
     def _convert_rgba_to_rgb(self, image: np.ndarray) -> np.ndarray:
@@ -325,7 +349,7 @@ class IMake:
         Returns:
             _type_: offset image
         """
-        offset_image = Image.fromarray(np.zeros((960, 1080, 3), np.uint8))
+        offset_image = Image.fromarray(np.zeros((1080, 960, 3), np.uint8))
         offset_image.paste(Image.fromarray(image), (dx, dy))
         return np.array(offset_image).astype(np.uint8)
 
@@ -494,20 +518,36 @@ def main() -> None:
     parser.add_argument("--camera_id", type=int, default=0, help="camera id")
     parser.add_argument("--scale", type=float, default=2.0, help="scale")
     parser.add_argument("--effect_width", type=int, default=400, help="effect width")
+
     parser.add_argument(
-        "-margin_height",
-        "--face_bounding_box_margin_height",
+        "-margin_left",
+        "--face_bounding_box_margin_left",
         type=int,
         default=100,
-        help="face bounding box margin height",
+        help="face bounding box margin left",
     )
     parser.add_argument(
-        "-margin_width",
-        "--face_bounding_box_margin_width",
+        "-margin_top",
+        "--face_bounding_box_margin_top",
         type=int,
         default=100,
-        help="face bounding box margin width",
+        help="face bounding box margin top",
     )
+    parser.add_argument(
+        "-margin_right",
+        "--face_bounding_box_margin_right",
+        type=int,
+        default=100,
+        help="face bounding box margin right",
+    )
+    parser.add_argument(
+        "-margin_bottom",
+        "--face_bounding_box_margin_bottom",
+        type=int,
+        default=100,
+        help="face bounding box margin bottom",
+    )
+
     parser.add_argument("--debug", action="store_true", help="debug mode if this flag is set (default: False)")
     args = parser.parse_args()
 
@@ -515,8 +555,10 @@ def main() -> None:
         camera_id=args.camera_id,
         scale=args.scale,
         effect_width=args.effect_width,
-        face_bounding_box_margin_height=args.face_bounding_box_margin_height,
-        face_bounding_box_margin_width=args.face_bounding_box_margin_width,
+        face_bounding_box_margin_left=args.face_bounding_box_margin_left,
+        face_bounding_box_margin_top=args.face_bounding_box_margin_top,
+        face_bounding_box_margin_right=args.face_bounding_box_margin_right,
+        face_bounding_box_margin_bottom=args.face_bounding_box_margin_bottom,
         debug=args.debug,
     )
 

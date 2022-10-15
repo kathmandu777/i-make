@@ -57,6 +57,25 @@
                 height="240"
             />
 
+            <button
+                class="key-3 card"
+                v-shortkey="[3]"
+                @shortkey="updateFocusCoefficient(focusDiff)"
+                width="240"
+                height="240"
+            >
+                Focus Up
+            </button>
+            <button
+                class="key-1 card"
+                v-shortkey="[1]"
+                @shortkey="updateFocusCoefficient(-focusDiff)"
+                width="240"
+                height="240"
+            >
+                Focus Down
+            </button>
+
             <img
                 class="key-0 card"
                 v-shortkey.once="[0]"
@@ -77,6 +96,7 @@ export default {
         return {
             offsetDiff: 3,
             scaleDiff: 0.05,
+            focusDiff: 0.02,
         }
     },
     methods: {
@@ -92,6 +112,9 @@ export default {
         },
         async updateScale(diff) {
             await window.eel.update_scale(diff)()
+        },
+        async updateFocusCoefficient(diff) {
+            await window.eel.update_focusing_coefficient(diff)()
         },
         async startConfig() {
             await window.eel.start_config()
