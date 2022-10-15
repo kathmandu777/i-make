@@ -98,12 +98,12 @@
             <button
                 class="key-5 card"
                 v-shortkey="[5]"
-                @shortkey="confirmFaceCenter"
-                @click="confirmFaceCenter"
+                @shortkey="setFaceCenter"
+                @click="setFaceCenter"
                 width="240"
                 height="240"
             >
-                Confirm Center
+                Set Face Center
             </button>
 
             <img
@@ -172,8 +172,8 @@ export default {
         toggleOffsetMode() {
             this.isOffsetMode = !this.isOffsetMode
         },
-        async confirmFaceCenter() {
-            await window.eel.confirm_face_center()()
+        async setFaceCenter() {
+            await window.eel.set_face_center()()
         },
         async startConfig() {
             await window.eel.start_config()
