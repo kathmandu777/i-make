@@ -46,7 +46,9 @@ class IMake:
         self.scale = scale
         self.x_offset = 0
         self.y_offset = 0
-        self.focusing_coefficient = 1.0
+        self.focusing_coefficient_left = 1.0
+        self.focusing_coefficient_top = 1.0
+        self.face_center = (self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) / 2, self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2)
 
         self.EFFECT_WIDTH: Final = effect_width
 
@@ -140,13 +142,42 @@ class IMake:
         """
         self.y_offset += diff
 
-    def update_focusing_coefficient(self, diff: float) -> None:
-        """Update focusing coefficient.
+    def update_focusing_coefficient_left(self, diff: float) -> None:
+        """Update focusing coefficient left.
 
         Args:
             diff (_type_): diff
         """
-        self.focusing_coefficient += diff
+        self.focusing_coefficient_left += diff
+
+    def update_focusing_coefficient_top(self, diff: float) -> None:
+        """Update focusing coefficient top.
+
+        Args:
+            diff (_type_): diff
+        """
+        self.focusing_coefficient_top += diff
+
+    def confirm_face_center(self) -> None:
+        """Confirm face center."""
+        try:
+            image = self._get_image()
+        except Exception as e:
+            raise e
+
+        try:
+            original_landmarks = self.face_mesh.get_landmarks(image)
+        except Exception as e:
+            raise e
+
+        face_left = int(np.amin(original_landmarks[:, 0]))
+        face_right = int(np.amax(original_landmarks[:, 0]))
+        face_top = int(np.amin(original_landmarks[:, 1]))
+        face_bottom = int(np.amax(original_landmarks[:, 1]))
+        self.face_center = (
+            int((face_left + face_right) / 2),
+            int((face_top + face_bottom) / 2),
+        )
 
     def start_skin_color(self) -> None:
         self._kill_back_process()
@@ -259,15 +290,13 @@ class IMake:
         face_width = face_right - face_left
         face_top = int(np.amin(original_landmarks[:, 1]))
         face_bottom = int(np.amax(original_landmarks[:, 1]))
-        # face_left_margin = max(face_left - self.FACE_BOUNDING_BOX_MARGIN_LEFT, 0)
-        # face_right_margin = min(face_right + self.FACE_BOUNDING_BOX_MARGIN_RIGHT, image.shape[1])
-        # face_top_margin = max(face_top - self.FACE_BOUNDING_BOX_MARGIN_TOP, 0)
-        # face_bottom_margin = min(face_bottom + self.FACE_BOUNDING_BOX_MARGIN_BOTTOM, image.shape[0])
-
-        # face = image[face_top_margin:face_bottom_margin, face_left_margin:face_right_margin]
         face = image[face_top:face_bottom, face_left:face_right]
         face_effect_width = cv2.resize(
             face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
+        )
+        current_face_center = (
+            int((face_left + face_right) / 2),
+            int((face_top + face_bottom) / 2),
         )
 
         try:
@@ -284,8 +313,8 @@ class IMake:
         )
         translated = self._translate_image(
             scaled,
-            int(face_left * self.focusing_coefficient + self.x_offset),
-            int(face_top * self.focusing_coefficient + self.y_offset),
+            int((current_face_center[0] - self.face_center[0]) * self.focusing_coefficient_left + self.x_offset),
+            int((current_face_center[1] - self.face_center[1]) * self.focusing_coefficient_top + self.y_offset),
         )
         return translated if not mirror else cv2.flip(translated, 1)
 
