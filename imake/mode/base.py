@@ -228,7 +228,7 @@ class BaseModeEffect(BaseMode, Effect):
             )
             for file in sorted(
                 choice_files,
-                key=lambda x: get_index(order, x, cls.DEFAULT_ORDER),
+                key=lambda x: get_index(order, x.replace(".png", "").replace(".PNG", ""), cls.DEFAULT_ORDER),
             )
         ]
         return [
