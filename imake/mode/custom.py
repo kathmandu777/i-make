@@ -50,7 +50,10 @@ class CustomMode(BaseModeEffect):
                 thumbnail_dir_path=os.path.join(cls.MAKEUP_IMAGES_DIR_PATH, part_name, cls.THUMBNAIL_DIR_NAME),
                 part_name=part_name,
             )
-            for file in sorted(choice_files, key=lambda x: get_index(order, x, cls.DEFAULT_ORDER))
+            for file in sorted(
+                choice_files,
+                key=lambda x: get_index(order, x.replace(".png", "").replace(".PNG", ""), cls.DEFAULT_ORDER),
+            )
         ]
         return [
             {
