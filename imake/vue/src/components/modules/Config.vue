@@ -2,6 +2,7 @@
     <div>
         <div class="keypad">
             <img
+                v-if="isOffsetMode"
                 src="/dist/left.png"
                 @click="updateXOffset(offsetDiff)"
                 class="key-4 card"
@@ -11,6 +12,7 @@
                 height="240"
             />
             <img
+                v-if="isOffsetMode"
                 src="/dist/right.png"
                 @click="updateXOffset(-offsetDiff)"
                 class="key-6 card"
@@ -20,6 +22,7 @@
                 height="240"
             />
             <img
+                v-if="isOffsetMode"
                 src="/dist/up.png"
                 @click="updateYOffset(-offsetDiff)"
                 class="key-8 card"
@@ -29,6 +32,7 @@
                 height="240"
             />
             <img
+                v-if="isOffsetMode"
                 src="/dist/down.png"
                 @click="updateYOffset(offsetDiff)"
                 class="key-2 card"
@@ -37,6 +41,70 @@
                 width="240"
                 height="240"
             />
+
+            <img
+                v-if="!isOffsetMode"
+                src="/dist/left.png"
+                @click="updateFocusCoefficientLeft(-focusDiff)"
+                class="key-4 card"
+                v-shortkey="[4]"
+                @shortkey="updateFocusCoefficientLeft(-focusDiff)"
+                width="240"
+                height="240"
+            />
+            <img
+                v-if="!isOffsetMode"
+                src="/dist/right.png"
+                @click="updateFocusCoefficientLeft(focusDiff)"
+                class="key-6 card"
+                v-shortkey="[6]"
+                @shortkey="updateFocusCoefficientLeft(focusDiff)"
+                width="240"
+                height="240"
+            />
+            <img
+                v-if="!isOffsetMode"
+                src="/dist/up.png"
+                @click="updateFocusCoefficientTop(focusDiff)"
+                class="key-8 card"
+                v-shortkey="[8]"
+                @shortkey="updateFocusCoefficientTop(focusDiff)"
+                width="240"
+                height="240"
+            />
+            <img
+                v-if="!isOffsetMode"
+                src="/dist/down.png"
+                @click="updateFocusCoefficientTop(-focusDiff)"
+                class="key-2 card"
+                v-shortkey="[2]"
+                @shortkey="updateFocusCoefficientTop(-focusDiff)"
+                width="240"
+                height="240"
+            />
+
+            <button
+                class="key-dot card"
+                v-shortkey="['.']"
+                @shortkey="toggleOffsetMode"
+                @click="toggleOffsetMode"
+                width="240"
+                height="240"
+            >
+                <span v-if="isOffsetMode">Offset</span>
+                <span v-else>Focus</span>
+            </button>
+
+            <button
+                class="key-5 card"
+                v-shortkey="[5]"
+                @shortkey="setFaceCenter"
+                @click="setFaceCenter"
+                width="240"
+                height="240"
+            >
+                Set Face Center
+            </button>
 
             <img
                 src="/dist/plus.png"
@@ -77,6 +145,8 @@ export default {
         return {
             offsetDiff: 3,
             scaleDiff: 0.05,
+            focusDiff: 0.02,
+            isOffsetMode: true,
         }
     },
     methods: {
@@ -92,6 +162,18 @@ export default {
         },
         async updateScale(diff) {
             await window.eel.update_scale(diff)()
+        },
+        async updateFocusCoefficientLeft(diff) {
+            await window.eel.update_focusing_coefficient_left(diff)()
+        },
+        async updateFocusCoefficientTop(diff) {
+            await window.eel.update_focusing_coefficient_top(diff)()
+        },
+        toggleOffsetMode() {
+            this.isOffsetMode = !this.isOffsetMode
+        },
+        async setFaceCenter() {
+            await window.eel.set_face_center()()
         },
         async startConfig() {
             await window.eel.start_config()
@@ -163,6 +245,10 @@ export default {
 
 .key-plus {
     grid-area: key-plus;
+}
+
+.key-dot {
+    grid-area: key-dot;
 }
 
 .card {
