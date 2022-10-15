@@ -42,10 +42,6 @@ class IMake:
         self.x_offset = -int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) // 4)
         self.y_offset = 0
 
-        if effect_width > self.RENDER_IMAGE_WIDTH:
-            raise ValueError(
-                f"effect_width({effect_width}) must be less than RENDER_IMAGE_WIDTH({self.RENDER_IMAGE_WIDTH})"
-            )
         self.EFFECT_WIDTH: Final = effect_width
         self.FACE_BOUNDING_BOX_MARGIN_HEIGHT: Final = face_bounding_box_margin_height
         self.FACE_BOUNDING_BOX_MARGIN_WIDTH: Final = face_bounding_box_margin_width
