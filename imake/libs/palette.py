@@ -32,12 +32,12 @@ COLOR_PALETTE = [
 ]
 
 DARK_PALETTE = [
-    HSV(h=0, s=0, v=0),
+    HSV(h=0, s=0, v=0),  # black
     HSV(h=240, s=51, v=23),
     HSV(h=28, s=72, v=38),
     HSV(h=25, s=73, v=28),
     HSV(h=9, s=80, v=27),
-    HSV(h=0, s=0, v=100),
+    HSV(h=0, s=0, v=100),  # white
     HSV(h=0, s=100, v=82),
     HSV(h=60, s=100, v=100),
     HSV(h=200, s=100, v=100),

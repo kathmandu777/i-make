@@ -56,7 +56,16 @@ export default {
             var h = hsv.h / 60
             var s = hsv.s / 100
             var v = hsv.v / 100
-            if (s == 0) return [v * 255, v * 255, v * 255]
+            if (s == 0)
+                return (
+                    'rgb(' +
+                    parseInt(v * 255) +
+                    ',' +
+                    parseInt(v * 255) +
+                    ',' +
+                    parseInt(v * 255) +
+                    ')'
+                )
             var rgb
             var i = parseInt(h)
             var f = h - i
@@ -150,6 +159,7 @@ export default {
     width: 190px;
     height: 190px;
     border-radius: 60px;
+    border: 2px solid #fff;
     margin: 4px 6px 6px 4px;
 }
 </style>
