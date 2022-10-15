@@ -29,7 +29,8 @@ class IMake:
         camera_id: int,
         scale: float,
         effect_width: int,
-        face_bounding_box_margin: int,
+        face_bounding_box_margin_height: int,
+        face_bounding_box_margin_width: int,
         debug: bool,
     ) -> None:
         self.face_mesh = FaceMesh(refine_landmarks=True)
@@ -46,7 +47,8 @@ class IMake:
                 f"effect_width({effect_width}) must be less than RENDER_IMAGE_WIDTH({self.RENDER_IMAGE_WIDTH})"
             )
         self.EFFECT_WIDTH: Final = effect_width
-        self.FACE_BOUNDING_BOX_MARGIN: Final = face_bounding_box_margin
+        self.FACE_BOUNDING_BOX_MARGIN_HEIGHT: Final = face_bounding_box_margin_height
+        self.FACE_BOUNDING_BOX_MARGIN_WIDTH: Final = face_bounding_box_margin_width
 
         self.skin_hsv = PALETTE["skin"][0]
         self.back_process = None
@@ -250,10 +252,10 @@ class IMake:
         contours, _ = cv2.findContours(contour_image[:, :, 2], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         x, y, w, h = cv2.boundingRect(contours[0])
 
-        left = max(0, x - self.FACE_BOUNDING_BOX_MARGIN)
-        right = min(w + self.FACE_BOUNDING_BOX_MARGIN * 2 + left, image.shape[1])
-        top = max(0, y - self.FACE_BOUNDING_BOX_MARGIN)
-        bottom = min(h + self.FACE_BOUNDING_BOX_MARGIN * 2 + top, image.shape[0])
+        left = max(0, x - self.FACE_BOUNDING_BOX_MARGIN_WIDTH)
+        right = min(w + self.FACE_BOUNDING_BOX_MARGIN_WIDTH * 2 + left, image.shape[1])
+        top = max(0, y - self.FACE_BOUNDING_BOX_MARGIN_HEIGHT)
+        bottom = min(h + self.FACE_BOUNDING_BOX_MARGIN_HEIGHT * 2 + top, image.shape[0])
         face = image[top:bottom, left:right]
         face_effect_width = cv2.resize(
             face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
@@ -509,7 +511,18 @@ def main() -> None:
     parser.add_argument("--scale", type=float, default=2.0, help="scale")
     parser.add_argument("--effect_width", type=int, default=400, help="effect width")
     parser.add_argument(
-        "-margin", "--face_bounding_box_margin", type=int, default=100, help="face bounding box margin"
+        "-margin_height",
+        "--face_bounding_box_margin_height",
+        type=int,
+        default=100,
+        help="face bounding box margin height",
+    )
+    parser.add_argument(
+        "-margin_width",
+        "--face_bounding_box_margin_width",
+        type=int,
+        default=100,
+        help="face bounding box margin width",
     )
     parser.add_argument("--debug", action="store_true", help="debug mode if this flag is set (default: False)")
     args = parser.parse_args()
@@ -518,7 +531,8 @@ def main() -> None:
         camera_id=args.camera_id,
         scale=args.scale,
         effect_width=args.effect_width,
-        face_bounding_box_margin=args.face_bounding_box_margin,
+        face_bounding_box_margin_height=args.face_bounding_box_margin_height,
+        face_bounding_box_margin_width=args.face_bounding_box_margin_width,
         debug=args.debug,
     )
 
