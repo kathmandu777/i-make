@@ -6,7 +6,6 @@ from typing import Any, Callable, Final
 
 import cv2
 import eel
-import mediapipe as mp
 import numpy as np
 from PIL import Image
 
@@ -39,7 +38,7 @@ class IMake:
         self.debug = debug
 
         self.scale = scale
-        self.x_offset = -int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) // 4)
+        self.x_offset = 0
         self.y_offset = 0
 
         self.EFFECT_WIDTH: Final = effect_width
@@ -233,25 +232,14 @@ class IMake:
             _type_: effect(BGR)
         """
         try:
-            original_landmarks = self.face_mesh.get_landmarks(image, return_original_style=True)
+            original_landmarks = self.face_mesh.get_landmarks(image)
         except Exception as e:
             raise e
 
-        contour_image = np.zeros(image.shape, dtype=np.uint8)
-        mp.solutions.drawing_utils.draw_landmarks(
-            image=contour_image,
-            landmark_list=original_landmarks,
-            connections=mp.solutions.face_mesh.FACEMESH_FACE_OVAL,
-            landmark_drawing_spec=None,
-            connection_drawing_spec=mp.solutions.drawing_utils.DrawingSpec(color=(255, 255, 255), thickness=3),
-        )
-        contours, _ = cv2.findContours(contour_image[:, :, 2], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        x, y, w, h = cv2.boundingRect(contours[0])
-
-        left = max(0, x - self.FACE_BOUNDING_BOX_MARGIN_WIDTH)
-        right = min(w + self.FACE_BOUNDING_BOX_MARGIN_WIDTH * 2 + left, image.shape[1])
-        top = max(0, y - self.FACE_BOUNDING_BOX_MARGIN_HEIGHT)
-        bottom = min(h + self.FACE_BOUNDING_BOX_MARGIN_HEIGHT * 2 + top, image.shape[0])
+        left = max(int(np.amin(original_landmarks[:, 0])) - self.FACE_BOUNDING_BOX_MARGIN_WIDTH, 0)
+        right = min(int(np.amax(original_landmarks[:, 0])) + self.FACE_BOUNDING_BOX_MARGIN_WIDTH * 2, image.shape[1])
+        top = max(int(np.amin(original_landmarks[:, 1])) - self.FACE_BOUNDING_BOX_MARGIN_HEIGHT, 0)
+        bottom = min(int(np.amax(original_landmarks[:, 1])) + self.FACE_BOUNDING_BOX_MARGIN_HEIGHT * 2, image.shape[0])
         face = image[top:bottom, left:right]
         face_effect_width = cv2.resize(
             face, (self.EFFECT_WIDTH, int(self.EFFECT_WIDTH * face.shape[0] / face.shape[1]))
