@@ -13,6 +13,12 @@ iMake!は、プロジェクターを用いた、どんな人でもメイクを�
 
 <img src="./res/images/iMake-easy-facepaint.png" width="100%">
 
+- [予選資料](docs/qualifying-docs.pdf)
+- [パンフレット用資料](docs/brochure.pdf)
+- [操作マニュアル](docs/manual.pdf)
+- [プレゼン資料](docs/presentation.pdf)
+- [紹介動画](https://youtu.be/b1eCYd-JyHw)
+
 ## Requirement
 
 ### OS
