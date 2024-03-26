@@ -18,6 +18,8 @@ iMake!は、プロジェクターを用いた、どんな人でもメイクを�
 - [操作マニュアル](docs/manual.pdf)
 - [プレゼン資料](docs/presentation.pdf)
 - [紹介動画](https://youtu.be/b1eCYd-JyHw)
+- [プレゼン動画](https://www.youtube.com/watch?v=wSapbCyDciY&t=17701s) (presented by https://github.com/GoRuGoo)
+- [デモンストレーション動画](https://www.youtube.com/live/rOr0CrfxRIs?si=53l4_22NPQQ1R6kb&t=6665) (demonstrated by https://github.com/itomo2)
 
 ## Requirement
 
